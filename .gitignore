@@ -1,0 +1,16 @@
+# Node.js (서버)
+node_modules/
+npm-debug.log
+*.env
+
+# React (클라이언트)
+client/node_modules/
+client/build/
+
+# OS 및 편집기 관련
+.DS_Store
+.vscode/
+.idea/
+
+# 폴더 등 설명
+*.txt
