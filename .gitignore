@@ -11,6 +11,3 @@ client/build/
 .DS_Store
 .vscode/
 .idea/
-
-# 폴더 등 설명
-*.txt
