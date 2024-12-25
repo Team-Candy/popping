@@ -65,7 +65,7 @@ git push origin SH
 
 ### GitHub 웹사이트에서 PR 생성
 
-1. GitHub 팀 레포지토리로 가서, `sh` 브랜치에서 `dev` 브랜치로 PR을 생성합니다.
+1. GitHub 팀 레포지토리로 가서, `SH` 브랜치에서 `dev` 브랜치로 PR을 생성합니다.
 2. **Pull requests** 탭을 클릭합니다.
 3. **New Pull Request** 버튼을 클릭합니다.
 4. **base** 브랜치를 `dev`로 설정하고, **compare** 브랜치를 자신의 브랜치(`SH`)로 설정합니다.
