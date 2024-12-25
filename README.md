@@ -6,6 +6,7 @@ git clone URL
 ```
 GitHub 레포지토리 URL을 사용해 원격 저장소를 클론합니다.
 <br>
+<br>
 
 ## 2. 자기 브랜치로 변경
 ### (1) 원격과 로컬 브랜치 확인
@@ -26,6 +27,7 @@ git fetch
 git checkout SH  # 자신의 브랜치로 이동
 ```
 <br>
+<br>
 
 ## 3. 작업 후 커밋
 ### (1) 변경 사항 스테이지
@@ -43,12 +45,14 @@ git commit
 ```
 커밋 메시지는 팀의 컨벤션에 맞게 작성합니다.
 <br>
+<br>
 
 ## 4. 자기 브랜치에 푸시
 ```bash
 git push origin SH
 ```
 로컬에서 작업한 내용을 원격 브랜치(`SH`)에 푸시합니다.
+<br>
 <br>
 
 ## 5. Pull Request (PR) 생성
