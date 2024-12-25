@@ -27,7 +27,6 @@ git fetch
 git checkout SH  # 자신의 브랜치로 이동
 ```
 <br>
-<br>
 
 ## 3. 작업 후 커밋
 ### (1) 변경 사항 스테이지
