@@ -21,8 +21,6 @@ const HomeBanner = () => {
           },
           {
             id: 2,
-            // imageUrl: "https://example.com/banner2.jpg",
-            // redirectUrl: "https://example.com/store/2",
             imageUrl: "https://i.ibb.co/DtRrWkm/banner2.jpg",
             redirectUrl: "https://i.ibb.co/vXyFTdR/banner1.jpg",
           },
@@ -68,24 +66,6 @@ const HomeBanner = () => {
   if (error) {
     return <div>{error}</div>;
   }
-
-  // return (
-  //   <div>
-  //     {banners.length === 0 ? (
-  //       <div>No banners available</div> // 배너가 없으면
-  //     ) : (
-  //       banners.map((banner) => {
-  //         return (
-  //           <a key={banner.id} href={banner.redirectUrl} target="_blank" rel="noopener noreferrer">
-  //             {/* noopener: 보안, noreferrer: 프라이버시 */}
-  //             <img src={banner.imageUrl} alt={`Banner ${banner.id}`} />
-  //             {/* alt: 배너 설명 */}
-  //           </a>
-  //         );
-  //       })
-  //     )}
-  //   </div>
-  // );
 
   return (
     <div>

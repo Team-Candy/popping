@@ -1,8 +1,8 @@
-import React from "react";
-import { Link } from "react-router-dom";
-
 const Footer = () => {
   return (
+    <>
+      <div>Copyright 2025. Team-Candy. All rights reserved.</div>
+    </>
   );
 };
 
