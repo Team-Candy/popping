@@ -332,29 +332,10 @@ const PopupDetailPage = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "description":
-        return (
-          <Description detail={detail}></Description>
-          //   <section>
-          //     <p>
-          //       <strong>운영 기간:</strong> {detail.startDate}~{detail.endDate}
-          //     </p>
-
-          //     <p>
-          //       <strong>운영 시간:</strong> {detail.business_hours}
-          //     </p>
-
-          //     <p>
-          //       <strong>상세 설명:</strong> {detail.description}
-          //     </p>
-
-          //     <p>
-          //       <strong>문의:</strong> {detail.contact}
-          //     </p>
-          //   </section>
-        );
+        return <Description detail={detail}></Description>;
 
       case "reviews":
-        return <BlogReview></BlogReview>;
+        return <BlogReview name={detail.name}></BlogReview>;
 
       default:
         return null;
