@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-
-import PropTypes from "prop-types";
+import { useParams } from "react-router-dom";
+import BlogReview from "../components/BlogReview";
+import Description from "../components/Description";
 
 // 임시 데이터
 const popupData = [
@@ -272,98 +272,132 @@ const popupData = [
   },
 ];
 
-function filterByCategory(category) {
-  if (!category || category === "whole") {
-    return popupData;
-  }
-
-  return popupData.filter((item) => item.type === category);
+function filterById(popupId) {
+  return popupData.find((popup) => popup.id == popupId) || null;
 }
 
-const PopupList = ({ category }) => {
-  const [popups, setPopups] = useState([]);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
+const PopupDetailPage = () => {
+  const { popupId } = useParams(); // URL에서 popupId 가져옴, string type임
+  const [detail, setDetail] = useState(null); // 팝업 상세 정보 저장
+  const [error, setError] = useState(null); // 에러 메시지 저장
+  const [loading, setLoading] = useState(true); // 로딩 상태 저장
 
-  const fetchCategoryData = async (category) => {
-    setError(null);
+  const [activeTab, setActiveTab] = useState("description"); // 기본은 상세 설명 탭
 
+  // 팝업 상세 정보 API 호출
+  const fetchPopupDetail = async () => {
     try {
-      const response = await fetch(`/api/main/categories/${category}`);
+      const response = await fetch(`api/stores/${popupId}`);
       if (!response.ok) {
-        throw new Error("Failed to fetch categories");
+        throw new Error("Failed to fetch PopupDetail");
       }
 
-      //API
-      // const data = response.json();
-      //  data = {
-      //     categories: [
-      //       { id: 100, type: "culture", name: "오징어게임2 팝업스토어 in 강남", imageUrl: "https://i.ibb.co/grpvWqW/list1.jpg", location: "" },
-      //       { id: 200, type: "food", name: "바나나맛우유 50주년 팝업스토어", imageUrl: "https://i.ibb.co/vJrZYn3/list2.jpg", location: "" },
-      //       { id: 300, type: "characters", name: "카카오프렌즈 춘식이 X 해리포터 팝업스토어", imageUrl: "", location: "서울특별시 서초구 강남대로 429 카카오프렌즈 강남플래그십 스토어" },
-      //       { id: 1, type: "culture", name: "카카오프렌즈 춘식이 X 해리포터 팝업스토어", imageUrl: "", location: "서울특별시 서초구 강남대로 429 카카오프렌즈 강남플래그십 스토어" },
-      //     ],
-      //   };
+      // const data = await response.json();
 
-      // category type
-      // whole, food, education, culture, digital, clothing, interior, sports, fashion miscellaneous goods, characters, others
-      // popular, scheduled
-
-      const data = filterByCategory(category);
-      // console.log("data: ", data);
-
-      // api
-      // if (data.categories) {
-      // setPopups(data.categories);
-
-      if (data) {
-        setPopups(data);
-      } else {
-        setPopups([]);
-      }
+      // 임시 데이터
+      const data = filterById(popupId);
+      setDetail(data); // 데이터 저장
+      setError(null); // 에러 초기화
     } catch (err) {
-      setError(err.message);
+      setError(err.message); // 에러 메시지 저장
+      setDetail(null); // 데이터 초기화
+    } finally {
+      setLoading(false); // 로딩 종료
     }
   };
 
+  // fetchPopupDetail(); // 그냥 => 무한 호출
   useEffect(() => {
-    if (category) {
-      fetchCategoryData(category);
-    }
-  }, [category]);
+    // 컴포넌트가 마운드 되거나 popupId가 변경될 때 API 호출
+    // console.log("넘어온 params:", popupId);
+    fetchPopupDetail();
+  }, [popupId]);
 
+  // 로딩 중일 때 표시
+  if (loading) {
+    return <p>로딩 중...</p>;
+  }
+
+  // 에러 발생 시 표시
+  if (error) {
+    return <p>에러: {error}</p>;
+  }
+
+  // 받아온 데이터가 없을 때 표시
+  if (!detail) {
+    return <p>팝업 정보를 불러올 수 없습니다.</p>;
+  }
+
+  // 조건부 렌더링
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "description":
+        return (
+          <Description detail={detail}></Description>
+          //   <section>
+          //     <p>
+          //       <strong>운영 기간:</strong> {detail.startDate}~{detail.endDate}
+          //     </p>
+
+          //     <p>
+          //       <strong>운영 시간:</strong> {detail.business_hours}
+          //     </p>
+
+          //     <p>
+          //       <strong>상세 설명:</strong> {detail.description}
+          //     </p>
+
+          //     <p>
+          //       <strong>문의:</strong> {detail.contact}
+          //     </p>
+          //   </section>
+        );
+
+      case "reviews":
+        return <BlogReview></BlogReview>;
+
+      default:
+        return null;
+    }
+  };
+
+  // 데이터 렌더링
   return (
     <div>
-      {error && <p>Error: {error}</p>}
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px", padding: "16px" }}>
-        {popups.length > 0 ? (
-          popups.map((popup) => (
-            <div key={popup.id} onClick={() => navigate(`/popup/${popup.id}`)} style={{ cursor: "pointer", textAlign: "center", border: "1px solid #ccc", borderRadius: "8px", padding: "8px" }}>
-              <img
-                src={popup.images[0]}
-                alt={popup.name}
-                style={{
-                  width: "100%",
-                  height: "150px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                }}
-              />
-              <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.name}</p>
-            </div>
-          ))
-        ) : (
-          <p>No Popup available for this category.</p>
-        )}
+      <div>
+        {/* 이미지 렌더링 */}
+        <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+          {detail.images.map((url, index) => (
+            <img key={index} src={url} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
+          ))}
+        </div>
       </div>
+
+      <div>
+        {/* 제목 */}
+        <h1>{detail.name}</h1>
+
+        {/* 주최 */}
+        <p>
+          <strong>주최:</strong> {detail.owner}
+        </p>
+
+        {/* 장소 */}
+        <p>
+          <strong>장소:</strong> {detail.location}
+        </p>
+      </div>
+
+      {/* 버튼, 탭 */}
+      <div>
+        <button onClick={() => setActiveTab("description")}>상세 설명</button>
+        <button onClick={() => setActiveTab("reviews")}>실시간 후기</button>
+      </div>
+
+      {/* 탭 컨텐츠 */}
+      {renderTabContent()}
     </div>
   );
 };
 
-// category prop의 타입을 string으로 지정
-PopupList.propTypes = {
-  category: PropTypes.string.isRequired, // category는 필수로 string이어야 함
-};
-
-export default PopupList;
+export default PopupDetailPage;

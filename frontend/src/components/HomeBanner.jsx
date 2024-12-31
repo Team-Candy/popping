@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import "./HomeBanner.css";
+import "../styles/HomeBanner.css";
 
 const HomeBanner = () => {
   const [banners, setBanners] = useState([]); // 배너 데이터 저장
-  const [loading, setLoading] = useState(true); // 로딩 상태
+  // const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
   const [currentIndex, setCurrentIndex] = useState(0); // 현재 배너 인덱스
 
@@ -42,9 +42,10 @@ const HomeBanner = () => {
         // {"id": 2,"imageUrl": "https://example.com/banner2.jpg","redirectUrl": "https://example.com/store/2"}]}
       } catch (err) {
         setError(err.message); // 에러 상태 저장
-      } finally {
-        setLoading(false); // 로딩 완료
       }
+      // finally {
+      //   setLoading(false); // 로딩 완료
+      // }
     };
 
     fetchBanners();
@@ -59,9 +60,9 @@ const HomeBanner = () => {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + banners.length) % banners.length);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
 
   if (error) {
     return <div>{error}</div>;
@@ -70,7 +71,14 @@ const HomeBanner = () => {
   return (
     <div>
       {banners.length === 0 ? (
-        <div>No banners available</div> // 배너가 없으면
+        // <div>No banners available</div> // 배너가 없으면
+        <div
+          style={{
+            width: "500px", // 고정 너비
+            height: "300px", // 고정 높이
+            backgroundColor: "white", // 배경색 (테스트용)
+          }}
+        ></div>
       ) : (
         <div>
           <a key={banners[currentIndex].id} href={banners[currentIndex].redirectUrl} target="_blank" rel="noopener noreferrer">
