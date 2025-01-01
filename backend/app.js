@@ -302,6 +302,29 @@ function authenticateJWT(req, res, next) {
     });
 }
 
+// 사용자 정보 조회
+app.get("/api/users/:u_id", authenticateJWT, (req, res) => {
+    const { u_id } = req.user;
+
+    const query = `
+        SELECT email, name, nickname, profileImage, introduction 
+        FROM User 
+        WHERE u_id = ?
+    `;
+    db.query(query, [u_id], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Failed to retrieve user information" });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.json({ profile: results[0] });
+    });
+});
+
 // 검색 기능
 app.get("/api/search", (req, res) => {
     const { region, name, page = 1, limit = 10 } = req.query;
