@@ -3,7 +3,8 @@ const express = require("express");
 const mysql = require("mysql2");
 const morgan = require("morgan");
 const axios = require("axios");
-// const nodemailer = require("nodemailer");
+const nodemailer = require("nodemailer");
+// const path = require("path");
 
 const app = express();
 const PORT = 3000;
@@ -20,10 +21,6 @@ const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET;
 
 app.use(morgan("dev"));
 app.use(express.json());
-
-// 사용자 이메일 인증 데이터를 저장할 임시 저장소
-let userCodes = [];
-// let registeredUsers = []; 
 
 db.connect((err) => {
     if (err) {
@@ -46,6 +43,75 @@ app.get('/users', (req, res) => {
       res.json(results);
       console.log(results);
   });
+});
+
+// 사용자 이메일 인증 데이터를 저장할 임시 저장소
+let userCodes = [];
+let registeredUsers = []; // 등록된 사용자 저장
+
+const transport = nodemailer.createTransport({
+    host: "smtp.naver.com",
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
+
+function generateCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function isAuthenticated(email, code) {
+    const email = req.cookies.userEmail;
+
+    if (email) {
+        next();
+    } else {
+        res.status(401).json({ message: "Unauthorized" });
+    }
+}
+
+// 회원가입 (이메일 인증코드 전송)
+app.post("/api/signup/email-code", (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ error: "이메일을 입력해주세요." });
+    }
+
+    const code = generateCode();
+    userCodes[email] = { code, timestamp: Date.now() };
+    setTimeout(() => delete userCodes[email], 10 * 60 * 1000); // 10분 후 코드 삭제
+
+    console.log(`인증코드 발송: ${email} -> ${code}`);
+
+    const emailEnabled = process.env.EMAIL_ENABLED === "true"; // 발송 여부 확인
+
+    if (emailEnabled) {
+        transport.sendMail({
+            from: process.env.NAVER_EMAIL,
+            to: email,
+            subject: "이메일 인증 코드",
+            html: `
+                <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px;">
+                    <h2 style="color: #4CAF50;">서비스 가입을 환영합니다!</h2>
+                    <p>아래의 6자리 코드를 입력하여 인증을 완료해주세요:</p>
+                    <h1 style="color: #333; letter-spacing: 5px;">${code}</h1>
+                    <p>이 요청을 본인이 하지 않았다면, 이 메일을 무시하세요.</p>
+                </div>
+            `
+        })
+        .then(() => res.json({ success: true, message: "인증 코드가 이메일로 전송되었습니다" }))
+        .catch((error) => {
+            console.error(error);
+            res.status(500).json({ error: "이메일 전송 실패" });
+        })
+    } else {
+        console.log("이메일 발송 비활성화: 코드가 전송되지 않았습니다.");
+        res.json({ success: true, message: `이메일 발송이 비활성화 되었습니다. Code: ${code}` });
+    }
 });
 
 // 검색 기능
