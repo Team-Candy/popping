@@ -284,6 +284,13 @@ app.post("/api/login", (req, res) => {
     });
 });
 
+// 로그아웃 기능
+app.post("/api/logout", (req, res) => {
+    // 로그아웃 시 서버에서 할 작업은 사실 없음.
+    // 클라이언트에서 JWT 토큰을 삭제하는 작업이 필요함.
+    res.json({ message: "로그아웃 되었습니다." });
+});
+
 // JWT 검증 미들웨어
 function authenticateJWT(req, res, next) {
     const token = req.header("Authorization")?.replace("Bearer ", "");
