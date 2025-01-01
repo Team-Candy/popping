@@ -393,7 +393,7 @@ app.get("/api/stores/:s_id", (req, res) => {
 // 팝업스토어 정보 수정
 app.put("/api/stores/:s_id", (req, res) => {
     const { s_id } = req.params; // URL 경로에서 팝업스토어 ID 가져오기
-    const { owner, s_name, contact, location, s_date, e_date, business_hours, desciption, imageUrl } = req.body;
+    const { owner, s_name, contact, location, s_date, e_date, business_hours, description, imageUrl } = req.body;
 
     if (!s_name || !location || !s_date || !e_date) {
         return res.status(400).json({ error: "s_name, location, s_date, e_date are required" });
