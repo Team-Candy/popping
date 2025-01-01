@@ -4,6 +4,8 @@ const mysql = require("mysql2");
 const morgan = require("morgan");
 const axios = require("axios");
 const nodemailer = require("nodemailer");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 // const path = require("path");
 
 const app = express();
@@ -18,6 +20,7 @@ const db = mysql.createConnection({
 
 const NAVER_CLIENT_ID = process.env.NAVER_CLIENT_ID;
 const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET;
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 app.use(morgan("dev"));
 app.use(express.json());
@@ -45,10 +48,6 @@ app.get('/users', (req, res) => {
   });
 });
 
-// 사용자 이메일 인증 데이터를 저장할 임시 저장소
-let userCodes = [];
-let registeredUsers = []; // 등록된 사용자 저장
-
 const transport = nodemailer.createTransport({
     host: "smtp.naver.com",
     port: 465,
@@ -61,16 +60,6 @@ const transport = nodemailer.createTransport({
 
 function generateCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-function isAuthenticated(email, code) {
-    const email = req.cookies.userEmail;
-
-    if (email) {
-        next();
-    } else {
-        res.status(401).json({ message: "Unauthorized" });
-    }
 }
 
 // 회원가입 (이메일 인증코드 전송)
@@ -249,6 +238,69 @@ app.post("/api/signup/users", (req, res) => {
         });
     });
 });
+
+// 로그인
+app.post("/api/login", (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: "이메일과 비밀번호를 입력해주세요." });
+    }
+
+    const query = `
+        SELECT u_id, email, password, name
+        FROM User
+        WHERE email = ?
+    `;
+    db.query(query, [email], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Failed to login" });
+        }
+
+        if (results.length === 0) {
+            return res.status(400).json({ error: "등록되지 않은 이메일입니다." });
+        }
+
+        const user = results[0];
+
+        // 비밀번호 확인
+        bcrypt.compare(password, user.password, (err, isMatch) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: "비밀번호 확인 오류" });
+            }
+
+            if (!isMatch) {
+                return res.status(400).json({ error: "비밀번호가 일치하지 않습니다." });
+            }
+
+            // JWT 토큰 발급
+            const token = jwt.sign({ u_id: user.u_id, email: user.email }, JWT_SECRET_KEY, { expiresIn: "1h" });
+
+            // JWT를 클라이언트에 전달
+            res.json({ message: "로그인 성공", token });
+        });
+    });
+});
+
+// JWT 검증 미들웨어
+function authenticateJWT(req, res, next) {
+    const token = req.header("Authorization")?.replace("Bearer ", "");
+
+    if (!token) {
+        return res.status(401).json({ error: "토큰이 필요합니다." });
+    }
+
+    jwt.verify(token, JWT_SECRET_KEY, (err, user) => {
+        if (err) {
+            return res.status(403).json({ error: "토큰이 만료되었습니다." });
+        }
+
+        req.user = user;
+        next();
+    });
+}
 
 // 검색 기능
 app.get("/api/search", (req, res) => {
