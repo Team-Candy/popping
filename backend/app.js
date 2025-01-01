@@ -114,6 +114,37 @@ app.post("/api/signup/email-code", (req, res) => {
     }
 });
 
+// 회원가입 (이메일 인증코드 확인)
+app.post("/api/signup/verify-code", (req, res) => {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+        return res.status(400).json({ error: "이메일과 코드를 입력해주세요." });
+    }
+
+    const userCode = userCodes[email];
+
+    if (!userCode) {
+        return res.status(400).json({ error: "인증 코드가 존재하지 않습니다." });
+    }
+
+    if (userCode.code === code) {
+        db.query(`SELECT email FROM User WHERE email = ?`, [email], (err, results) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: "Failed to check user email" });
+            }
+            if (results.length > 0) {
+                return res.status(400).json({ error: "이미 등록된 이메일 입니다." });
+            }
+        });
+
+        return res.json({ success: true, message: "인증되었습니다." });
+    } else {
+        return res.status(400).json({ error: "인증 코드가 일치하지 않습니다." });
+    }
+});
+
 // 검색 기능
 app.get("/api/search", (req, res) => {
     const { region, name, page = 1, limit = 10 } = req.query;
