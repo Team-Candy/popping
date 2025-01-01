@@ -1,23 +1,59 @@
 import { useState, useEffect } from "react";
-import Map from "../components/Map";
-
-// 서버에서 지역별 팝업 위치 가져오기
-async function fetchLocationData(region) {
-  // 에러 처리
-  const response = await fetch(`http://localhost:3000/api/getLocation/${region}`);
-  const data = await response.json();
-  // {"location": ["", "", "", ...]}
-  return data.location;
-}
+import Map from "../components/SearchMap";
+import Region from "../components/Region";
 
 const MapPage = () => {
-  const [location, setLocation] = useState(null);
-  setLocation(fetchLocationData());
+  const [selectedRegion, setSelectedRegion] = useState("total"); // Default region
+  const [location, setLocation] = useState([]);
+
+  useEffect(() => {
+    // 현재 활성화된 전체 팝업 정보 요청
+    const fetchLocationData = async () => {
+      try {
+        // const response = await fetch(`http://localhost:3000/api/activePopups`);
+        // if (!response.ok) {
+        //   throw new Error("");
+        // }
+        // const data = await response.json();
+        // 팝업고유 id, 팝업 이름, 주소, startDate, endDate, 이미지 url
+
+        // 임시 데이터
+        const data = {
+          list: [
+            {
+              id: 100,
+              name: "오징어게임2 팝업스토어 in 강남",
+              location: "서울 서초구 신반포로 176 신세계백화점 강남점 1층 오픈스테이지",
+              startDate: "2024.12.20",
+              endDate: "2025.01.12",
+              image: "https://i.ibb.co/tPJYqCB/detail2-1.jpg",
+            },
+            {
+              id: 200,
+              name: "바나나맛우유 50주년 팝업스토어",
+              location: "서울 종로구 삼일대로28길 28 누디트 익선 B동",
+              startDate: "2024.12.21",
+              endDate: "2024.12.28",
+              image: "https://i.ibb.co/2df8xYG/detail1.jpg",
+            },
+          ],
+        };
+
+        setLocation(data.list);
+      } catch (err) {
+        console.error("Error fetching location data: ", err);
+      }
+    };
+
+    fetchLocationData();
+  }, []);
 
   return (
     <div>
       <h1>맵 페이지</h1>
-      <Map location={location}></Map>
+      <Region onSelectRegion={setSelectedRegion}></Region>
+      {/* 지역 선택 버튼에서 선택된 값을 setSelectedRegion으로 업데이트 */}
+      <Map region={selectedRegion} location={location}></Map>
     </div>
   );
 };
