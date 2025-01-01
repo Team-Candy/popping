@@ -1,18 +1,22 @@
 require("dotenv").config();
 const express = require("express");
-const mysql = require("mysql2/promise");
+const mysql = require("mysql2");
 const morgan = require("morgan");
+const axios = require("axios");
 // const nodemailer = require("nodemailer");
 
 const app = express();
 const PORT = 3000;
 
-const db = mysql.createPool({
+const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME
 });
+
+const NAVER_CLIENT_ID = process.env.NAVER_CLIENT_ID;
+const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET;
 
 app.use(morgan("dev"));
 app.use(express.json());
@@ -125,6 +129,37 @@ app.get("/api/main/categories/:categoryName", async (req, res) => {
     } catch (error) {
         console.error('Database query error:', error);
         res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+// 네이버 블로그 검색 API를 사용하여 글 가져오기
+app.get("/api/blogs", async (req, res) => {
+    const { query } = req.query;
+
+    if (!query) {
+        return res.status(400).json({ error: "query is required" });
+    }
+
+    const url = `https://openapi.naver.com/v1/search/blog?query=${encodeURIComponent(query)}`;
+
+    try {
+        const response = await axios.get(url, {
+            headers: {
+                "X-Naver-Client-Id": NAVER_CLIENT_ID,
+                "X-Naver-Client-Secret": NAVER_CLIENT_SECRET
+            }
+        });
+
+        // 필요한 데이터만 추출출
+        const blogs = response.data.items.map((item) => ({
+            title: item.title.replace(/<[^>]*>/g, ""), // HTML 태그 제거
+            link: item.link,
+        }));
+
+        res.json(blogs);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch blog data" });
     }
 });
 
