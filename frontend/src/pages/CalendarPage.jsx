@@ -1,7 +1,10 @@
+import Calendar from "../components/Calendar";
+
 const CalenderPage = () => {
   return (
     <div>
-      <h1>캘린더 페이지</h1>
+      <h1>달력</h1>
+      <Calendar></Calendar>
     </div>
   );
 };
