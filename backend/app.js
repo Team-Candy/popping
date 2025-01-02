@@ -803,9 +803,29 @@ app.get("/api/blogs", async (req, res) => {
     }
 });
 
-// 달력 관련 api
 // 달력에 표시할 팝업스토어 정보 가져오기
+app.get("/api/calendar", async (req, res) => {
+    try {
+        const [rows] = await db.query(
+            `SELECT s_id AS id, s_name AS title, s_date AS startDate, e_date AS endDate 
+             FROM Store
+            `
+        );
 
+        // 결과 데이터를 가공
+        const results = rows.map(row => ({
+            id: row.id.toString(),
+            title: row.title,
+            startDate: row.startDate.toISOString().split("T")[0],
+            endDate: row.endDate.toISOString().split("T")[0],
+        }));
+
+        res.json({ results });
+    } catch (error) {
+        console.error("Database query failed:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
 
 // 팝업스토어 상세 정보
 app.get("/api/stores/:s_id", (req, res) => {
@@ -833,7 +853,7 @@ app.get("/api/stores/:s_id", (req, res) => {
 
         // 결과가 여러 개일 수 있기 때문에 첫 번째 결과를 가져오기 전에 이미지를 배열로 처리
         const store = results[0];
-        const images = results.map(result => result.image_url).filter(image => image); // 이미지 URL만 배열로 만듦
+        const images = results.map(result => result.image_url).filter(postimg => postimg); // 이미지 URL만 배열로 만듦
 
         // 응답 구조 변경: store 정보와 images 배열을 분리
         res.status(200).json({
@@ -852,7 +872,6 @@ app.get("/api/stores/:s_id", (req, res) => {
         });
     });
 });
-
 
 // 팝업스토어 정보 수정
 app.put("/api/stores/:s_id", (req, res) => {
