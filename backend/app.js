@@ -654,35 +654,80 @@ app.get("/api/main/banners", async (req, res) => {
 });
 
 // FE측에서 카테고리 정보를 받아와서 DB에 저장
-// app.post("/api/categories", (req, res) => {
-//     const { s_id, categories } = req.body;
+app.post("/api/categories", (req, res) => {
+    const { s_id, categories } = req.body;
 
-//     if (!s_id || !categories || !Array.isArray(categories)) {
-//         return res.status(400).json({ error: "s_id and categories are required" });
-//     }
+    if (!s_id || !categories || !Array.isArray(categories) || categories.length === 0) {
+        return res.status(400).json({ error: "s_id and a non-empty categories array are required" });
+    }
 
-//     // 기존 카테고리 정보 삭제
-//     const deleteQuery = `DELETE FROM Category WHERE s_id = ?`;
-//     db.query(deleteQuery, [s_id], (err) => {
-//         if (err) {
-//             console.error(err);
-//             return res.status(500).json({ error: "Failed to delete existing categories" });
-//         }
+    // 중복 카테고리 제거
+    const uniqueCategories = [...new Set(categories)];
 
-//         // 카테고리 정보 삽입
-//         const insertQuery = `INSERT INTO Category (s_id, name) VALUES ?`;
-//         const values = categories.map(category => [s_id, category]);
+    // DB 연결 및 트랜잭션 실행
+    db.getConnection((err, connection) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Failed to connect to the database" });
+        }
 
-//         db.query(insertQuery, [values], (err) => {
-//             if (err) {
-//                 console.error(err);
-//                 return res.status(500).json({ error: "Failed to insert categories" });
-//             }
+        connection.beginTransaction((err) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: "Failed to start transaction" });
+            }
 
-//             res.status(201).json({ message: "Categories saved successfully" });
-//         });
-//     });
-// });
+            // 1. s_id 검증
+            const checkStoreQuery = `SELECT s_id FROM Store WHERE s_id = ?`;
+            connection.query(checkStoreQuery, [s_id], (err, results) => {
+                if (err || results.length === 0) {
+                    connection.rollback(() => {
+                        console.error(err || "Invalid s_id");
+                        return res.status(400).json({ error: "Invalid s_id" });
+                    });
+                } else {
+                    // 2. 기존 카테고리 삭제
+                    const deleteQuery = `DELETE FROM Category WHERE s_id = ?`;
+                    connection.query(deleteQuery, [s_id], (err) => {
+                        if (err) {
+                            connection.rollback(() => {
+                                console.error(err);
+                                return res.status(500).json({ error: "Failed to delete existing categories" });
+                            });
+                        } else {
+                            // 3. 새로운 카테고리 삽입
+                            const insertQuery = `INSERT INTO Category (s_id, name) VALUES ?`;
+                            const values = uniqueCategories.map(category => [s_id, category]);
+                            connection.query(insertQuery, [values], (err) => {
+                                if (err) {
+                                    connection.rollback(() => {
+                                        console.error(err);
+                                        return res.status(500).json({ error: "Failed to insert categories" });
+                                    });
+                                } else {
+                                    // 4. 트랜잭션 커밋
+                                    connection.commit((err) => {
+                                        if (err) {
+                                            connection.rollback(() => {
+                                                console.error(err);
+                                                return res.status(500).json({ error: "Failed to commit transaction" });
+                                            });
+                                        } else {
+                                            res.status(201).json({ message: "Categories saved successfully" });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        // DB 연결 해제
+        connection.release();
+    });
+});
 
 // 메인 페이지 - 카테고리 별 팝업 스토어 정보 전달
 app.get("/api/main/categories/:categoryName", async (req, res) => {
@@ -757,6 +802,10 @@ app.get("/api/blogs", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch blog data" });
     }
 });
+
+// 달력 관련 api
+// 달력에 표시할 팝업스토어 정보 가져오기
+
 
 // 팝업스토어 상세 정보
 app.get("/api/stores/:s_id", (req, res) => {
