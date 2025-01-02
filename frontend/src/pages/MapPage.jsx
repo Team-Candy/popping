@@ -50,7 +50,7 @@ const MapPage = () => {
 
   return (
     <div>
-      <h1>맵 페이지</h1>
+      <h1>지도</h1>
       <Region onSelectRegion={setSelectedRegion}></Region>
       {/* 지역 선택 버튼에서 선택된 값을 setSelectedRegion으로 업데이트 */}
       <Map region={selectedRegion} location={location}></Map>
