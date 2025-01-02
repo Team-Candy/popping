@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"; // Link 컴포넌트
 import CreatePopup from "./CreatePopup"; // 팝업 올리기
-import AuthForm from "./AuthForm"; // 로그인/회원가입
+import AuthButton from "./AuthButton"; // 로그인/회원가입
 import SearchBar from "./SearchBar"; // 검색
 
 import "../styles/Header.css";
@@ -15,7 +15,7 @@ function Header() {
         {/* <div className="logo">POPPING</div> */}
         <div className="header-actions">
           <CreatePopup />
-          <AuthForm />
+          <AuthButton />
         </div>
       </div>
 
@@ -23,13 +23,6 @@ function Header() {
       <div className="header-search">
         <SearchBar />
       </div>
-
-      {/* 세 번째 줄 */}
-      {/* <nav className="header-nav">
-        <a href="/">홈</a>
-        <a href="/">달력</a>
-        <a href="/">지도</a>
-      </nav> */}
     </header>
   );
 }

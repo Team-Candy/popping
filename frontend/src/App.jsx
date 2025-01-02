@@ -7,8 +7,12 @@ import CalenderPage from "./pages/CalendarPage";
 import PopupDetailPage from "./pages/PopupDetailPage";
 import SearchResult from "./pages/SearchResultPage";
 
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import LoginPage from "./pages/Auth/LoginPage";
+import SignUpPage from "./pages/Auth/SignUpPage";
+import JoinEmailPage from "./pages/Auth/JoinMailPage";
+
+// import Header from "./components/Header";
+// import Footer from "./components/Footer";
 
 function App() {
   // const [count, setCount] = useState(0);
@@ -32,6 +36,12 @@ function App() {
           <Route path="popup/:popupId" element={<PopupDetailPage />} />
           {/* 검색 결과 페이지 */}
           <Route path="popup/search" element={<SearchResult />} />
+          {/* 로그인 페이지 */}
+          <Route path="login" element={<LoginPage />} />
+          {/* 회원가입 */}
+          <Route path="signup" element={<SignUpPage />} />
+          {/* 이메일로 가입하기 */}
+          <Route path="join/email" element={<JoinEmailPage />} />
         </Route>
       </Routes>
 

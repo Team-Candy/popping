@@ -3,7 +3,7 @@ import FullCalendar from "@fullcalendar/react"; // FullCalendar React 컴포넌�
 import dayGridPlugin from "@fullcalendar/daygrid"; // dayGrid 플러그인
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../../public/index.css";
+import "../styles/calendar.css";
 
 async function fetchPopup() {
   // // API
