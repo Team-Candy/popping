@@ -682,8 +682,8 @@ app.post("/api/categories", (req, res) => {
             connection.query(checkStoreQuery, [s_id], (err, results) => {
                 if (err || results.length === 0) {
                     connection.rollback(() => {
-                        console.error(err || "Invalid s_id");
-                        return res.status(400).json({ error: "Invalid s_id" });
+                        console.error(err || "Invalid id");
+                        return res.status(400).json({ error: "Invalid id" });
                     });
                 } else {
                     // 2. 기존 카테고리 삭제
@@ -769,8 +769,6 @@ app.get("/api/main/categories/:categoryName", async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 });
-
-// 메인 페이지 - 
 
 // 네이버 블로그 검색 API를 사용하여 글 가져오기
 app.get("/api/blogs", async (req, res) => {
