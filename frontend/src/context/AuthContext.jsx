@@ -1,6 +1,6 @@
 // 로그인 상태 관리 - 전역
 import PropTypes from "prop-types";
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState } from "react";
 
 const AuthContext = createContext();
 

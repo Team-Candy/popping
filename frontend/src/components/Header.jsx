@@ -32,7 +32,6 @@ function Header() {
         <div className="header-actions">
           <CreatePopup />
           <AuthButton />
-          {/* {isLogIn ? <MyPageButton username={username} onLogout={handleLogout} /> : <AuthButton onLoginSuccess={handleLoginSuccess} />} */}
         </div>
       </div>
 

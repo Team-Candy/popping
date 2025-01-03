@@ -9,11 +9,14 @@ import SearchResult from "./pages/SearchResultPage";
 
 import SignUpPage from "./pages/Auth/SignUpPage";
 import JoinEmailPage from "./pages/Auth/JoinMailPage";
-import MyPage from "./pages/MyPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 import { AuthProvider } from "./context/AuthContext"; // 로그인 전역 상태관리
 import LoginPage from "./pages/Auth/LoginPage";
+
+import FavoritePopupPage from "./pages/MyPage/FavoritePopupPage";
+import MyPopupPage from "./pages/MyPage/MyPopupPage";
+import ProfilePage from "./pages/MyPage/ProfilePage";
 
 function App() {
   return (
@@ -31,7 +34,9 @@ function App() {
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignUpPage />} />
             <Route path="join/email" element={<JoinEmailPage />} />
-            <Route path="mypage" element={<MyPage />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="my-popup" element={<MyPopupPage />} />
+            <Route path="favorite-popup" element={<FavoritePopupPage />} />
             <Route path="*" element={<NotFoundPage />} /> {/* 404페이지 - 잘못된 경로로 접근*/}
           </Route>
         </Routes>

@@ -1,5 +1,6 @@
 import useAuth from "../context/useAuth"; // 로그인 상태;
 import { useNavigate } from "react-router-dom";
+import MyPageButton from "./MyPageButton";
 
 const AuthButton = () => {
   const { auth, logout } = useAuth();
@@ -19,7 +20,7 @@ const AuthButton = () => {
     <div>
       {auth.isLoggedIn ? (
         <>
-          <button>{auth.username}님</button>
+          <MyPageButton auth={auth} />
           <button onClick={handleLogout}> 로그아웃</button>
         </>
       ) : (
