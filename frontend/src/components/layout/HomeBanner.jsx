@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import "../styles/HomeBanner.css";
+import "../../styles/HomeBanner.css";
 
 const HomeBanner = () => {
   const [banners, setBanners] = useState([]); // 배너 데이터 저장
   // const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
   const [currentIndex, setCurrentIndex] = useState(0); // 현재 배너 인덱스
+
+  // (수정) 배너 로딩 느림, 부자연스러움
 
   useEffect(() => {
     const fetchBanners = async () => {

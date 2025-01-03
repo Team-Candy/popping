@@ -1,22 +1,23 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Layout from "./pages/Layout";
-import HomePage from "./pages/HomePage";
-import MapPage from "./pages/MapPage";
-import CalendarPage from "./pages/CalendarPage";
 import PopupDetailPage from "./pages/PopupDetailPage";
 import SearchResult from "./pages/SearchResultPage";
 
-import SignUpPage from "./pages/Auth/SignUpPage";
-import JoinEmailPage from "./pages/Auth/JoinMailPage";
-import NotFoundPage from "./pages/NotFoundPage";
+import HomePage from "./pages/home/HomePage";
+import CalendarPage from "./pages/home/CalendarPage";
+import MapPage from "./pages/home/MapPage";
+
+import SignUpPage from "./pages/auth/SignUpPage";
+import JoinEmailPage from "./pages/auth/JoinMailPage";
+import LoginPage from "./pages/auth/LoginPage";
 
 import { AuthProvider } from "./context/AuthContext"; // 로그인 전역 상태관리
-import LoginPage from "./pages/Auth/LoginPage";
+import NotFoundPage from "./pages/notfound/NotFoundPage";
 
-import FavoritePopupPage from "./pages/MyPage/FavoritePopupPage";
-import MyPopupPage from "./pages/MyPage/MyPopupPage";
-import ProfilePage from "./pages/MyPage/ProfilePage";
+import FavoritePopupPage from "./pages/mypage/FavoritePopupPage";
+import MyPopupPage from "./pages/mypage/MyPopupPage";
+import ProfilePage from "./pages/mypage/ProfilePage";
 
 function App() {
   return (

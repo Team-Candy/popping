@@ -1,6 +1,6 @@
-import HomeBanner from "../components/HomeBanner.jsx";
-import Category from "../components/Category";
-import PopupList from "../components/PopupList";
+import HomeBanner from "../../components/layout/HomeBanner.jsx";
+import Category from "../../components/Category.jsx";
+import PopupList from "../../components/PopupList.jsx";
 
 const Home = () => {
   return (
