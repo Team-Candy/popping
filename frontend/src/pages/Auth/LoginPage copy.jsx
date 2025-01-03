@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuth from "../../context/useAuth";
 
-const LoginPage = () => {
+const AuthPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // login 함수 가져옴
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,17 +65,10 @@ const LoginPage = () => {
     }
 
     try {
-      // Mock 성공 예시
+      alert("로그인에 성공했습니다."); // 로그인 성공 메시지
 
-      // 로그인 후 상태 갱신 (AuthContext의 login 호출)
-      // 로그인 성공 후 받을 사용자 이름
-      const mockUsername = "홍길동";
-      login(mockUsername);
-
-      // 로그인 성공 후 JWT(토큰, 서버에서 받음)를 로컬 스토리지에 저장
-      localStorage.setItem("authToken", "mock-token");
-
-      alert("로그인에 성공했습니다.");
+      // 로그인 성공 후 JWT(토큰)를 로컬 스토리지에 저장
+      localStorage.setItem("authToken", "dejifiw2981"); // 서버에서 반환한 JWT
 
       // 로그인 후 페이지 이동
       navigate("/");
@@ -92,9 +83,9 @@ const LoginPage = () => {
       <h3>이메일 로그인</h3>
       <form onSubmit={handleSubmit}>
         <div style={{ display: "flex" }}>
-          <input type="text" name="email" value={email} onChange={handleChange} placeholder="email" />
+          <input type="text" name={"email"} value={email} onChange={handleChange} placeholder="email" />
           <br />
-          <input type="password" name="password" value={password} onChange={handleChange} placeholder="password" />
+          <input type="password" name={"password"} value={password} onChange={handleChange} placeholder="password" />
           <button type="submit">로그인</button>
         </div>
       </form>
@@ -108,4 +99,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default AuthPage;
