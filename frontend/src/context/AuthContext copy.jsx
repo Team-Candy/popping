@@ -5,15 +5,20 @@ import { createContext, useState, useEffect } from "react";
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  // 렌더링이 완료되기 전 로그인 상태 불러오기
-  const storedToken = sessionStorage.getItem("authToken");
-  const storedUsername = sessionStorage.getItem("username");
-
-  // 세션 스토리지에 로그인 정보가 있으면 바로 상태 설정
   const [auth, setAuth] = useState({
-    isLoggedIn: storedToken && storedUsername ? true : false,
-    username: storedUsername || "",
+    isLoggedIn: false,
+    username: "",
   });
+
+  // 컴포넌트가 마운트도리 때 세션 스토리지에서 로그인 정보를 불러옴
+  useEffect(() => {
+    const storedToken = sessionStorage.getItem("authToken");
+    const storedUsername = sessionStorage.getItem("username");
+
+    if (storedToken && storedUsername) {
+      setAuth({ isLoggedIn: true, username: storedUsername });
+    }
+  }, []);
 
   const login = (username, token) => {
     setAuth({ isLoggedIn: true, username });
