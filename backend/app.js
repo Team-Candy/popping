@@ -654,35 +654,80 @@ app.get("/api/main/banners", async (req, res) => {
 });
 
 // FE측에서 카테고리 정보를 받아와서 DB에 저장
-// app.post("/api/categories", (req, res) => {
-//     const { s_id, categories } = req.body;
+app.post("/api/categories", (req, res) => {
+    const { s_id, categories } = req.body;
 
-//     if (!s_id || !categories || !Array.isArray(categories)) {
-//         return res.status(400).json({ error: "s_id and categories are required" });
-//     }
+    if (!s_id || !categories || !Array.isArray(categories) || categories.length === 0) {
+        return res.status(400).json({ error: "s_id and a non-empty categories array are required" });
+    }
 
-//     // 기존 카테고리 정보 삭제
-//     const deleteQuery = `DELETE FROM Category WHERE s_id = ?`;
-//     db.query(deleteQuery, [s_id], (err) => {
-//         if (err) {
-//             console.error(err);
-//             return res.status(500).json({ error: "Failed to delete existing categories" });
-//         }
+    // 중복 카테고리 제거
+    const uniqueCategories = [...new Set(categories)];
 
-//         // 카테고리 정보 삽입
-//         const insertQuery = `INSERT INTO Category (s_id, name) VALUES ?`;
-//         const values = categories.map(category => [s_id, category]);
+    // DB 연결 및 트랜잭션 실행
+    db.getConnection((err, connection) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Failed to connect to the database" });
+        }
 
-//         db.query(insertQuery, [values], (err) => {
-//             if (err) {
-//                 console.error(err);
-//                 return res.status(500).json({ error: "Failed to insert categories" });
-//             }
+        connection.beginTransaction((err) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: "Failed to start transaction" });
+            }
 
-//             res.status(201).json({ message: "Categories saved successfully" });
-//         });
-//     });
-// });
+            // 1. s_id 검증
+            const checkStoreQuery = `SELECT s_id FROM Store WHERE s_id = ?`;
+            connection.query(checkStoreQuery, [s_id], (err, results) => {
+                if (err || results.length === 0) {
+                    connection.rollback(() => {
+                        console.error(err || "Invalid id");
+                        return res.status(400).json({ error: "Invalid id" });
+                    });
+                } else {
+                    // 2. 기존 카테고리 삭제
+                    const deleteQuery = `DELETE FROM Category WHERE s_id = ?`;
+                    connection.query(deleteQuery, [s_id], (err) => {
+                        if (err) {
+                            connection.rollback(() => {
+                                console.error(err);
+                                return res.status(500).json({ error: "Failed to delete existing categories" });
+                            });
+                        } else {
+                            // 3. 새로운 카테고리 삽입
+                            const insertQuery = `INSERT INTO Category (s_id, name) VALUES ?`;
+                            const values = uniqueCategories.map(category => [s_id, category]);
+                            connection.query(insertQuery, [values], (err) => {
+                                if (err) {
+                                    connection.rollback(() => {
+                                        console.error(err);
+                                        return res.status(500).json({ error: "Failed to insert categories" });
+                                    });
+                                } else {
+                                    // 4. 트랜잭션 커밋
+                                    connection.commit((err) => {
+                                        if (err) {
+                                            connection.rollback(() => {
+                                                console.error(err);
+                                                return res.status(500).json({ error: "Failed to commit transaction" });
+                                            });
+                                        } else {
+                                            res.status(201).json({ message: "Categories saved successfully" });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        // DB 연결 해제
+        connection.release();
+    });
+});
 
 // 메인 페이지 - 카테고리 별 팝업 스토어 정보 전달
 app.get("/api/main/categories/:categoryName", async (req, res) => {
@@ -725,8 +770,6 @@ app.get("/api/main/categories/:categoryName", async (req, res) => {
     }
 });
 
-// 메인 페이지 - 
-
 // 네이버 블로그 검색 API를 사용하여 글 가져오기
 app.get("/api/blogs", async (req, res) => {
     const { query } = req.query;
@@ -758,6 +801,30 @@ app.get("/api/blogs", async (req, res) => {
     }
 });
 
+// 달력에 표시할 팝업스토어 정보 가져오기
+app.get("/api/calendar", async (req, res) => {
+    try {
+        const [rows] = await db.query(
+            `SELECT s_id AS id, s_name AS title, s_date AS startDate, e_date AS endDate 
+             FROM Store
+            `
+        );
+
+        // 결과 데이터를 가공
+        const results = rows.map(row => ({
+            id: row.id.toString(),
+            title: row.title,
+            startDate: row.startDate.toISOString().split("T")[0],
+            endDate: row.endDate.toISOString().split("T")[0],
+        }));
+
+        res.json({ results });
+    } catch (error) {
+        console.error("Database query failed:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 // 팝업스토어 상세 정보
 app.get("/api/stores/:s_id", (req, res) => {
     const { s_id } = req.params;
@@ -784,7 +851,7 @@ app.get("/api/stores/:s_id", (req, res) => {
 
         // 결과가 여러 개일 수 있기 때문에 첫 번째 결과를 가져오기 전에 이미지를 배열로 처리
         const store = results[0];
-        const images = results.map(result => result.image_url).filter(image => image); // 이미지 URL만 배열로 만듦
+        const images = results.map(result => result.image_url).filter(postimg => postimg); // 이미지 URL만 배열로 만듦
 
         // 응답 구조 변경: store 정보와 images 배열을 분리
         res.status(200).json({
@@ -803,7 +870,6 @@ app.get("/api/stores/:s_id", (req, res) => {
         });
     });
 });
-
 
 // 팝업스토어 정보 수정
 app.put("/api/stores/:s_id", (req, res) => {
