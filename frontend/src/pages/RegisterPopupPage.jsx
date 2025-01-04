@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const RegisterPopupPage = () => {
@@ -16,6 +16,8 @@ const RegisterPopupPage = () => {
 
   const [images, setImages] = useState([null]);
   const [imagesValid, setImagesValid] = useState(false);
+
+  const [isFormValid, setIsFormValid] = useState(false);
 
   // 이미지 업로드 처리
   const handleImageChange = (e, index) => {
@@ -76,12 +78,19 @@ const RegisterPopupPage = () => {
   };
 
   // 모든 필드가 유효한지 검사
-  const isFormValid = () => {
-    return name.trim() !== "" && location.trim() !== "" && startDate !== "" && endDate !== "" && selectedCategory && owner.trim() !== "" && isDescriptionValid && imagesValid;
-  };
+  //   const isFormValid = () => {
+  //     return name.trim() !== "" && location.trim() !== "" && startDate !== "" && endDate !== "" && selectedCategory && owner.trim() !== "" && isDescriptionValid && imagesValid;
+  //   };
+  useEffect(() => {
+    const valid = name.trim() !== "" && location.trim() !== "" && startDate !== "" && endDate !== "" && selectedCategory && owner.trim() !== "" && isDescriptionValid && imagesValid;
+    setIsFormValid(valid);
+  }, [name, location, owner, startDate, endDate, selectedCategory, isDescriptionValid, imagesValid]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 디버깅
+    // console.log("isFormValid:", isFormValid);
 
     // API - 서버로 데이터 보내기
     if (isDescriptionValid && selectedCategory && images.length > 0) {
@@ -100,14 +109,14 @@ const RegisterPopupPage = () => {
       });
 
       // 디버깅
-      console.log("name:", name);
-      console.log("location:", location);
-      console.log("startDate:", startDate);
-      console.log("endDate:", endDate);
-      console.log("category:", selectedCategory);
-      console.log("owner:", owner);
-      console.log("description:", description);
-      console.log("images:", images);
+      //   console.log("name:", name);
+      //   console.log("location:", location);
+      //   console.log("startDate:", startDate);
+      //   console.log("endDate:", endDate);
+      //   console.log("category:", selectedCategory);
+      //   console.log("owner:", owner);
+      //   console.log("description:", description);
+      //   console.log("images:", images);
 
       try {
         const response = await fetch("/api/stores", {
@@ -156,9 +165,9 @@ const RegisterPopupPage = () => {
     whiteSpace: "pre-wrap", // 텍스트가 자동으로 줄 바꿈 되도록 설정
   };
   const submitStyle = {
-    backgroundColor: isFormValid() ? "#4CAF50" : "#ccc", // 유효할 경우 초록색, 비활성화되면 회색
-    color: isFormValid() ? "white" : "gray", // 텍스트 색상
-    cursor: isFormValid() ? "pointer" : "not-allowed", // 클릭 가능 시 포인터, 비활성화 시 불가
+    backgroundColor: isFormValid ? "#4CAF50" : "#ccc", // 유효할 경우 초록색, 비활성화되면 회색
+    color: isFormValid ? "white" : "gray", // 텍스트 색상
+    cursor: isFormValid ? "pointer" : "not-allowed", // 클릭 가능 시 포인터, 비활성화 시 불가
     padding: "10px 20px",
     border: "none",
     borderRadius: "5px",
