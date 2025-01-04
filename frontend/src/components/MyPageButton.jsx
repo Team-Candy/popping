@@ -32,12 +32,12 @@ const MyPageButton = ({ auth }) => {
               </button>
             </li>
             <li>
-              <button onClick={handleClick} name="my-popup">
+              <button onClick={handleClick} name="myPopup">
                 나의 팝업
               </button>
             </li>
             <li>
-              <button onClick={handleClick} name="favorite-popup">
+              <button onClick={handleClick} name="favoritePopup">
                 관심 팝업
               </button>
             </li>

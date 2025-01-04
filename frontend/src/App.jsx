@@ -19,6 +19,8 @@ import FavoritePopupPage from "./pages/mypage/FavoritePopupPage";
 import MyPopupPage from "./pages/mypage/MyPopupPage";
 import ProfilePage from "./pages/mypage/ProfilePage";
 
+import RegisterPopupPage from "./pages/RegisterPopupPage";
+
 function App() {
   return (
     <BrowserRouter>
@@ -36,8 +38,9 @@ function App() {
             <Route path="signup" element={<SignUpPage />} />
             <Route path="join/email" element={<JoinEmailPage />} />
             <Route path="profile" element={<ProfilePage />} />
-            <Route path="my-popup" element={<MyPopupPage />} />
-            <Route path="favorite-popup" element={<FavoritePopupPage />} />
+            <Route path="myPopup" element={<MyPopupPage />} />
+            <Route path="favoritePopup" element={<FavoritePopupPage />} />
+            <Route path="registerPopup" element={<RegisterPopupPage />} />
             <Route path="*" element={<NotFoundPage />} /> {/* 404페이지 - 잘못된 경로로 접근*/}
           </Route>
         </Routes>

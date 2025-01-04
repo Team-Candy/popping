@@ -1,7 +1,15 @@
+import { useNavigate } from "react-router-dom";
+
 const CreatePopup = () => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("registerPopup");
+  };
+
   return (
     <>
-      <button>팝업 올리기</button>
+      <button onClick={handleClick}>팝업 올리기</button>
     </>
   );
 };
