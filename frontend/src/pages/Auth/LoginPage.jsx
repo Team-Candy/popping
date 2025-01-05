@@ -50,8 +50,7 @@ const LoginPage = () => {
   //     alert("로그인에 성공했습니다."); // 로그인 성공 메시지
 
   //     // 로그인 성공 후 JWT(토큰)를 세션 스토리지에 저장
-  //     // 서버에서 반환한 JWT
-  //     login(data.username, data.token);
+  //     login(data.username, data.token, data.userId);
 
   //     navigate("/");
   //   } catch (err) {
@@ -71,7 +70,8 @@ const LoginPage = () => {
     try {
       // 로그인 후 상태 갱신 (AuthContext의 login 호출)
       const mockUsername = "홍길동";
-      login(mockUsername, "mock-token");
+      const mockUserId = "u_1234";
+      login(mockUsername, "mock-token", mockUserId);
 
       alert("로그인에 성공했습니다.");
 

@@ -15,15 +15,17 @@ const AuthProvider = ({ children }) => {
     username: storedUsername || "",
   });
 
-  const login = (username, token) => {
+  const login = (username, token, userId) => {
     setAuth({ isLoggedIn: true, username });
 
-    sessionStorage.setItem("authToken", token); // JWT 토큰 저장
     sessionStorage.setItem("username", username); // 사용자 이름 저장
+    sessionStorage.setItem("authToken", token); // JWT 토큰 저장
+    sessionStorage.setItem("userId", userId); // 사용자 고유 ID 저장
 
     // 디버깅
     console.log("login, authToken: ", sessionStorage.getItem("authToken"));
     console.log("login, username: ", sessionStorage.getItem("username"));
+    console.log("login, userId: ", sessionStorage.getItem("userId"));
   };
 
   const logout = () => {

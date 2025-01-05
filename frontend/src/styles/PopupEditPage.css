@@ -1,0 +1,123 @@
+/* 수정용 */
+
+/* 공통 스타일 */
+.form-group label {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #333;
+  margin-top: 10px;
+}
+
+/* input 태그에 대한 스타일 */
+.form-group input[type="text"] {
+  padding: 12px 15px;
+  font-size: 16px;
+  width: 500px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+/* input에 포커스를 주었을 때의 스타일 */
+.form-group input[type="text"]:focus {
+  border-color: #4caf50;
+  outline: none;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+/* 마우스를 올렸을 때 input 스타일 */
+.form-group input[type="text"]:hover {
+  border-color: #888;
+}
+
+/* Placeholder 텍스트 스타일 */
+.form-group input[type="text"]::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* input[type="time"]에 대한 스타일 */
+.form-group input[type="time"],
+input[type="email"],
+textarea {
+  padding: 12px 15px;
+  font-size: 16px;
+  width: 500px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  margin-bottom: 15px;
+}
+
+/* input[type="time"]에 포커스를 주었을 때 */
+.form-group input[type="time"]:focus,
+input[type="email"]:focus,
+textarea:focus {
+  border-color: #4caf50;
+  outline: none;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+/* input[type="time"]:hover */
+.form-group input[type="time"]:hover,
+input[type="email"]:hover,
+textarea:hover {
+  border-color: #888;
+}
+
+/* placeholder 스타일 */
+.form-group input[type="time"]::placeholder,
+input[type="email"]::placeholder,
+textarea::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* textarea 스타일 */
+.form-group textarea {
+  height: 100px;
+  resize: vertical; /* 세로로 크기 조절 가능 */
+}
+
+/* input[type="date"]에 대한 스타일 */
+.form-group input[type="date"] {
+  padding: 12px 15px;
+  font-size: 16px;
+  width: 500px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  margin-bottom: 15px;
+}
+
+/* input[type="date"]:focus */
+.form-group input[type="date"]:focus {
+  border-color: #4caf50;
+  outline: none;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+/* input[type="date"]:hover */
+.form-group input[type="date"]:hover {
+  border-color: #888;
+}
+
+/* placeholder 스타일 */
+.form-group input[type="date"]::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* p 태그 스타일 (운영 일자 타이틀) */
+.form-group p {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}

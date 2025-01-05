@@ -8,8 +8,11 @@ const RegisterPopupPage = () => {
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [owner, setOwner] = useState("");
+  const [contact, setContact] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [description, setDescription] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
   const [isDescriptionValid, setIsDescriptionValid] = useState(false);
@@ -82,9 +85,9 @@ const RegisterPopupPage = () => {
   //     return name.trim() !== "" && location.trim() !== "" && startDate !== "" && endDate !== "" && selectedCategory && owner.trim() !== "" && isDescriptionValid && imagesValid;
   //   };
   useEffect(() => {
-    const valid = name.trim() !== "" && location.trim() !== "" && startDate !== "" && endDate !== "" && selectedCategory && owner.trim() !== "" && isDescriptionValid && imagesValid;
+    const valid = name.trim() !== "" && location.trim() !== "" && startDate !== "" && endDate !== "" && selectedCategory && owner.trim() !== "" && contact.trim() !== "" && isDescriptionValid && imagesValid;
     setIsFormValid(valid);
-  }, [name, location, owner, startDate, endDate, selectedCategory, isDescriptionValid, imagesValid]);
+  }, [name, location, owner, contact, startDate, endDate, selectedCategory, isDescriptionValid, imagesValid]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -99,8 +102,10 @@ const RegisterPopupPage = () => {
       formData.append("location", location);
       formData.append("startDate", startDate);
       formData.append("endDate", endDate);
+      formData.append("business_hour", startTime + "-" + endTime);
       formData.append("category", selectedCategory);
       formData.append("owner", owner);
+      formData.append("contact", contact);
       formData.append("description", description);
 
       // 이미지 추가
@@ -109,15 +114,9 @@ const RegisterPopupPage = () => {
       });
 
       // 디버깅
-      //   console.log("name:", name);
-      //   console.log("location:", location);
-      //   console.log("startDate:", startDate);
-      //   console.log("endDate:", endDate);
-      //   console.log("category:", selectedCategory);
-      //   console.log("owner:", owner);
-      //   console.log("description:", description);
-      //   console.log("images:", images);
-
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
       try {
         const response = await fetch("/api/stores", {
           method: "POST",
@@ -135,7 +134,7 @@ const RegisterPopupPage = () => {
         const data = await response.json();
         console.log("응답 데이터: ", data);
 
-        alert("제출에 성공했습니다.");
+        alert("등록 성공했습니다.");
         navigate("/");
       } catch (err) {
         //네트워크 오류 처리
@@ -143,9 +142,6 @@ const RegisterPopupPage = () => {
         alert("네트워크 오류가 발생했습니다. 다시 시도해 주세요.");
       }
     }
-    // else {
-    //   alert("모든 필드를 올바르게 입력해주세요.");
-    // }
   };
 
   const style = { fontSize: 20, fontWeight: "bold", padding: 0, marginBottom: 5 };
@@ -203,24 +199,23 @@ const RegisterPopupPage = () => {
         </div>
 
         <div>
-          <p style={style} value={name}>
-            팝업스토어 이름
-          </p>
-          <input type="text" onChange={(e) => setName(e.target.value)} />
+          <p style={style}>팝업스토어 이름</p>
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
         <div>
-          <p style={style} value={location}>
-            장소
-          </p>
-          <input type="text" onChange={(e) => setLocation(e.target.value)} />
+          <p style={style}>장소</p>
+          <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} />
         </div>
 
         <div>
-          <p style={style} value={owner}>
-            주최자
-          </p>
-          <input type="text" onChange={(e) => setOwner(e.target.value)} />
+          <p style={style}>주최자</p>
+          <input type="text" value={owner} onChange={(e) => setOwner(e.target.value)} />
+        </div>
+
+        <div>
+          <p style={style}>문의 연락처</p>
+          <input type="text" value={contact} placeholder="email, etc ..." onChange={(e) => setContact(e.target.value)} />
         </div>
 
         <div>
@@ -230,6 +225,15 @@ const RegisterPopupPage = () => {
           <br />
           <label>종료일자 </label>
           <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={dateStyle} />
+        </div>
+
+        <div>
+          <p style={style}>운영 시간</p>
+          <label>시작시간</label>
+          <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+          <br />
+          <label>종료시간</label>
+          <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
         </div>
 
         <div>
@@ -264,7 +268,7 @@ const RegisterPopupPage = () => {
         </div>
 
         <button type="submit" style={submitStyle} disabled={!isFormValid}>
-          제출
+          등록
         </button>
       </form>
     </div>

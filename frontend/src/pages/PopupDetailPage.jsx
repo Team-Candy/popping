@@ -362,6 +362,10 @@ const PopupDetailPage = () => {
       <div>
         {/* 제목 */}
         <h1>{detail.name}</h1>
+        {/* 주최 */}
+        <p>
+          <strong>카테고리:</strong> {detail.type}
+        </p>
 
         {/* 주최 */}
         <p>

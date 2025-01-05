@@ -20,6 +20,7 @@ import MyPopupPage from "./pages/mypage/MyPopupPage";
 import ProfilePage from "./pages/mypage/ProfilePage";
 
 import RegisterPopupPage from "./pages/RegisterPopupPage";
+import PopupEditPage from "./pages/mypage/PopupEditPage";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
             <Route path="myPopup" element={<MyPopupPage />} />
             <Route path="favoritePopup" element={<FavoritePopupPage />} />
             <Route path="registerPopup" element={<RegisterPopupPage />} />
+            <Route path="popup/edit/:popupId" element={<PopupEditPage />} />
             <Route path="*" element={<NotFoundPage />} /> {/* 404페이지 - 잘못된 경로로 접근*/}
           </Route>
         </Routes>
