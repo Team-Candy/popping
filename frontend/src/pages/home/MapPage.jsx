@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import Map from "../components/SearchMap";
-import Region from "../components/Region";
+import Map from "../../components/SearchMap";
+import Region from "../../components/Region";
 
 const MapPage = () => {
   const [selectedRegion, setSelectedRegion] = useState("total"); // Default region

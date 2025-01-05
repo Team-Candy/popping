@@ -278,11 +278,16 @@ function filterById(popupId) {
 
 const PopupDetailPage = () => {
   const { popupId } = useParams(); // URL에서 popupId 가져옴, string type임
+
   const [detail, setDetail] = useState(null); // 팝업 상세 정보 저장
   const [error, setError] = useState(null); // 에러 메시지 저장
   const [loading, setLoading] = useState(true); // 로딩 상태 저장
 
   const [activeTab, setActiveTab] = useState("description"); // 기본은 상세 설명 탭
+
+  // if (isNaN(popupId)) {
+  //   return <div>잘못된 팝업 ID입니다.</div>;
+  // }
 
   // 팝업 상세 정보 API 호출
   const fetchPopupDetail = async () => {
@@ -357,6 +362,10 @@ const PopupDetailPage = () => {
       <div>
         {/* 제목 */}
         <h1>{detail.name}</h1>
+        {/* 주최 */}
+        <p>
+          <strong>카테고리:</strong> {detail.type}
+        </p>
 
         {/* 주최 */}
         <p>

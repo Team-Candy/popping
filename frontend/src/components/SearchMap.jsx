@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 // 지역에 따른 좌표 데이터
 const regionCoordinates = {
