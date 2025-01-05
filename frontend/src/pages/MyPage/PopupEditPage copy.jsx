@@ -14,9 +14,6 @@ const PopupEditPage = () => {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 
-  // 미리보기 URL 관리
-  const [images, setImages] = useState([]);
-
   const [formData, setFormData] = useState({
     name: "",
     type: "",
@@ -27,7 +24,6 @@ const PopupEditPage = () => {
     business_hours: "",
     description: "",
     contact: "",
-    images: [],
   });
 
   const categories = [
@@ -156,8 +152,6 @@ const PopupEditPage = () => {
         contact: data.contact,
       });
 
-      setImages(data.images);
-
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -199,37 +193,16 @@ const PopupEditPage = () => {
   const handleSave = async () => {
     // 디버깅
     console.log("수정된 데이터:", formData);
-    console.log("이미지 데이터:", formData.images);
 
     if (!validateForm()) return;
 
-    const formDataToSend = new FormData();
-
-    Object.keys(formData).forEach((key) => {
-      if (key === "images") {
-        formData.images.forEach((image, index) => {
-          // 파일은 "images"로 보냄
-          if (image instanceof File) {
-            formDataToSend.append("images", image, `image_${index}.jpg`);
-          } else {
-            // URL은 "imageUrls"로 보냄
-            formDataToSend.append("imageUrls", image);
-          }
-        });
-      } else {
-        // 나머지는 그대로
-        formDataToSend.append(key, formData[key]);
-      }
-    });
-
-    // FormData의 내용 출력
-    for (const [key, value] of formDataToSend.entries()) {
-      console.log(`${key}: ${value}`);
-    }
     try {
       const response = await fetch(`/api/stores/${popupId}`, {
         method: "POST",
-        body: formDataToSend,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
 
       // 200 - {"message": "Store updated successfully"}
@@ -301,39 +274,6 @@ const PopupEditPage = () => {
       console.error("네트워크 오류 발생", err.message);
       alert("네트워크 오류가 발생했습니다.\n다시 시도해 주세요.");
     }
-  };
-
-  // 이미지 업로드
-  const handleImageChange = (e) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      //   const newImages = Array.from(files).map(
-      //     (file) => URL.createObjectURL(file) // 선택된 이미지의 URL을 생성하여 미리보기
-      //   );
-
-      const newFiles = Array.from(files); // 선택된 파일들을 배열로 변환
-      const newImageUrls = newFiles.map((file) => URL.createObjectURL(file)); // 파일의 미리보기 URL 생성
-
-      // 실제 파일 객체는 formData.images에 저장
-      setFormData((prevData) => ({
-        ...prevData,
-        images: [...prevData.images, ...newFiles], // 기존 이미지와 추가된 이미지를 합쳐서 상태에 저장
-      }));
-
-      // 미리보기 URL은 setImages에 저장
-      setImages((prevImages) => [...prevImages, ...newImageUrls]); // 기존 미리보기 URL과 새로 추가된 URL을 합침
-    }
-  };
-
-  // 이미지 삭제
-  const handleDeleteImage = (index) => {
-    // formData에서 이미지 파일 삭제
-    const newImages = formData.images.filter((_, i) => i !== index);
-    setFormData({ ...formData, images: newImages });
-
-    // setImages에서 미리보기 URL 삭제
-    const newImageUrls = images.filter((_, i) => i !== index);
-    setImages(newImageUrls);
   };
 
   return (
@@ -409,34 +349,9 @@ const PopupEditPage = () => {
 
           <div>
             <label>이미지</label>
-            {/* 이미지 목록 표시 */}
-            <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-              {images.map((url, index) => (
-                <div key={index} style={{ position: "relative" }}>
-                  <img src={url} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
-                  <button
-                    onClick={() => handleDeleteImage(index)}
-                    style={{
-                      position: "absolute",
-                      top: "5px",
-                      right: "5px",
-                      backgroundColor: "red",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "50%",
-                      cursor: "pointer",
-                    }}
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            {/* 이미지 업로드 */}
-            <input type="file" accept="image/*" onChange={handleImageChange} />
+            {/* 현재 이미지 확인 및 삭제 버튼 */}
+            {/* 새로운 이미지 업로드 버튼 */}
           </div>
-
           <button onClick={handleSave}>저장</button>
         </div>
       ) : (
