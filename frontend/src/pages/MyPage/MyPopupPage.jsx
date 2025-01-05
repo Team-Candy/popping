@@ -3,7 +3,7 @@ import PopupList from "../../components/PopupList_mypage";
 const MyPopupPage = () => {
   return (
     <div>
-      <h2 style={{ color: "red" }}>나의 팝업</h2>
+      <h2>나의 팝업</h2>
       <hr />
 
       {/* 뷰*/}
