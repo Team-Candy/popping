@@ -220,7 +220,7 @@ const SearchResult = () => {
 
   return (
     <div>
-      <h2>검색 결과</h2>
+      <h2 style={{ color: "red" }}>검색 결과</h2>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px", padding: "16px" }}>
         {results.length > 0 ? (
