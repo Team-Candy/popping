@@ -50,80 +50,80 @@ router.get("/:s_id", (req, res) => {
 });
 
 // 팝업스토어 정보 수정
-router.put("/:s_id", (req, res) => {
-    const { s_id } = req.params; // URL 경로에서 s_id 가져오기
-    const { owner, s_name, contact, location, s_date, e_date, business_hours, description, image_url } = req.body;
+// router.put("/:s_id", (req, res) => {
+//     const { s_id } = req.params; // URL 경로에서 s_id 가져오기
+//     const { owner, s_name, contact, location, s_date, e_date, business_hours, description, image_url } = req.body;
 
-    // 필수 필드 검증
-    if (!s_name || !location || !s_date || !e_date) {
-        return res.status(400).json({ error: "s_name, location, s_date, and e_date are required" });
-    }
+//     // 필수 필드 검증
+//     if (!s_name || !location || !s_date || !e_date) {
+//         return res.status(400).json({ error: "s_name, location, s_date, and e_date are required" });
+//     }
 
-    // 날짜 형식 검증
-    if (!Date.parse(s_date) || !Date.parse(e_date)) {
-        return res.status(400).json({ error: "Invalid date format" });
-    }
+//     // 날짜 형식 검증
+//     if (!Date.parse(s_date) || !Date.parse(e_date)) {
+//         return res.status(400).json({ error: "Invalid date format" });
+//     }
 
-    // 트랜잭션 시작
-    db.beginTransaction(err => {
-        if (err) {
-            console.error("Transaction start error:", err);
-            return res.status(500).json({ error: "Failed to start transaction" });
-        }
+//     // 트랜잭션 시작
+//     db.beginTransaction(err => {
+//         if (err) {
+//             console.error("Transaction start error:", err);
+//             return res.status(500).json({ error: "Failed to start transaction" });
+//         }
 
-        // Store 업데이트 쿼리
-        const storeQuery = `
-            UPDATE Store
-            SET 
-                owner = ?,
-                s_name = ?,
-                contact = ?,
-                location = ?,
-                s_date = ?,
-                e_date = ?,
-                business_hours = ?,
-                description = ?
-            WHERE s_id = ?;
-        `;
-        const storeValues = [owner, s_name, contact, location, s_date, e_date, business_hours, description, s_id];
+//         // Store 업데이트 쿼리
+//         const storeQuery = `
+//             UPDATE Store
+//             SET 
+//                 owner = ?,
+//                 s_name = ?,
+//                 contact = ?,
+//                 location = ?,
+//                 s_date = ?,
+//                 e_date = ?,
+//                 business_hours = ?,
+//                 description = ?
+//             WHERE s_id = ?;
+//         `;
+//         const storeValues = [owner, s_name, contact, location, s_date, e_date, business_hours, description, s_id];
 
-        db.query(storeQuery, storeValues, (err, storeResults) => {
-            if (err) {
-                console.error("Store update error:", err);
-                return db.rollback(() => res.status(500).json({ error: "Failed to update store" }));
-            }
+//         db.query(storeQuery, storeValues, (err, storeResults) => {
+//             if (err) {
+//                 console.error("Store update error:", err);
+//                 return db.rollback(() => res.status(500).json({ error: "Failed to update store" }));
+//             }
 
-            if (storeResults.affectedRows === 0) {
-                return db.rollback(() => res.status(404).json({ error: "Store not found" }));
-            }
+//             if (storeResults.affectedRows === 0) {
+//                 return db.rollback(() => res.status(404).json({ error: "Store not found" }));
+//             }
 
-            // Store_Image 업데이트 쿼리
-            const storeImageQuery = `
-                UPDATE Store_Image
-                SET image_url = ?
-                WHERE s_id = ?;
-            `;
-            const storeImageValues = [image_url, s_id];
+//             // Store_Image 업데이트 쿼리
+//             const storeImageQuery = `
+//                 UPDATE Store_Image
+//                 SET image_url = ?
+//                 WHERE s_id = ?;
+//             `;
+//             const storeImageValues = [image_url, s_id];
 
-            db.query(storeImageQuery, storeImageValues, (err, imageResults) => {
-                if (err) {
-                    console.error("Store_Image update error:", err);
-                    return db.rollback(() => res.status(500).json({ error: "Failed to update store image" }));
-                }
+//             db.query(storeImageQuery, storeImageValues, (err, imageResults) => {
+//                 if (err) {
+//                     console.error("Store_Image update error:", err);
+//                     return db.rollback(() => res.status(500).json({ error: "Failed to update store image" }));
+//                 }
 
-                // 트랜잭션 커밋
-                db.commit(err => {
-                    if (err) {
-                        console.error("Transaction commit error:", err);
-                        return db.rollback(() => res.status(500).json({ error: "Failed to commit transaction" }));
-                    }
+//                 // 트랜잭션 커밋
+//                 db.commit(err => {
+//                     if (err) {
+//                         console.error("Transaction commit error:", err);
+//                         return db.rollback(() => res.status(500).json({ error: "Failed to commit transaction" }));
+//                     }
 
-                    res.status(200).json({ message: "Store and image updated successfully" });
-                });
-            });
-        });
-    });
-});
+//                     res.status(200).json({ message: "Store and image updated successfully" });
+//                 });
+//             });
+//         });
+//     });
+// });
 
 // 팝업스토어 삭제
 router.delete("/:s_id", (req, res) => {

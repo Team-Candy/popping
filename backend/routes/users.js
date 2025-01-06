@@ -171,6 +171,92 @@ router.get("/:u_id/profile", (req, res) => {
     });
 });
 
+// 유저가 게시글 등록하는 기능
+router.post("/:u_id/stores", (req, res) => {
+    const { u_id } = req.params;
+    const { s_name, contact, location, s_date, e_date, business_hours, description, image_urls } = req.body;
+
+    // 필수 필드 확인
+    if (!s_name || !contact || !location || !s_date || !e_date || !business_hours || !description) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // 시작 트랜잭션
+    db.beginTransaction((err) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Transaction initialization failed" });
+        }
+
+        const storeQuery = `
+            INSERT INTO Store (u_id, s_name, contact, location, s_date, e_date, business_hours, description)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        const storeValues = [u_id, s_name, contact, location, s_date, e_date, business_hours, description];
+
+        // Store 테이블에 데이터 삽입
+        db.query(storeQuery, storeValues, (err, results) => {
+            if (err) {
+                console.error(err);
+                return db.rollback(() => {
+                    res.status(500).json({ error: "Failed to register store" });
+                });
+            }
+
+            const s_id = results.insertId; // 새로 삽입된 Store ID
+
+            // image_urls 배열 확인 및 처리
+            if (Array.isArray(image_urls) && image_urls.length > 0) {
+                const imageQuery = `
+                    INSERT INTO Store_Image (s_id, image_url) VALUES ?
+                `;
+                const imageValues = image_urls.map((url) => [s_id, url]); // 각 이미지 URL과 Store ID 매핑
+
+                // Store_Image 테이블에 데이터 삽입
+                db.query(imageQuery, [imageValues], (err) => {
+                    if (err) {
+                        console.error(err);
+                        return db.rollback(() => {
+                            res.status(500).json({ error: "Failed to register store images" });
+                        });
+                    }
+
+                    // 트랜잭션 커밋
+                    db.commit((err) => {
+                        if (err) {
+                            console.error(err);
+                            return db.rollback(() => {
+                                res.status(500).json({ error: "Transaction commit failed" });
+                            });
+                        }
+
+                        res.status(201).json({
+                            message: "Store and images registered successfully",
+                            store: { s_id, s_name, contact, location },
+                            images: image_urls,
+                        });
+                    });
+                });
+            } else {
+                // 이미지가 없는 경우, 단순히 Store만 저장
+                db.commit((err) => {
+                    if (err) {
+                        console.error(err);
+                        return db.rollback(() => {
+                            res.status(500).json({ error: "Transaction commit failed" });
+                        });
+                    }
+
+                    res.status(201).json({
+                        message: "Store registered successfully (no images provided)",
+                        store: { s_id, s_name, contact, location },
+                    });
+                });
+            }
+        });
+    });
+});
+
 // 유저가 작성한 게시글 조회
 router.get("/:u_id/stores", (req, res) => {
     const { u_id } = req.params;
@@ -193,6 +279,138 @@ router.get("/:u_id/stores", (req, res) => {
         }
 
         res.status(200).json(results);
+    });
+});
+
+// 유저가 작성한 게시글 수정
+router.put("/:u_id/stores/:s_id", (req, res) => {
+    const { u_id, s_id } = req.params;
+    const { s_name, contact, location, s_date, e_date, business_hours, description, image_urls } = req.body;
+
+    // 필수 필드 확인
+    if (!s_name || !contact || !location || !s_date || !e_date || !business_hours || !description) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // 시작 트랜잭션
+    db.beginTransaction((err) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Transaction initialization failed" });
+        }
+
+        const storeQuery = `
+            UPDATE Store
+            SET s_name = ?, contact = ?, location = ?, s_date = ?, e_date = ?, business_hours = ?, description = ?
+            WHERE s_id = ? AND u_id = ?
+        `;
+        const storeValues = [s_name, contact, location, s_date, e_date, business_hours, description, s_id, u_id];
+
+        // Store 테이블에 데이터 업데이트
+        db.query(storeQuery, storeValues, (err, results) => {
+            if (err) {
+                console.error(err);
+                return db.rollback(() => {
+                    res.status(500).json({ error: "Failed to update store" });
+                });
+            }
+
+            if (results.affectedRows === 0) {
+                return db.rollback(() => {
+                    res.status(404).json({ error: "Store not found" });
+                });
+            }
+
+            // image_urls 배열 확인 및 처리
+            if (Array.isArray(image_urls) && image_urls.length > 0) {
+                const deleteImagesQuery = `DELETE FROM Store_Image WHERE s_id = ?`;
+                db.query(deleteImagesQuery, [s_id], (err) => {
+                    if (err) {
+                        console.error(err);
+                        return db.rollback(() => {
+                            res.status(500).json({ error: "Failed to delete store images" });
+                        });
+                    }
+
+                    const imageQuery = `
+                        INSERT INTO Store_Image (s_id, image_url) VALUES ?
+                    `;
+                    const imageValues = image_urls.map((url) => [s_id, url]); // 각 이미지 URL과 Store ID 매핑
+
+                    // Store_Image 테이블에 데이터 삽입
+                    db.query(imageQuery, [imageValues], (err) => {
+                        if (err) {
+                            console.error(err);
+                            return db.rollback(() => {
+                                res.status(500).json({ error: "Failed to register store images" });
+                            });
+                        }
+
+                        // 트랜잭션 커밋
+                        db.commit((err) => {
+                            if (err) {
+                                console.error(err);
+                                return db.rollback(() => {
+                                    res.status(500).json({ error: "Transaction commit failed" });
+                                });
+                            }
+
+                            res.status(200).json({
+                                message: "Store and images updated successfully",
+                                store: { s_id, s_name, contact, location },
+                                images: image_urls,
+                            });
+                        });
+                    });
+                });
+            } else {
+                // 이미지가 없는 경우, 단순히 Store만 저장
+                db.commit((err) => {
+                    if (err) {
+                        console.error(err);
+                        return db.rollback(() => {
+                            res.status(500).json({ error: "Transaction commit failed" });
+                        });
+                    }
+
+                    res.status(200).json({
+                        message: "Store updated successfully (no images provided)",
+                        store: { s_id, s_name, contact, location },
+                    });
+                });
+            }
+        });
+    });
+});
+
+// 유저가 작성한 게시글 삭제
+router.delete("/:u_id/stores/:s_id", (req, res) => {
+    const { u_id, s_id } = req.params;
+
+    db.beginTransaction((err) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Failed to start transaction" });
+        }
+
+        const deleteImagesQuery = `DELETE FROM Store_Image WHERE s_id = ?`;
+        db.query(deleteImagesQuery, [s_id], (err) => {
+            if (err) return db.rollback(() => res.status(500).json({ error: "Failed to delete store images" }));
+
+            const deleteStoreQuery = `DELETE FROM Store WHERE s_id = ? AND u_id = ?`;
+            db.query(deleteStoreQuery, [s_id, u_id], (err, results) => {
+                if (err) return db.rollback(() => res.status(500).json({ error: "Failed to delete store" }));
+
+                if (results.affectedRows === 0) {
+                    return db.rollback(() => res.status(404).json({ error: "Store not found" }));
+                }
+
+                db.commit((err) => {
+                    if (err) return db.rollback(() => res.status(500).json({ error: "Failed to commit transaction" }));
+                    res.status(200).json({ message: `Store with ID ${s_id} deleted successfully` });
+                });
+            });
+        });
     });
 });
 

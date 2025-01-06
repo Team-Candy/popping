@@ -10,7 +10,6 @@ const categoryRoutes = require("./routes/category");
 const blogRoutes = require("./routes/blogs"); 
 const calenderRoutes = require("./routes/calender"); 
 const storesRoutes = require("./routes/stores");
-const likesRoutes = require("./routes/likes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,7 +28,6 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/calender", calenderRoutes);
 app.use("/api/stores", storesRoutes);
-app.use("/api/likes", likesRoutes);
 
 // 기본 라우트
 app.get("/", (req, res) => res.send("API Running..."));
