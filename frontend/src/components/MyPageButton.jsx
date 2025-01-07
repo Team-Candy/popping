@@ -37,7 +37,7 @@ const MyPageButton = ({ auth }) => {
               </button>
             </li>
             <li>
-              <button style={{ color: "red" }} onClick={handleClick} name="favoritePopup">
+              <button onClick={handleClick} name="favoritePopup">
                 관심 팝업
               </button>
             </li>

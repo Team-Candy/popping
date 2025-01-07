@@ -420,8 +420,6 @@ const PopupList = ({ category }) => {
     //         : prevLiked.filter((id) => id !== popupId) // 제거 복구
     //   );
     // }
-
-    console.log("likedList: ", likedPopups);
   };
 
   const heartStyle = {
@@ -458,7 +456,6 @@ const PopupList = ({ category }) => {
                     borderRadius: "8px",
                   }}
                 />
-                <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.name}</p>
                 <button
                   style={heartStyle}
                   onClick={(e) => {
@@ -469,6 +466,7 @@ const PopupList = ({ category }) => {
                   {likedPopups.includes(popup.id) ? "❤️" : "🤍"}
                 </button>
               </div>
+              <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.name}</p>
             </div>
           ))
         ) : (
