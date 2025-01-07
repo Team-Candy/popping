@@ -4,39 +4,6 @@ const db = require("../config/db");
 
 const router = express.Router();
 
-// 사용자 정보 조회
-router.get("/:u_id", authenticateJWT, (req, res) => {
-    const { u_id } = req.params;
-
-    // 사용자 인증을 통과한 사용자의 u_id와 요청된 u_id가 일치하는지 확인
-    if (u_id !== req.user.u_id) {
-        return res.status(403).json({ error: "You are not authorized to access this user's data" });
-    }
-
-    // u_id가 숫자 형식인지 확인
-    if (isNaN(u_id)) {
-        return res.status(400).json({ error: "Invalid user ID" });
-    }
-
-    const query = `
-        SELECT email, name, nickname, profileImage, introduction 
-        FROM User 
-        WHERE u_id = ?
-    `;
-    db.query(query, [u_id], (err, results) => {
-        if (err) {
-            console.error("Database error:", err);
-            return res.status(500).json({ error: "Failed to retrieve user information" });
-        }
-
-        if (results.length === 0) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        res.json({ success: true, profile: results[0] });
-    });
-});
-
 // 유저 프로필 정보 등록
 router.post("/", (req, res) => {
     const { email, name, nickname, profileImage, introduction } = req.body;
@@ -151,8 +118,18 @@ router.delete("/:u_id", authenticateJWT, (req, res) => {
 });
 
 // 사용자 디테일 프로필 정보 조회
-router.get("/:u_id/profile", (req, res) => {
+router.get("/:u_id/profile", authenticateJWT, (req, res) => {
     const { u_id } = req.params;
+
+    // 사용자 인증을 통과한 사용자의 u_id와 요청된 u_id가 일치하는지 확인
+    if (u_id !== req.user.u_id) {
+        return res.status(403).json({ error: "You are not authorized to access this user's data" });
+    }
+
+    // u_id가 숫자 형식인지 확인
+    if (isNaN(u_id)) {
+        return res.status(400).json({ error: "Invalid user ID" });
+    }
 
     const query = `
         SELECT u_id, email, name, nickname, profileImage, introduction, created_at
@@ -167,7 +144,19 @@ router.get("/:u_id/profile", (req, res) => {
         if (results.length === 0) {
             return res.status(404).json({ error: "User not found" });
         }
-        res.status(200).json(results[0]);
+
+        const user = results[0];
+        res.status(200).json({
+            user: {
+                u_id: user.u_id,
+                email: user.email,
+                name: user.name,
+                nickname: user.nickname,
+                profileImage: user.profileImage,
+                introduction: user.introduction,
+                created_at: user.created_at,
+            }
+        });
     });
 });
 
@@ -262,14 +251,26 @@ router.get("/:u_id/stores", (req, res) => {
     const { u_id } = req.params;
 
     const query = `
-        SELECT s_id, owner, s_name, contact, location, s_date, e_date, business_hours, description
+        SELECT 
+            Store.s_id, 
+            Store.owner, 
+            Store.s_name, 
+            Store.contact, 
+            Store.location, 
+            Store.s_date, 
+            Store.e_date, 
+            Store.business_hours, 
+            Store.description,
+            JSON_ARRAYAGG(Store_Image.image_url) AS images
         FROM Store
-        JOIN User ON Store.u_id = User.u_id
-        WHERE User.u_id = ?
+        LEFT JOIN Store_Image ON Store.s_id = Store_Image.s_id
+        WHERE Store.u_id = ?
+        GROUP BY Store.s_id
     `;
 
     db.query(query, [u_id], (err, results) => {
         if (err) {
+            console.error("Database error:", err.message);
             return res.status(500).json({ error: "Failed to retrieve user stores" });
         }
 
@@ -278,7 +279,20 @@ router.get("/:u_id/stores", (req, res) => {
             return res.status(404).json({ error: "Stores not found" });
         }
 
-        res.status(200).json(results);
+        res.status(200).json({
+            stores: results.map(store => ({
+                s_id: store.s_id,
+                owner: store.owner,
+                s_name: store.s_name,
+                contact: store.contact,
+                location: store.location,
+                s_date: store.s_date,
+                e_date: store.e_date,
+                business_hours: store.business_hours,
+                description: store.description,
+                images: JSON.parse(store.images) || [], // JSON 배열로 파싱
+            }))
+        });
     });
 });
 
@@ -414,19 +428,92 @@ router.delete("/:u_id/stores/:s_id", (req, res) => {
     });
 });
 
+// 사용자가 팝업 스토어에 좋아요 추가
+router.post("/:u_id/stores/:s_id/likes", (req, res) => {
+    const { u_id, s_id } = req.params;
+
+    // 입력 검증
+    if (!u_id || isNaN(u_id) || !s_id || isNaN(s_id)) {
+        return res.status(400).json({ error: "Invalid user ID or store ID" });
+    }
+
+    // 좋아요 추가
+    const insertQuery = `
+        INSERT INTO Likes (u_id, s_id)
+        VALUES (?, ?)
+    `;
+
+    db.query(insertQuery, [u_id, s_id], (err) => {
+        if (err) {
+            if (err.code === 'ER_DUP_ENTRY') {
+                return res.status(409).json({ error: "Like already exists" });
+            }
+            console.error("Database error during like addition:", err.message);
+            return res.status(500).json({ error: "Failed to add like" });
+        }
+
+        res.status(201).json({ message: "Like added successfully" });
+    });
+});
+
+// 사용자가 팝업 스토어에 좋아요 취소
+router.delete("/:u_id/stores/:s_id/likes", (req, res) => {
+    const { u_id, s_id } = req.params;
+
+    // 입력 검증
+    if (!u_id || isNaN(u_id) || !s_id || isNaN(s_id)) {
+        return res.status(400).json({ error: "Invalid user ID or store ID" });
+    }
+
+    // 좋아요 취소 쿼리
+    const deleteQuery = `
+        DELETE FROM Likes
+        WHERE u_id = ? AND s_id = ?
+    `;
+
+    db.query(deleteQuery, [u_id, s_id], (err, results) => {
+        if (err) {
+            console.error("Database error during like removal:", err.message);
+            return res.status(500).json({ error: "Failed to remove like" });
+        }
+
+        if (results.affectedRows > 0) {
+            res.status(200).json({
+                message: "Like removed successfully",
+                liked: false,
+            });
+        } else {
+            res.status(404).json({ error: "Like not found" });
+        }
+    });
+});
+
 // 사용자가 좋아요 누른 게시글 조회
 router.get("/:u_id/likes", (req, res) => {
     const { u_id } = req.params;
 
     const query = `
-        SELECT s_id, owner, s_name, contact, location, s_date, e_date, business_hours, description
+        SELECT 
+            Store.s_id, 
+            Store.owner, 
+            Store.s_name, 
+            Store.contact, 
+            Store.location, 
+            Store.s_date, 
+            Store.e_date, 
+            Store.business_hours, 
+            Store.description,
+            JSON_ARRAYAGG(Store_Image.image_url) AS images
         FROM Store
         JOIN Likes ON Store.s_id = Likes.s_id
+        LEFT JOIN Store_Image ON Store.s_id = Store_Image.s_id
         WHERE Likes.u_id = ?
+        GROUP BY Store.s_id
     `;
 
     db.query(query, [u_id], (err, results) => {
         if (err) {
+            console.error("Database error:", err.message);
             return res.status(500).json({ error: "Failed to retrieve user likes" });
         }
 
@@ -435,7 +522,20 @@ router.get("/:u_id/likes", (req, res) => {
             return res.status(404).json({ error: "Likes not found" });
         }
 
-        res.status(200).json(results);
+        res.status(200).json({
+            likes: results.map(store => ({
+                s_id: store.s_id,
+                owner: store.owner,
+                s_name: store.s_name,
+                contact: store.contact,
+                location: store.location,
+                s_date: store.s_date,
+                e_date: store.e_date,
+                business_hours: store.business_hours,
+                description: store.description,
+                images: JSON.parse(store.images) || [], // JSON 배열로 파싱
+            }))
+        });
     });
 });
 

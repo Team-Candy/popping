@@ -88,7 +88,7 @@ router.get("/:categoryName", async (req, res) => {
             `SELECT s.s_id AS StoreId, s.owner AS Owner, s.s_name AS StoreName, 
                     s.contact AS Contact, s.s_date AS StartDate, s.e_date AS EndDate, 
                     s.business_hours AS BusinessHours, c.name AS CategoryName, 
-                    GROUP_CONCAT(si.image_url) AS ImageUrls
+                    JSON_ARRAYAGG(si.image_url) AS Images
              FROM Store s
              JOIN Category c ON s.s_id = c.s_id
              LEFT JOIN Store_Image si ON s.s_id = si.s_id
@@ -110,7 +110,7 @@ router.get("/:categoryName", async (req, res) => {
             EndDate: row.EndDate,
             BusinessHours: row.BusinessHours,
             CategoryName: row.CategoryName,
-            ImageUrls: row.ImageUrls ? row.ImageUrls.split(",") : [], // 이미지 URL이 여러 개일 경우 배열로 변환
+            Images: JSON.parse(row.Images) || [],
         }));
 
         res.json({ stores });
