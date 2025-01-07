@@ -11,10 +11,11 @@ router.get("/:s_id", (req, res) => {
         SELECT 
             s.s_id, s.owner, s.s_name, s.contact, s.location, 
             s.s_date, s.e_date, s.business_hours, s.description,
-            si.image_url
+            JSON_ARRAYAGG(si.image_url) AS image_urls
         FROM Store s
         LEFT JOIN Store_Image si ON s.s_id = si.s_id
         WHERE s.s_id = ?
+        GROUP BY s.s_id
     `;
 
     db.query(query, [s_id], (err, results) => {
@@ -27,11 +28,10 @@ router.get("/:s_id", (req, res) => {
             return res.status(404).json({ error: "Store not found" });
         }
 
-        // 결과가 여러 개일 수 있기 때문에 첫 번째 결과를 가져오기 전에 이미지를 배열로 처리
         const store = results[0];
-        const images = results.map(result => result.image_url).filter(postimg => postimg); // 이미지 URL만 배열로 만듦
+        // JSON_ARRAYAGG 결과는 이미 배열로 반환되므로 그대로 사용 가능
+        const images = store.image_urls || [];
 
-        // 응답 구조 변경: store 정보와 images 배열을 분리
         res.status(200).json({
             store: {
                 s_id: store.s_id,

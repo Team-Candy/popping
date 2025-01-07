@@ -47,5 +47,4 @@ router.get("/banners", async (req, res) => {
     }
 });
 
-
 module.exports = router;
