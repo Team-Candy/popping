@@ -1,3 +1,5 @@
+// 팝업 좋아요 취소 안되어있음.
+
 import { useState, useEffect } from "react";
 import useAuth from "../context/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -289,64 +291,122 @@ const PopupList = ({ category }) => {
   const [error, setError] = useState(null);
   const [likedPopups, setLikedPopups] = useState([]);
 
-  // API - 팝업 데이터 가져오기
-  // useEffect(() => {
-  //   if (category) {
-  //     fetchCategoryData(category);
-  //   }
-  // }, [category]);
-
-  // const fetchCategoryData = async (category) => {
-  //   setError(null);
-
-  //   try {
-  //     // API
-  //     const response = await fetch(`/api/main/categories/${category}`);
-  //     if (!response.ok) {
-  //       throw new Error("Failed to fetch categories");
-  //     }
-
-  //     // category type
-  //     // whole, food, education, culture, digital, clothing, interior, sports, fashion miscellaneous goods, characters, others
-  //     // popular, scheduled
-
-  //     //API
-  //     // const data = response.json();
-  //     //  data = {
-  //     //     categories: [
-  //     //       { id: 100, type: "culture", name: "오징어게임2 팝업스토어 in 강남", imageUrl: "https://i.ibb.co/grpvWqW/list1.jpg", location: "" },
-  //     //       { id: 200, type: "food", name: "바나나맛우유 50주년 팝업스토어", imageUrl: "https://i.ibb.co/vJrZYn3/list2.jpg", location: "" },
-  //     //       { id: 300, type: "characters", name: "카카오프렌즈 춘식이 X 해리포터 팝업스토어", imageUrl: "", location: "서울특별시 서초구 강남대로 429 카카오프렌즈 강남플래그십 스토어" },
-  //     //       { id: 1, type: "culture", name: "카카오프렌즈 춘식이 X 해리포터 팝업스토어", imageUrl: "", location: "서울특별시 서초구 강남대로 429 카카오프렌즈 강남플래그십 스토어" },
-  //     //     ],
-  //     //   };
-
-  //     // if (data.categories) {
-  //     // setPopups(data.categories);
-
-  //     // (수정) MOCK
-  //     const data = filterByCategory(category);
-  //     if (data) {
-  //       setPopups(data);
-  //     } else {
-  //       setPopups([]);
-  //     }
-  //   } catch (err) {
-  //     setError(err.message);
-  //   }
-  // };
-
+  // 팝업 데이터 가져오기
   useEffect(() => {
     if (category) {
+      fetchCategoryData(category);
+    }
+  }, [category]);
+
+  // 좋아요 데이터 가져오기
+  useEffect(() => {
+    // 로그인 되지 않은 경우 무시
+    if (!auth.isLoggedIn) {
+      return;
+    }
+
+    const fetchLikedPopups = async () => {
+      try {
+        // (수정) API
+        // const response = await fetch(`/api/users/${auth.userId}/likes`);
+        // if (!response.ok) {
+        //   throw new Error("Failed to fetch likes");
+        // }
+        // const data = await response.json();
+
+        // (수정) MOCK
+        const data = {
+          likes: [{ s_id: "18" }, { s_id: "19" }, { s_id: "200" }, { s_id: "6" }, { s_id: "10" }, { s_id: "11" }],
+        };
+
+        // 좋아요한 팝업 ID만 배열로 저장
+        const likes = data.likes.map((store) => parseInt(store.s_id));
+
+        setLikedPopups(likes);
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
+    fetchLikedPopups();
+  }, [auth.isLoggedIn]);
+
+  // 좋아요 추가 요청
+  const handleLikeClick = async (popupId) => {
+    if (!auth.isLoggedIn) {
+      navigate("/login");
+      alert("로그인 후 즐겨찾기에 추가 가능합니다.");
+      return;
+    }
+
+    try {
+      // 좋아요하지 않은 경우 -> 추가
+      if (!likedPopups.includes(popupId)) {
+        // (수정) API
+        // const response = await fetch(`/api/users/${auth.userId}/stores/${popupId}/likes`, {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // });
+
+        // if (!response.ok) {
+        //   throw new Error("Failed to fetch ");
+        // }
+
+        // if (response.status === 201) {
+        //   setLikedPopups((prev) => [...prev, popupId]); // 좋아요 배열에 팝업 ID 추가
+        // } else {
+        //   const errorData = await response.json();
+        //   console.error(errorData.error || "Failed to add like");
+        // }
+
+        // (수정) MOCK
+        setLikedPopups((prev) => [...prev, popupId]); // 좋아요 배열에 팝업 ID 추가
+      } else {
+        // 이미 좋아요한 경우-> 제거
+        const response = await fetch(`/api/users/${auth.userId}/stores/${popupId}/likes`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch ");
+        }
+      }
+    } catch (err) {
+      console.error("Error adding like:", err.message);
+    }
+  };
+
+  const fetchCategoryData = async (category) => {
+    setError(null);
+
+    try {
       // API
-      setError(null);
-      // fetch(`/api/main/categories/${category}`)
-      //   .then((res) => res.json())
-      //   .then((data) => setPopups(data.categories))
-      //   .catch((err) => {
-      //     console.error("Error fetching popups:", err);
-      //     setError(err.message);
-      //   });
+      const response = await fetch(`/api/main/categories/${category}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch categories");
+      }
+
+      // category type
+      // whole, food, education, culture, digital, clothing, interior, sports, fashion miscellaneous goods, characters, others
+      // popular, scheduled
+
+      //API
+      // const data = response.json();
+      //  data = {
+      //     categories: [
+      //       { id: 100, type: "culture", name: "오징어게임2 팝업스토어 in 강남", imageUrl: "https://i.ibb.co/grpvWqW/list1.jpg", location: "" },
+      //       { id: 200, type: "food", name: "바나나맛우유 50주년 팝업스토어", imageUrl: "https://i.ibb.co/vJrZYn3/list2.jpg", location: "" },
+      //       { id: 300, type: "characters", name: "카카오프렌즈 춘식이 X 해리포터 팝업스토어", imageUrl: "", location: "서울특별시 서초구 강남대로 429 카카오프렌즈 강남플래그십 스토어" },
+      //       { id: 1, type: "culture", name: "카카오프렌즈 춘식이 X 해리포터 팝업스토어", imageUrl: "", location: "서울특별시 서초구 강남대로 429 카카오프렌즈 강남플래그십 스토어" },
+      //     ],
+      //   };
+
+      // if (data.categories) {
+      // setPopups(data.categories);
 
       // (수정) MOCK
       const data = filterByCategory(category);
@@ -355,73 +415,9 @@ const PopupList = ({ category }) => {
       } else {
         setPopups([]);
       }
+    } catch (err) {
+      setError(err.message);
     }
-  }, [category]);
-
-  // 로그인 상태일 때만 좋아요 데이터 가져오기
-  useEffect(() => {
-    // 로그인 되지 않은 경우 무시
-    if (!auth.isLoggedIn) {
-      return;
-    }
-
-    // fetch(`/api/users/${auth.userId}/likes`)
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     const likes = data.likes.map((store) => store.s_id);
-    //     setLikedPopups(likes);
-    //   })
-    //   .catch((err) => console.error("Error fetching likes:", err));
-
-    // (수정) MOCK
-    const data = {
-      likes: [{ s_id: "18" }, { s_id: "19" }, { s_id: "200" }, { s_id: "6" }, { s_id: "10" }, { s_id: "11" }],
-    };
-    const likes = data.likes.map((store) => parseInt(store.s_id));
-    setLikedPopups(likes);
-  }, [auth.isLoggedIn]);
-
-  const handleLikeToggle = async (popupId) => {
-    if (!auth.isLoggedIn) {
-      navigate("/login");
-      alert("로그인 후 즐겨찾기에 추가 가능합니다.");
-      return;
-    }
-
-    // UI 먼저 업데이트
-    const isLiked = likedPopups.includes(popupId); // true,false
-    setLikedPopups(
-      (prevLiked) =>
-        isLiked
-          ? prevLiked.filter((id) => id !== popupId) // 좋아요 취소
-          : [...prevLiked, popupId] // 좋아요 추가
-    );
-
-    // API - 서버에 요청
-    // try {
-    //   const response = await fetch(`/api/users/${auth.userId}/stores/${popupId}/likes`, {
-    //     method: isLiked ? "DELETE" : "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   });
-
-    //   if (!response.ok) {
-    //     throw new Error(`Failed to ${isLiked ? "unlike" : "like"} popup`);
-    //   }
-    // } catch (error) {
-    //   console.error(error.message);
-
-    //   // 요청 실패 시 상태 복구
-    //   setLikedPopups(
-    //     (prevLiked) =>
-    //       isLiked
-    //         ? [...prevLiked, popupId] // 좋아요 복구
-    //         : prevLiked.filter((id) => id !== popupId) // 제거 복구
-    //   );
-    // }
-
-    console.log("likedList: ", likedPopups);
   };
 
   const heartStyle = {
@@ -434,6 +430,13 @@ const PopupList = ({ category }) => {
     fontSize: "24px", // 하트 크기
     zIndex: 10, // 이미지 위에 표시
   };
+
+  // const toggleLike = (id) => {
+  //   setLikedPopups((prevState) => ({
+  //     ...prevState,
+  //     [id]: !prevState[id],
+  //   }));
+  // };
 
   return (
     <div>
@@ -463,7 +466,7 @@ const PopupList = ({ category }) => {
                   style={heartStyle}
                   onClick={(e) => {
                     e.stopPropagation(); // 부모 클릭 이벤트 방지
-                    handleLikeToggle(popup.id); // 하트 상태 토글
+                    handleLikeClick(popup.id); // 하트 상태 토글
                   }}
                 >
                   {likedPopups.includes(popup.id) ? "❤️" : "🤍"}

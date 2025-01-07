@@ -23,6 +23,7 @@ const AuthProvider = ({ children }) => {
     sessionStorage.setItem("userId", userId); // 사용자 고유 ID 저장
 
     // 디버깅
+    console.log("login, auth.isLoggedIn: ", auth.isLoggedIn);
     console.log("login, authToken: ", sessionStorage.getItem("authToken"));
     console.log("login, username: ", sessionStorage.getItem("username"));
     console.log("login, userId: ", sessionStorage.getItem("userId"));
