@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../context/useAuth";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // login 함수 가져옴
+  const { auth, login } = useAuth(); // login 함수 가져옴
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,6 +18,13 @@ const LoginPage = () => {
     if (name === "email") setEmail(value);
     if (name === "password") setPassword(value);
   };
+
+  useEffect(() => {
+    if (auth.isLoggedIn) {
+      alert("이미 로그인 되어있습니다.\n프로필 페이지로 이동합니다.");
+      navigate("/profile");
+    }
+  }, []);
 
   // API
   // const handleSubmit = async (e) => {

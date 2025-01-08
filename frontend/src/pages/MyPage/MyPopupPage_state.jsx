@@ -3,7 +3,7 @@ const MyPopupPage = () => {
 
   return (
     <div>
-      <h2 style={{ color: "red" }}>나의 팝업</h2>
+      <h2>나의 팝업</h2>
       <hr />
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
         <button>리스트 뷰</button>

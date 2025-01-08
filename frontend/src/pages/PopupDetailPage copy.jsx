@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import BlogReview from "../components/BlogReview";
 import Description from "../components/Description";
-import useAuth from "../context/useAuth";
 
 // 임시 데이터
 const popupData = [
@@ -279,15 +278,16 @@ function filterById(popupId) {
 
 const PopupDetailPage = () => {
   const { popupId } = useParams(); // URL에서 popupId 가져옴, string type임
-  const { auth } = useAuth();
-  const navigate = useNavigate();
 
   const [detail, setDetail] = useState(null); // 팝업 상세 정보 저장
   const [error, setError] = useState(null); // 에러 메시지 저장
   const [loading, setLoading] = useState(true); // 로딩 상태 저장
+
   const [activeTab, setActiveTab] = useState("description"); // 기본은 상세 설명 탭
 
-  const [likedPopups, setLikedPopups] = useState([]); // 좋아요 상태 저장
+  // if (isNaN(popupId)) {
+  //   return <div>잘못된 팝업 ID입니다.</div>;
+  // }
 
   // 팝업 상세 정보 API 호출
   const fetchPopupDetail = async () => {
@@ -311,39 +311,12 @@ const PopupDetailPage = () => {
     }
   };
 
-  // 로그인 상태일 때만 좋아요 데이터 가져오기
-  const fetchLikedPopups = async () => {
-    if (!auth.isLoggedIn) {
-      return;
-    }
-
-    // (수정) API
-    // try {
-    //   const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/likes`);
-    //   if (!response.ok) {
-    //     throw new Error("Failed to fetch liked popups");
-    //   }
-
-    //   const data = await response.json();
-    //   const likedIds = data.likes.map((store) => store.s_id); // 좋아요 상태 아이디 목록
-    //   setLikedPopups(likedIds); // 좋아요 상태 업데이트
-    // } catch (err) {
-    //   console.error("Error fetching liked popups:", err);
-    // }
-
-    // (수정) MOCK
-    const data = {
-      likes: [{ s_id: "18" }, { s_id: "19" }, { s_id: "200" }, { s_id: "6" }, { s_id: "10" }, { s_id: "11" }],
-    };
-    const likes = data.likes.map((store) => store.s_id);
-    setLikedPopups(likes);
-    console.log("likes: ", likes);
-  };
-
+  // fetchPopupDetail(); // 그냥 => 무한 호출
   useEffect(() => {
+    // 컴포넌트가 마운드 되거나 popupId가 변경될 때 API 호출
+    // console.log("넘어온 params:", popupId);
     fetchPopupDetail();
-    fetchLikedPopups();
-  }, [popupId, auth.isLoggedIn]);
+  }, [popupId]);
 
   // 로딩 중일 때 표시
   if (loading) {
@@ -374,62 +347,11 @@ const PopupDetailPage = () => {
     }
   };
 
-  const handleLikeToggle = async (popupId) => {
-    // console.log("type:", typeof popupId);
-
-    if (!auth.isLoggedIn) {
-      navigate("/login");
-      alert("로그인 후 즐겨찾기에 추가 가능합니다.");
-      return;
-    }
-
-    // UI 먼저 업데이트
-    const isLiked = likedPopups.includes(popupId); // true,false
-    setLikedPopups(
-      (prevLiked) =>
-        isLiked
-          ? prevLiked.filter((id) => id !== popupId) // 좋아요 취소
-          : [...prevLiked, popupId] // 좋아요 추가
-    );
-
-    // API - 서버에 요청
-    // try {
-    //   const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
-    //     method: isLiked ? "DELETE" : "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   });
-
-    //   if (!response.ok) {
-    //     throw new Error(`Failed to ${isLiked ? "unlike" : "like"} popup`);
-    //   }
-    // } catch (error) {
-    //   console.error(error.message);
-
-    //   // 요청 실패 시 상태 복구
-    //   setLikedPopups(
-    //     (prevLiked) =>
-    //       isLiked
-    //         ? [...prevLiked, popupId] // 좋아요 복구
-    //         : prevLiked.filter((id) => id !== popupId) // 제거 복구
-    //   );
-    // }
-  };
-
-  const heartStyle = {
-    bottom: "8px", // 이미지 하단 여백
-    right: "8px", // 이미지 오른쪽 여백
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "24px", // 하트 크기
-    zIndex: 10, // 이미지 위에 표시
-  };
-
+  // 데이터 렌더링
   return (
     <div>
       <div>
+        {/* 이미지 렌더링 */}
         <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
           {detail.images.map((url, index) => (
             <img key={index} src={url} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
@@ -439,28 +361,18 @@ const PopupDetailPage = () => {
 
       <div>
         {/* 제목 */}
-        <div style={{ display: "flex" }}>
-          <h1>{detail.name}</h1>
-
-          <button
-            style={heartStyle}
-            onClick={(e) => {
-              e.stopPropagation(); // 부모 클릭 이벤트 방지
-              handleLikeToggle(popupId); // 하트 상태 토글
-            }}
-          >
-            {likedPopups.includes(popupId) ? "❤️" : "🤍"}
-          </button>
-        </div>
-
+        <h1>{detail.name}</h1>
+        {/* 주최 */}
         <p>
           <strong>카테고리:</strong> {detail.type}
         </p>
 
+        {/* 주최 */}
         <p>
           <strong>주최:</strong> {detail.owner}
         </p>
 
+        {/* 장소 */}
         <p>
           <strong>장소:</strong> {detail.location}
         </p>

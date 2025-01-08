@@ -1,8 +1,10 @@
+// 팝업 좋아요 취소 안되어있음.
+
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import BlogReview from "../components/BlogReview";
-import Description from "../components/Description";
 import useAuth from "../context/useAuth";
+import { useNavigate } from "react-router-dom";
+
+import PropTypes from "prop-types";
 
 // 임시 데이터
 const popupData = [
@@ -273,151 +275,153 @@ const popupData = [
   },
 ];
 
-function filterById(popupId) {
-  return popupData.find((popup) => popup.id == popupId) || null;
+function filterByCategory(category) {
+  if (!category || category === "whole") {
+    return popupData;
+  }
+
+  return popupData.filter((item) => item.type === category);
 }
 
-const PopupDetailPage = () => {
-  const { popupId } = useParams(); // URL에서 popupId 가져옴, string type임
-  const { auth } = useAuth();
+const PopupList = ({ category }) => {
+  const { auth } = useAuth(); // 로그인 정보
   const navigate = useNavigate();
 
-  const [detail, setDetail] = useState(null); // 팝업 상세 정보 저장
-  const [error, setError] = useState(null); // 에러 메시지 저장
-  const [loading, setLoading] = useState(true); // 로딩 상태 저장
-  const [activeTab, setActiveTab] = useState("description"); // 기본은 상세 설명 탭
+  const [popups, setPopups] = useState([]);
+  const [error, setError] = useState(null);
+  const [likedPopups, setLikedPopups] = useState([]);
 
-  const [likedPopups, setLikedPopups] = useState([]); // 좋아요 상태 저장
-
-  // 팝업 상세 정보 API 호출
-  const fetchPopupDetail = async () => {
-    try {
-      const response = await fetch(`api/stores/${popupId}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch PopupDetail");
-      }
-
-      // const data = await response.json();
-
-      // 임시 데이터
-      const data = filterById(popupId);
-      setDetail(data); // 데이터 저장
-      setError(null); // 에러 초기화
-    } catch (err) {
-      setError(err.message); // 에러 메시지 저장
-      setDetail(null); // 데이터 초기화
-    } finally {
-      setLoading(false); // 로딩 종료
+  // 팝업 데이터 가져오기
+  useEffect(() => {
+    if (category) {
+      fetchCategoryData(category);
     }
-  };
+  }, [category]);
 
-  // 로그인 상태일 때만 좋아요 데이터 가져오기
-  const fetchLikedPopups = async () => {
+  // 좋아요 데이터 가져오기
+  useEffect(() => {
+    // 로그인 되지 않은 경우 무시
     if (!auth.isLoggedIn) {
       return;
     }
 
-    // (수정) API
-    // try {
-    //   const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/likes`);
-    //   if (!response.ok) {
-    //     throw new Error("Failed to fetch liked popups");
-    //   }
+    const fetchLikedPopups = async () => {
+      try {
+        // (수정) API
+        // const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/likes`);
+        // if (!response.ok) {
+        //   throw new Error("Failed to fetch likes");
+        // }
+        // const data = await response.json();
 
-    //   const data = await response.json();
-    //   const likedIds = data.likes.map((store) => store.s_id); // 좋아요 상태 아이디 목록
-    //   setLikedPopups(likedIds); // 좋아요 상태 업데이트
-    // } catch (err) {
-    //   console.error("Error fetching liked popups:", err);
-    // }
+        // (수정) MOCK
+        const data = {
+          likes: [{ s_id: "18" }, { s_id: "19" }, { s_id: "200" }, { s_id: "6" }, { s_id: "10" }, { s_id: "11" }],
+        };
 
-    // (수정) MOCK
-    const data = {
-      likes: [{ s_id: "18" }, { s_id: "19" }, { s_id: "200" }, { s_id: "6" }, { s_id: "10" }, { s_id: "11" }],
+        // 좋아요한 팝업 ID만 배열로 저장
+        const likes = data.likes.map((store) => parseInt(store.s_id));
+
+        setLikedPopups(likes);
+      } catch (err) {
+        console.error(err.message);
+      }
     };
-    const likes = data.likes.map((store) => store.s_id);
-    setLikedPopups(likes);
-    console.log("likes: ", likes);
-  };
-
-  useEffect(() => {
-    fetchPopupDetail();
     fetchLikedPopups();
-  }, [popupId, auth.isLoggedIn]);
+  }, [auth.isLoggedIn]);
 
-  // 로딩 중일 때 표시
-  if (loading) {
-    return <p>로딩 중...</p>;
-  }
-
-  // 에러 발생 시 표시
-  if (error) {
-    return <p>에러: {error}</p>;
-  }
-
-  // 받아온 데이터가 없을 때 표시
-  if (!detail) {
-    return <p>팝업 정보를 불러올 수 없습니다.</p>;
-  }
-
-  // 조건부 렌더링
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "description":
-        return <Description detail={detail}></Description>;
-
-      case "reviews":
-        return <BlogReview name={detail.name}></BlogReview>;
-
-      default:
-        return null;
-    }
-  };
-
-  const handleLikeToggle = async (popupId) => {
-    // console.log("type:", typeof popupId);
-
+  // 좋아요 추가 요청
+  const handleLikeClick = async (popupId) => {
     if (!auth.isLoggedIn) {
       navigate("/login");
       alert("로그인 후 즐겨찾기에 추가 가능합니다.");
       return;
     }
 
-    // UI 먼저 업데이트
-    const isLiked = likedPopups.includes(popupId); // true,false
-    setLikedPopups(
-      (prevLiked) =>
-        isLiked
-          ? prevLiked.filter((id) => id !== popupId) // 좋아요 취소
-          : [...prevLiked, popupId] // 좋아요 추가
-    );
+    try {
+      // 좋아요하지 않은 경우 -> 추가
+      if (!likedPopups.includes(popupId)) {
+        // (수정) API
+        // const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // });
 
-    // API - 서버에 요청
-    // try {
-    //   const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
-    //     method: isLiked ? "DELETE" : "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   });
+        // if (!response.ok) {
+        //   throw new Error("Failed to fetch ");
+        // }
 
-    //   if (!response.ok) {
-    //     throw new Error(`Failed to ${isLiked ? "unlike" : "like"} popup`);
-    //   }
-    // } catch (error) {
-    //   console.error(error.message);
+        // if (response.status === 201) {
+        //   setLikedPopups((prev) => [...prev, popupId]); // 좋아요 배열에 팝업 ID 추가
+        // } else {
+        //   const errorData = await response.json();
+        //   console.error(errorData.error || "Failed to add like");
+        // }
 
-    //   // 요청 실패 시 상태 복구
-    //   setLikedPopups(
-    //     (prevLiked) =>
-    //       isLiked
-    //         ? [...prevLiked, popupId] // 좋아요 복구
-    //         : prevLiked.filter((id) => id !== popupId) // 제거 복구
-    //   );
-    // }
+        // (수정) MOCK
+        setLikedPopups((prev) => [...prev, popupId]); // 좋아요 배열에 팝업 ID 추가
+      } else {
+        // 이미 좋아요한 경우-> 제거
+        const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch ");
+        }
+      }
+    } catch (err) {
+      console.error("Error adding like:", err.message);
+    }
+  };
+
+  const fetchCategoryData = async (category) => {
+    setError(null);
+
+    try {
+      // API
+      const response = await fetch(`/api/main/categories/${category}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch categories");
+      }
+
+      // category type
+      // whole, food, education, culture, digital, clothing, interior, sports, fashion miscellaneous goods, characters, others
+      // popular, scheduled
+
+      //API
+      // const data = response.json();
+      //  data = {
+      //     categories: [
+      //       { id: 100, type: "culture", name: "오징어게임2 팝업스토어 in 강남", imageUrl: "https://i.ibb.co/grpvWqW/list1.jpg", location: "" },
+      //       { id: 200, type: "food", name: "바나나맛우유 50주년 팝업스토어", imageUrl: "https://i.ibb.co/vJrZYn3/list2.jpg", location: "" },
+      //       { id: 300, type: "characters", name: "카카오프렌즈 춘식이 X 해리포터 팝업스토어", imageUrl: "", location: "서울특별시 서초구 강남대로 429 카카오프렌즈 강남플래그십 스토어" },
+      //       { id: 1, type: "culture", name: "카카오프렌즈 춘식이 X 해리포터 팝업스토어", imageUrl: "", location: "서울특별시 서초구 강남대로 429 카카오프렌즈 강남플래그십 스토어" },
+      //     ],
+      //   };
+
+      // if (data.categories) {
+      // setPopups(data.categories);
+
+      // (수정) MOCK
+      const data = filterByCategory(category);
+      if (data) {
+        setPopups(data);
+      } else {
+        setPopups([]);
+      }
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const heartStyle = {
+    position: "absolute",
     bottom: "8px", // 이미지 하단 여백
     right: "8px", // 이미지 오른쪽 여백
     background: "none",
@@ -427,57 +431,60 @@ const PopupDetailPage = () => {
     zIndex: 10, // 이미지 위에 표시
   };
 
+  // const toggleLike = (id) => {
+  //   setLikedPopups((prevState) => ({
+  //     ...prevState,
+  //     [id]: !prevState[id],
+  //   }));
+  // };
+
   return (
     <div>
-      <div>
-        <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-          {detail.images.map((url, index) => (
-            <img key={index} src={url} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
-          ))}
-        </div>
+      {error && <p>Error: {error}</p>}
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px", padding: "16px" }}>
+        {popups.length > 0 ? (
+          popups.map((popup) => (
+            <div key={popup.id} onClick={() => navigate(`/popup/${popup.id}`)} style={{ cursor: "pointer", textAlign: "center", border: "1px solid #ccc", borderRadius: "8px", padding: "8px" }}>
+              <div
+                style={{
+                  position: "relative", // 이미지 컨테이너를 기준으로 버튼 배치
+                }}
+              >
+                <img
+                  src={popup.images[0]}
+                  alt={popup.name}
+                  style={{
+                    width: "100%",
+                    height: "150px",
+                    objectFit: "cover",
+                    borderRadius: "8px",
+                  }}
+                />
+                <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.name}</p>
+                <button
+                  style={heartStyle}
+                  onClick={(e) => {
+                    e.stopPropagation(); // 부모 클릭 이벤트 방지
+                    handleLikeClick(popup.id); // 하트 상태 토글
+                  }}
+                >
+                  {likedPopups.includes(popup.id) ? "❤️" : "🤍"}
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No Popup available for this category.</p>
+        )}
       </div>
-
-      <div>
-        {/* 제목 */}
-        <div style={{ display: "flex" }}>
-          <h1>{detail.name}</h1>
-
-          <button
-            style={heartStyle}
-            onClick={(e) => {
-              e.stopPropagation(); // 부모 클릭 이벤트 방지
-              handleLikeToggle(popupId); // 하트 상태 토글
-            }}
-          >
-            {likedPopups.includes(popupId) ? "❤️" : "🤍"}
-          </button>
-        </div>
-
-        <p>
-          <strong>카테고리:</strong> {detail.type}
-        </p>
-
-        <p>
-          <strong>주최:</strong> {detail.owner}
-        </p>
-
-        <p>
-          <strong>장소:</strong> {detail.location}
-        </p>
-      </div>
-
-      {/* 버튼, 탭 */}
-      <div>
-        <button onClick={() => setActiveTab("description")}>상세 설명</button>
-        <button style={{ color: "red" }} onClick={() => setActiveTab("reviews")}>
-          실시간 후기
-        </button>
-      </div>
-
-      {/* 탭 컨텐츠 */}
-      {renderTabContent()}
     </div>
   );
 };
 
-export default PopupDetailPage;
+// category prop의 타입을 string으로 지정
+PopupList.propTypes = {
+  category: PropTypes.string.isRequired, // category는 필수로 string이어야 함
+};
+
+export default PopupList;
