@@ -11,9 +11,11 @@ router.get("/:s_id", (req, res) => {
         SELECT 
             s.s_id, s.owner, s.s_name, s.contact, s.location, 
             s.s_date, s.e_date, s.business_hours, s.description,
-            JSON_ARRAYAGG(si.image_url) AS image_urls
+            JSON_ARRAYAGG(si.image_url) AS image_urls,
+            c.name AS category
         FROM Store s
         LEFT JOIN Store_Image si ON s.s_id = si.s_id
+        LEFT JOIN Category c ON s.s_id = c.s_id
         WHERE s.s_id = ?
         GROUP BY s.s_id
     `;
@@ -42,7 +44,8 @@ router.get("/:s_id", (req, res) => {
                 s_date: store.s_date,
                 e_date: store.e_date,
                 business_hours: store.business_hours,
-                description: store.description
+                description: store.description,
+                category: store.category
             },
             images
         });

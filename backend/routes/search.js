@@ -23,9 +23,11 @@ router.get("/", (req, res) => {
             s.description AS description, 
             s.s_date AS startDate, 
             s.e_date AS endDate, 
-            JSON_ARRAYAGG(si.image_url) AS images
+            JSON_ARRAYAGG(si.image_url) AS images,
+            c.name AS category
         FROM Store s
         LEFT JOIN Store_Image si ON s.s_id = si.s_id
+        LEFT JOIN Category c ON s.s_id = c.s_id
         WHERE 1=1
     `;
     const queryParams = [];
@@ -88,6 +90,7 @@ router.get("/", (req, res) => {
                     startDate: new Date(row.startDate).toISOString(),
                     endDate: new Date(row.endDate).toISOString(),
                     images: JSON.parse(row.images) || [], // 이미지 배열 파싱
+                    category: row.category,
                 })),
                 pagination: {
                     currentPage: currentPage,

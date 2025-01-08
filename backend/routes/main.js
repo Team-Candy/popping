@@ -17,8 +17,10 @@ router.get("/banners", async (req, res) => {
                 s.business_hours AS BusinessHours, 
                 s.location AS Location, 
                 JSON_ARRAYAGG(si.image_url) AS Images
+                c.name AS Category
             FROM Store s
             LEFT JOIN Store_Image si ON si.s_id = s.s_id
+            LEFT JOIN Category c ON c.s_id = s.s_id
             GROUP BY s.s_id
         `;
 
@@ -37,6 +39,7 @@ router.get("/banners", async (req, res) => {
             EndDate: row.EndDate,
             BusinessHours: row.BusinessHours,
             Location: row.Location,
+            Category: row.Category,
             Images: JSON.parse(row.Images) || [], // JSON 배열 파싱
         }));
 
