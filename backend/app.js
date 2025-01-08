@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
+const path = require("path");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const emailVerificationRoutes = require("./routes/emailVerification");
