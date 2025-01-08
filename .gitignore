@@ -12,5 +12,15 @@ client/build/
 .vscode/
 .idea/
 
+
+# 폴더 등 설명
+*.txt
+
+*.sql
+*.erd.json
+
 # /docs
 docs/
+
+# /backup
+backup/
