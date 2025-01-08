@@ -1,45 +1,13 @@
 const express = require("express");
 const authenticateJWT = require("../middleware/authenticateJWT");
 const db = require("../config/db");
+const upload = require("../middleware/upload");
 
 const router = express.Router();
 
-// 사용자 정보 조회
-router.get("/:u_id", authenticateJWT, (req, res) => {
-    const { u_id } = req.params;
-
-    // 사용자 인증을 통과한 사용자의 u_id와 요청된 u_id가 일치하는지 확인
-    if (u_id !== req.user.u_id) {
-        return res.status(403).json({ error: "You are not authorized to access this user's data" });
-    }
-
-    // u_id가 숫자 형식인지 확인
-    if (isNaN(u_id)) {
-        return res.status(400).json({ error: "Invalid user ID" });
-    }
-
-    const query = `
-        SELECT email, name, nickname, profileImage, introduction 
-        FROM User 
-        WHERE u_id = ?
-    `;
-    db.query(query, [u_id], (err, results) => {
-        if (err) {
-            console.error("Database error:", err);
-            return res.status(500).json({ error: "Failed to retrieve user information" });
-        }
-
-        if (results.length === 0) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        res.json({ success: true, profile: results[0] });
-    });
-});
-
 // 유저 프로필 정보 등록
 router.post("/", (req, res) => {
-    const { email, name, nickname, profileImage, introduction } = req.body;
+    const { email, name } = req.body;
 
     if (!email || !name) return res.status(400).json({ error: "email and name are required" });
 
@@ -51,8 +19,8 @@ router.post("/", (req, res) => {
         if (err) return res.status(500).json({ error: "Failed to check email uniqueness" });
         if (result[0].count > 0) return res.status(400).json({ error: "Email is already in use" });
 
-        const query = `INSERT INTO User (email, name, nickname, profileImage, introduction) VALUES (?, ?, ?, ?, ?)`;
-        const values = [email, name, nickname, profileImage, introduction || ''];
+        const query = `INSERT INTO User (email, name) VALUES (?, ?)`;
+        const values = [email, name];
 
         db.query(query, values, (err, results) => {
             if (err) return res.status(500).json({ error: "Failed to register user profile" });
@@ -64,7 +32,7 @@ router.post("/", (req, res) => {
 // 유저 정보 수정
 router.put("/:u_id/profile", authenticateJWT, (req, res) => {
     const { u_id } = req.params;
-    const { email, name, nickname, profileImage, introduction } = req.body;
+    const { email, name } = req.body;
     
     // 필수 필드 검증
     if (!email || !name) {
@@ -92,10 +60,10 @@ router.put("/:u_id/profile", authenticateJWT, (req, res) => {
         // 유저 정보 업데이트
         const query = `
             UPDATE User
-            SET email = ?, name = ?, nickname = ?, profileImage = ?, introduction = ?
+            SET email = ?, name = ?
             WHERE u_id = ?
         `;
-        const values = [email, name, nickname, profileImage, introduction, u_id];
+        const values = [email, name, u_id];
 
         db.query(query, values, (err, results) => {
             if (err) {
@@ -151,11 +119,21 @@ router.delete("/:u_id", authenticateJWT, (req, res) => {
 });
 
 // 사용자 디테일 프로필 정보 조회
-router.get("/:u_id/profile", (req, res) => {
+router.get("/:u_id/profile", authenticateJWT, (req, res) => {
     const { u_id } = req.params;
 
+    // 사용자 인증을 통과한 사용자의 u_id와 요청된 u_id가 일치하는지 확인
+    if (u_id !== req.user.u_id) {
+        return res.status(403).json({ error: "You are not authorized to access this user's data" });
+    }
+
+    // u_id가 숫자 형식인지 확인
+    if (isNaN(u_id)) {
+        return res.status(400).json({ error: "Invalid user ID" });
+    }
+
     const query = `
-        SELECT u_id, email, name, nickname, profileImage, introduction, created_at
+        SELECT u_id, email, name created_at
         FROM User
         WHERE u_id = ?
     `;
@@ -167,23 +145,131 @@ router.get("/:u_id/profile", (req, res) => {
         if (results.length === 0) {
             return res.status(404).json({ error: "User not found" });
         }
-        res.status(200).json(results[0]);
+
+        const user = results[0];
+        res.status(200).json({
+            user: {
+                u_id: user.u_id,
+                email: user.email,
+                name: user.name,
+                created_at: user.created_at,
+            }
+        });
     });
 });
 
-// 유저가 작성한 게시글 조회
+// 유저가 팝업스토어어 등록하는 기능
+router.post("/:u_id/stores", upload.array("images", 10), (req, res) => {
+    const { u_id } = req.params;
+    const { s_name, owner, contact, location, s_date, e_date, business_hours, description, category } = req.body;
+
+    // 필수 필드 확인
+    if (!s_name || !owner || !contact || !location || !s_date || !e_date || !business_hours || !description || !category) {
+        return res.status(400).json({ error: "All fields, including category, are required" });
+    }
+
+    // 이미지 검증
+    const imageFiles = req.files;
+    if (!imageFiles || imageFiles.length === 0) {
+        return res.status(400).json({ error: "At least one image is required" });
+    }
+
+    // DB 트랜잭션 시작
+    db.beginTransaction((err) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Transaction initialization failed" });
+        }
+
+        // Store 등록
+        const storeQuery = `
+            INSERT INTO Store (u_id, s_name, owner, contact, location, s_date, e_date, business_hours, description)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        const storeValues = [u_id, s_name, owner, contact, location, s_date, e_date, business_hours, description];
+
+        db.query(storeQuery, storeValues, (err, results) => {
+            if (err) {
+                console.error(err);
+                return db.rollback(() => {
+                    res.status(500).json({ error: "Failed to register store" });
+                });
+            }
+
+            const s_id = results.insertId;
+
+            // 이미지 삽입
+            const imageQuery = `INSERT INTO Store_Image (s_id, image_url) VALUES ?`;
+            const imageValues = imageFiles.map((file) => [s_id, `/uploads/${file.filename}`]);
+
+            db.query(imageQuery, [imageValues], (err) => {
+                if (err) {
+                    console.error(err);
+                    return db.rollback(() => {
+                        res.status(500).json({ error: "Failed to register store images" });
+                    });
+                }
+
+                // 카테고리 삽입
+                const categoryQuery = `INSERT INTO Category (s_id, name) VALUES (?, ?)`;
+                db.query(categoryQuery, [s_id, category], (err) => {
+                    if (err) {
+                        console.error(err);
+                        return db.rollback(() => {
+                            res.status(500).json({ error: "Failed to register category" });
+                        });
+                    }
+
+                    // 트랜잭션 커밋
+                    db.commit((err) => {
+                        if (err) {
+                            console.error(err);
+                            return db.rollback(() => {
+                                res.status(500).json({ error: "Transaction commit failed" });
+                            });
+                        }
+
+                        res.status(201).json({
+                            message: "Store, images, and category registered successfully",
+                            store: { s_id, s_name, owner, contact, location, s_date, e_date, business_hours, description },
+                            images: imageFiles.map((file) => `/uploads/${file.filename}`),
+                            category: category,
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
+
+
+// 유저가 작성한 팝업스토어어 조회
 router.get("/:u_id/stores", (req, res) => {
     const { u_id } = req.params;
 
     const query = `
-        SELECT s_id, owner, s_name, contact, location, s_date, e_date, business_hours, description
+        SELECT 
+            Store.s_id, 
+            Store.owner, 
+            Store.s_name, 
+            Store.contact, 
+            Store.location, 
+            Store.s_date, 
+            Store.e_date, 
+            Store.business_hours, 
+            Store.description,
+            JSON_ARRAYAGG(Store_Image.image_url) AS images,
+            Category.name AS category
         FROM Store
-        JOIN User ON Store.u_id = User.u_id
-        WHERE User.u_id = ?
+        LEFT JOIN Store_Image ON Store.s_id = Store_Image.s_id
+        LEFT JOIN Category ON Store.s_id = Category.s_id
+        WHERE Store.u_id = ?
+        GROUP BY Store.s_id
     `;
 
     db.query(query, [u_id], (err, results) => {
         if (err) {
+            console.error("Database error:", err.message);
             return res.status(500).json({ error: "Failed to retrieve user stores" });
         }
 
@@ -192,7 +278,261 @@ router.get("/:u_id/stores", (req, res) => {
             return res.status(404).json({ error: "Stores not found" });
         }
 
-        res.status(200).json(results);
+        res.status(200).json({
+            stores: results.map(store => ({
+                s_id: store.s_id,
+                owner: store.owner,
+                s_name: store.s_name,
+                contact: store.contact,
+                location: store.location,
+                s_date: store.s_date,
+                e_date: store.e_date,
+                business_hours: store.business_hours,
+                description: store.description,
+                images: store.images ? JSON.parse(store.images) : [], // JSON 배열로 파싱
+                category: store.category || null,
+            }))
+        });
+    });
+});
+
+// 유저가 작성한 팝업스토어 수정 접근 권한 확인
+router.use("/:u_id/stores/:s_id/check-popup-permission", (req, res, next) => {
+    const { u_id, s_id } = req.params;
+
+    // 사용자 인증을 통과한 사용자의 u_id와 요청된 u_id가 일치하는지 확인
+    if (u_id !== req.user.u_id) {
+        return res.status(403).json({ error: "You are not authorized to access this user's data" });
+    }
+
+    // u_id와 s_id가 숫자 형식인지 확인
+    if (isNaN(u_id) || isNaN(s_id)) {
+        return res.status(400).json({ error: "Invalid user ID or store ID" });
+    }
+
+    next();
+});
+
+// 유저가 작성한 팝업스토어어 수정
+router.put("/:u_id/stores/:s_id", upload.array("images", 10), (req, res) => {
+    const { u_id, s_id } = req.params;
+    const { s_name, owner, contact, location, s_date, e_date, business_hours, description, category } = req.body;
+
+    // 업로드된 파일 정보
+    const files = req.files;
+    const imageUrls = files.map(file => `/uploads/${file.filename}`); // 저장된 이미지 URL 생성
+
+    // 필수 필드 확인
+    if (!s_name || !owner || !contact || !location || !s_date || !e_date || !business_hours || !description || !category) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // 시작 트랜잭션
+    db.beginTransaction((err) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Transaction initialization failed" });
+        }
+
+        const storeQuery = `
+            UPDATE Store
+            SET s_name = ?, owner = ?, contact = ?, location = ?, s_date = ?, e_date = ?, business_hours = ?, description = ?
+            WHERE s_id = ? AND u_id = ?
+        `;
+        const storeValues = [s_name, owner, contact, location, s_date, e_date, business_hours, description, s_id, u_id];
+
+        // Store 테이블에 데이터 업데이트
+        db.query(storeQuery, storeValues, (err, results) => {
+            if (err) {
+                console.error(err);
+                return db.rollback(() => {
+                    res.status(500).json({ error: "Failed to update store" });
+                });
+            }
+
+            if (results.affectedRows === 0) {
+                return db.rollback(() => {
+                    res.status(404).json({ error: "Store not found" });
+                });
+            }
+
+            // 1. 기존 이미지 URL 가져오기
+            const getExistingImagesQuery = `SELECT image_url FROM Store_Image WHERE s_id = ?`;
+            db.query(getExistingImagesQuery, [s_id], (err, existingImages) => {
+                if (err) {
+                    console.error(err);
+                    return db.rollback(() => {
+                        res.status(500).json({ error: "Failed to fetch existing images" });
+                    });
+                }
+
+                const existingImageUrls = existingImages.map(image => image.image_url);
+                const allImageUrls = [...existingImageUrls, ...imageUrls];
+
+                // 2. Store_Image 테이블에 새 이미지 추가
+                const imageQuery = `
+                    INSERT INTO Store_Image (s_id, image_url) VALUES ?
+                `;
+                const imageValues = allImageUrls.map(url => [s_id, url]);
+
+                db.query(imageQuery, [imageValues], (err) => {
+                    if (err) {
+                        console.error(err);
+                        return db.rollback(() => {
+                            res.status(500).json({ error: "Failed to register store images" });
+                        });
+                    }
+
+                    // 3. 기존 카테고리 삭제 및 새로운 카테고리 추가
+                    const deleteCategoryQuery = `DELETE FROM Category WHERE s_id = ?`;
+                    db.query(deleteCategoryQuery, [s_id], (err) => {
+                        if (err) {
+                            console.error(err);
+                            return db.rollback(() => {
+                                res.status(500).json({ error: "Failed to delete existing category" });
+                            });
+                        }
+
+                        const insertCategoryQuery = `INSERT INTO Category (s_id, name) VALUES (?, ?)`;
+                        db.query(insertCategoryQuery, [s_id, category], (err) => {
+                            if (err) {
+                                console.error(err);
+                                return db.rollback(() => {
+                                    res.status(500).json({ error: "Failed to update category" });
+                                });
+                            }
+
+                            // 4. 트랜잭션 커밋
+                            db.commit((err) => {
+                                if (err) {
+                                    console.error(err);
+                                    return db.rollback(() => {
+                                        res.status(500).json({ error: "Transaction commit failed" });
+                                    });
+                                }
+
+                                res.status(200).json({
+                                    message: "Store, images, and category updated successfully",
+                                    store: {
+                                        s_id, s_name, owner, contact, location, s_date, e_date, business_hours, description, category,
+                                    },
+                                    images: allImageUrls,
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
+
+// 유저가 작성한 게시글 삭제
+router.delete("/:u_id/stores/:s_id", (req, res) => {
+    const { u_id, s_id } = req.params;
+
+    db.beginTransaction((err) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Failed to start transaction" });
+        }
+
+        // 1. 카테고리 삭제
+        const deleteCategoryQuery = `DELETE FROM Category WHERE s_id = ?`;
+        db.query(deleteCategoryQuery, [s_id], (err) => {
+            if (err) {
+                return db.rollback(() => res.status(500).json({ error: "Failed to delete category" }));
+            }
+
+            // 2. 이미지 삭제
+            const deleteImagesQuery = `DELETE FROM Store_Image WHERE s_id = ?`;
+            db.query(deleteImagesQuery, [s_id], (err) => {
+                if (err) {
+                    return db.rollback(() => res.status(500).json({ error: "Failed to delete store images" }));
+                }
+
+                // 3. 스토어 삭제
+                const deleteStoreQuery = `DELETE FROM Store WHERE s_id = ? AND u_id = ?`;
+                db.query(deleteStoreQuery, [s_id, u_id], (err, results) => {
+                    if (err) {
+                        return db.rollback(() => res.status(500).json({ error: "Failed to delete store" }));
+                    }
+
+                    if (results.affectedRows === 0) {
+                        return db.rollback(() => res.status(404).json({ error: "Store not found" }));
+                    }
+
+                    // 4. 트랜잭션 커밋
+                    db.commit((err) => {
+                        if (err) {
+                            return db.rollback(() => res.status(500).json({ error: "Failed to commit transaction" }));
+                        }
+
+                        res.status(200).json({ message: `Store with ID ${s_id} deleted successfully` });
+                    });
+                });
+            });
+        });
+    });
+});
+
+// 사용자가 팝업 스토어에 좋아요 추가
+router.post("/:u_id/stores/:s_id/likes", (req, res) => {
+    const { u_id, s_id } = req.params;
+
+    // 입력 검증
+    if (!u_id || isNaN(u_id) || !s_id || isNaN(s_id)) {
+        return res.status(400).json({ error: "Invalid user ID or store ID" });
+    }
+
+    // 좋아요 추가
+    const insertQuery = `
+        INSERT INTO Likes (u_id, s_id)
+        VALUES (?, ?)
+    `;
+
+    db.query(insertQuery, [u_id, s_id], (err) => {
+        if (err) {
+            if (err.code === 'ER_DUP_ENTRY') {
+                return res.status(409).json({ error: "Like already exists" });
+            }
+            console.error("Database error during like addition:", err.message);
+            return res.status(500).json({ error: "Failed to add like" });
+        }
+
+        res.status(201).json({ message: "Like added successfully" });
+    });
+});
+
+// 사용자가 팝업 스토어에 좋아요 취소
+router.delete("/:u_id/stores/:s_id/likes", (req, res) => {
+    const { u_id, s_id } = req.params;
+
+    // 입력 검증
+    if (!u_id || isNaN(u_id) || !s_id || isNaN(s_id)) {
+        return res.status(400).json({ error: "Invalid user ID or store ID" });
+    }
+
+    // 좋아요 취소 쿼리
+    const deleteQuery = `
+        DELETE FROM Likes
+        WHERE u_id = ? AND s_id = ?
+    `;
+
+    db.query(deleteQuery, [u_id, s_id], (err, results) => {
+        if (err) {
+            console.error("Database error during like removal:", err.message);
+            return res.status(500).json({ error: "Failed to remove like" });
+        }
+
+        if (results.affectedRows > 0) {
+            res.status(200).json({
+                message: "Like removed successfully",
+                liked: false,
+            });
+        } else {
+            res.status(404).json({ error: "Like not found" });
+        }
     });
 });
 
@@ -201,14 +541,29 @@ router.get("/:u_id/likes", (req, res) => {
     const { u_id } = req.params;
 
     const query = `
-        SELECT s_id, owner, s_name, contact, location, s_date, e_date, business_hours, description
+        SELECT 
+            Store.s_id, 
+            Store.owner, 
+            Store.s_name, 
+            Store.contact, 
+            Store.location, 
+            Store.s_date, 
+            Store.e_date, 
+            Store.business_hours, 
+            Store.description,
+            JSON_ARRAYAGG(Store_Image.image_url) AS images
+            Category.name AS category
         FROM Store
         JOIN Likes ON Store.s_id = Likes.s_id
+        LEFT JOIN Store_Image ON Store.s_id = Store_Image.s_id
+        LEFT JOIN Category ON Store.s_id = Category.s_id
         WHERE Likes.u_id = ?
+        GROUP BY Store.s_id
     `;
 
     db.query(query, [u_id], (err, results) => {
         if (err) {
+            console.error("Database error:", err.message);
             return res.status(500).json({ error: "Failed to retrieve user likes" });
         }
 
@@ -217,7 +572,21 @@ router.get("/:u_id/likes", (req, res) => {
             return res.status(404).json({ error: "Likes not found" });
         }
 
-        res.status(200).json(results);
+        res.status(200).json({
+            likes: results.map(store => ({
+                s_id: store.s_id,
+                owner: store.owner,
+                s_name: store.s_name,
+                contact: store.contact,
+                location: store.location,
+                s_date: store.s_date,
+                e_date: store.e_date,
+                business_hours: store.business_hours,
+                description: store.description,
+                images: JSON.parse(store.images) || [], // JSON 배열로 파싱
+                category: store.category || null,
+            }))
+        });
     });
 });
 
