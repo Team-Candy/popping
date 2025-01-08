@@ -15,7 +15,7 @@ const FavoritePopupPage = () => {
   const fetchLikedPopups = async () => {
     // (수정) API
     // try {
-    //   const response = await fetch(`/api/users/${auth.userId}/likes`);
+    //   const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/likes`);
     //   const data = await response.json();
     //   if (!response.ok) {
     //     setError(data.error);
@@ -165,7 +165,7 @@ const FavoritePopupPage = () => {
 
     // API - 서버에 요청
     // try {
-    //   const response = await fetch(`/api/users/${auth.userId}/stores/${popupId}/likes`, {
+    //   const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
     //     method: isLiked ? "DELETE" : "POST",
     //     headers: {
     //       "Content-Type": "application/json",

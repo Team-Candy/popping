@@ -365,7 +365,7 @@ const PopupList = ({ category }) => {
       return;
     }
 
-    // fetch(`/api/users/${auth.userId}/likes`)
+    // fetch(`/api/users/${sessionStorage.getItem("userId")}/likes`)
     //   .then((res) => res.json())
     //   .then((data) => {
     //     const likes = data.likes.map((store) => store.s_id);
@@ -399,7 +399,7 @@ const PopupList = ({ category }) => {
 
     // API - 서버에 요청
     // try {
-    //   const response = await fetch(`/api/users/${auth.userId}/stores/${popupId}/likes`, {
+    //   const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
     //     method: isLiked ? "DELETE" : "POST",
     //     headers: {
     //       "Content-Type": "application/json",

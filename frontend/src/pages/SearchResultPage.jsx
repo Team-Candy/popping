@@ -226,7 +226,7 @@ const SearchResult = () => {
 
     // (수정) API
     // try {
-    //   const response = await fetch(`/api/users/${auth.userId}/likes`);
+    //   const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/likes`);
     //   if (!response.ok) {
     //     throw new Error("Failed to fetch liked popups");
     //   }
@@ -276,7 +276,7 @@ const SearchResult = () => {
 
     // API - 서버에 요청
     // try {
-    //   const response = await fetch(`/api/users/${auth.userId}/stores/${popupId}/likes`, {
+    //   const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
     //     method: isLiked ? "DELETE" : "POST",
     //     headers: {
     //       "Content-Type": "application/json",

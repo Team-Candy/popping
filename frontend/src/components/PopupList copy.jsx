@@ -308,7 +308,7 @@ const PopupList = ({ category }) => {
     const fetchLikedPopups = async () => {
       try {
         // (수정) API
-        // const response = await fetch(`/api/users/${auth.userId}/likes`);
+        // const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/likes`);
         // if (!response.ok) {
         //   throw new Error("Failed to fetch likes");
         // }
@@ -342,7 +342,7 @@ const PopupList = ({ category }) => {
       // 좋아요하지 않은 경우 -> 추가
       if (!likedPopups.includes(popupId)) {
         // (수정) API
-        // const response = await fetch(`/api/users/${auth.userId}/stores/${popupId}/likes`, {
+        // const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
         //   method: "POST",
         //   headers: {
         //     "Content-Type": "application/json",
@@ -364,7 +364,7 @@ const PopupList = ({ category }) => {
         setLikedPopups((prev) => [...prev, popupId]); // 좋아요 배열에 팝업 ID 추가
       } else {
         // 이미 좋아요한 경우-> 제거
-        const response = await fetch(`/api/users/${auth.userId}/stores/${popupId}/likes`, {
+        const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
