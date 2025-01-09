@@ -7,13 +7,14 @@ const BlogReview = ({ name }) => {
   // API 호출 - blog data 받기
   const fetchBlogs = async (name) => {
     try {
-      const response = await fetch(`/api/blogs?query=${encodeURIComponent(name)}`);
+      const response = await fetch(`http://localhost:3000/api/blogs?query=${encodeURIComponent(name)}`);
       if (!response.ok) {
         throw new Error("Failed to fetch blogs data");
       }
 
       console.log("response: ", response);
       const data = await response.json();
+      console.log("data: ", data);
 
       // // 임시 데이터
       // const data = {
@@ -33,9 +34,9 @@ const BlogReview = ({ name }) => {
       //   ],
       // };
 
-      if (data.result && Array.isArray(data.result)) {
+      if (data.blogs && Array.isArray(data.blogs)) {
         // {”result” : [{”title”: “(블로그 글 제목)”, “link”: “(블로그 포스트의 URL)”, “description”:”(블로그 포스트 내용 요약 정보)”, “postdate”:”(블로그 포스트 작성된 날짜)” }]}
-        setBlogs(data.result);
+        setBlogs(data.blogs);
       } else {
         setBlogs([]); // result가 없거나, []이 아닐 경우
       }
