@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
 
@@ -8,8 +9,10 @@ const NAVER_CLIENT_ID = process.env.NAVER_CLIENT_ID;
 const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET;
 
 // 블로그 검색
+// FE에서 검색어를 받아와서 네이버 블로그 API를 통해 검색 결과를 반환
 router.get("/", async (req, res) => {
     const { query } = req.query;
+    // console.log(query);
 
     if (!query) {
         return res.status(400).json({ error: "Query parameter is required" });
@@ -25,10 +28,18 @@ router.get("/", async (req, res) => {
             },
         });
 
-        const blogs = response.data.items.map((item) => ({
+        // const data = await response.json();
+
+        // console.log(data);
+
+        const blogs = await response.data.items.map((item) => ({
             title: item.title.replace(/<[^>]*>/g, ""), // HTML 태그 제거
             link: item.link,
+            description: item.description.replace(/<[^>]*>/g, ""), // HTML 태그 제거
+            postdate: item.postdate,
         }));
+
+        console.log(blogs);
 
         res.json({ blogs });
     } catch (error) {

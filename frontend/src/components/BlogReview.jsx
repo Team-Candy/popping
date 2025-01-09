@@ -12,11 +12,9 @@ const BlogReview = ({ name }) => {
         throw new Error("Failed to fetch blogs data");
       }
 
-      console.log("response: ", response);
       const data = await response.json();
       console.log("data: ", data);
 
-      // // 임시 데이터
       // const data = {
       //   result: [
       //     {
