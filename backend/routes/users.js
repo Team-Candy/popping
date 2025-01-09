@@ -242,7 +242,6 @@ router.post("/:u_id/stores", upload.array("images", 10), (req, res) => {
     });
 });
 
-
 // 유저가 작성한 팝업스토어어 조회
 router.get("/:u_id/stores", (req, res) => {
     const { u_id } = req.params;
@@ -297,20 +296,30 @@ router.get("/:u_id/stores", (req, res) => {
 });
 
 // 유저가 작성한 팝업스토어 수정 접근 권한 확인
-router.use("/:u_id/stores/:s_id/check-popup-permission", (req, res, next) => {
+router.post("/:u_id/stores/:s_id/check-popup-permission", (req, res) => {
     const { u_id, s_id } = req.params;
 
     // 사용자 인증을 통과한 사용자의 u_id와 요청된 u_id가 일치하는지 확인
     if (u_id !== req.user.u_id) {
-        return res.status(403).json({ error: "You are not authorized to access this user's data" });
+        return res.status(403).json({ 
+            hasPermission: false, 
+            message: "You are not authorized to access this user's data" 
+        });
     }
 
     // u_id와 s_id가 숫자 형식인지 확인
     if (isNaN(u_id) || isNaN(s_id)) {
-        return res.status(400).json({ error: "Invalid user ID or store ID" });
+        return res.status(400).json({ 
+            hasPermission: false, 
+            message: "Invalid user ID or store ID" 
+        });
     }
 
-    next();
+    // 모든 조건을 만족하면 권한이 있다는 응답 반환
+    return res.status(200).json({ 
+        hasPermission: true, 
+        message: "You have permission to edit this popup." 
+    });
 });
 
 // 유저가 작성한 팝업스토어어 수정
