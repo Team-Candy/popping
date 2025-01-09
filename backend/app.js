@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const path = require("path");
+const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const emailVerificationRoutes = require("./routes/emailVerification");
@@ -19,6 +20,10 @@ const PORT = process.env.PORT || 3000;
 // 미들웨어 설정
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(cors({
+    origin: "http://localhost:5173", // React 앱의 주소
+})); // CORS를 설정하여 특정 도메
+
 app.use((req, res, next) => {
     console.log("Request Origin: ", req.get("Origin"));
     next();
