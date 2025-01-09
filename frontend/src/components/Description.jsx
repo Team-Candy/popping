@@ -7,7 +7,7 @@ const Description = ({ detail }) => {
   return (
     <div>
       <p>
-        <strong>운영 기간:</strong> {detail.startDate}~{detail.endDate}
+        <strong>운영 기간:</strong> {detail.s_date} ~ {detail.e_date}
       </p>
 
       <p>
@@ -30,8 +30,8 @@ const Description = ({ detail }) => {
 Description.propTypes = {
   detail: PropTypes.shape({
     location: PropTypes.string.isRequired,
-    startDate: PropTypes.string.isRequired,
-    endDate: PropTypes.string.isRequired,
+    s_date: PropTypes.string.isRequired,
+    e_date: PropTypes.string.isRequired,
     business_hours: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     contact: PropTypes.string.isRequired,

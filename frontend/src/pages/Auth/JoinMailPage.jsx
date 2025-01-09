@@ -36,7 +36,7 @@ const JoinEmailPage = () => {
   const [termsChecked, setTermsChecked] = useState(false);
 
   // MOCK
-  const [mockAuthCode, setMockAuthCode] = useState("");
+  // const [mockAuthCode, setMockAuthCode] = useState("");
 
   // CSS
   const buttonStyle = {
@@ -95,110 +95,77 @@ const JoinEmailPage = () => {
     setIsAuthValid(false); // 인증상태 초기화
   };
 
-  // API - 인증번호 발송
-  // const handleEmailVerification = async () => {
-  //   if (!isEmailValid) {
-  //     setEmailError("유효한 이메일을 입력해주세요.");
-  //     return;
-  //   }
+  // API - 이메일 인증코드 발송
+  const handleEmailVerification = async () => {
+    if (!isEmailValid) {
+      setEmailError("유효한 이메일을 입력해주세요.");
+      return;
+    }
 
-  //   try {
-  //     const response = await fetch("/api/signup/email-code", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Types": "application/json",
-  //       },
-  //       body: JSON.stringify({ email }),
-  //     });
+    try {
+      const response = await fetch("/api/signup/email-code", {
+        method: "POST",
+        headers: {
+          "Content-Types": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
 
-  //     if (!response.ok) {
-  //       const data = await response.json();
-  //       setEmailError(data.message || "오류가 발생했습니다.");
-  //       return;
-  //     }
+      if (!response.ok) {
+        const data = await response.json();
+        setEmailError(data.message || "오류가 발생했습니다.");
+        return;
+      }
 
-  //     setSendNumber(true); // 인증번호 발송 성공
-  //     // alert("인증번호가 발송되었습니다.");
-  //   } catch (err) {
-  //     setEmailError("네트워크 오류가 발생했습니다.");
-  //     console.error(err);
-  //   }
-  // };
-
-  // MOCK - 이메일 인증번호 발송
-  const handleEmailVerification = () => {
-    if (!isEmailValid) return;
-
-    const generatedCode = Math.floor(100000 + Math.random() * 900000).toString(); // 6자리 랜덤 숫자
-    setMockAuthCode(generatedCode);
-    setSendNumber(true);
-    setEmailError("");
-    alert(`인증번호: ${generatedCode}`); // 인증번호를 사용자에게 표시 (실제 환경에서는 이메일 발송)
+      setSendNumber(true); // 인증번호 발송 성공
+      // alert("인증번호가 발송되었습니다.");
+    } catch (err) {
+      setEmailError("네트워크 오류가 발생했습니다.");
+      console.error(err);
+    }
   };
 
-  // 인증번호 입력
+  // 사용자 인증번호 입력
   const handleAuthNumberChange = (e) => {
     const inputNumber = e.target.value;
     setAuthNumber(inputNumber);
 
-    // input값 변경시
-    setIsAuthValid(false); // 인증 초기화
+    // input값 변경시 인증 초기화
+    setIsAuthValid(false);
     setAuthError("");
   };
 
-  // API - 인증번호 확인
-  // const handleAuthSubmit = async () => {
-  //   if (authNumber == "") {
-  //     setAuthError("인증번호를 입력해주세요.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await fetch("/api/signup/verify-code", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         email,
-  //         code: authNumber,
-  //       }),
-  //     });
-  //     // query {"email":"user@example.com","code": "123456"}
-
-  //     if (!response.ok) {
-  //       const data = await response.json();
-  //       // 실패시 {"error": "Invalid verification code"}
-  //       setAuthError(data.error || "인증번호가 일치하지 않습니다.");
-  //       setIsAuthValid(false);
-  //       return;
-  //     }
-
-  //     const data = await response.json();
-  //     // 성공시{"message": "Email verified successfully"}
-  //     setAuthError("");
-  //     setIsAuthValid(true);
-  //   } catch (err) {
-  //     setAuthError("네트워크 오류가 발생했습니다.");
-  //     setIsAuthValid(false);
-  //     console.error(err);
-  //   }
-  // };
-
-  // MOCK - 인증번호 검증
-  const handleAuthSubmit = () => {
-    if (!authNumber) {
+  // API - 이메일 인증코드 확인
+  const handleAuthSubmit = async () => {
+    if (authNumber == "") {
       setAuthError("인증번호를 입력해주세요.");
       return;
     }
 
-    if (authNumber && authNumber === mockAuthCode) {
+    try {
+      const response = await fetch("/api/signup/verify-code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          code: authNumber,
+        }),
+      });
+
+      if (!response.ok) {
+        setAuthError("인증번호가 일치하지 않습니다.");
+        setIsAuthValid(false);
+        return;
+      }
+
       setAuthError("");
       setIsAuthValid(true);
-      // alert("인증이 완료되었습니다.");
-    } else {
-      setAuthError("인증번호가 일치하지 않습니다.");
+    } catch (err) {
+      setAuthError("네트워크 오류가 발생했습니다.");
       setIsAuthValid(false);
+      console.error(err);
     }
   };
 
@@ -241,70 +208,50 @@ const JoinEmailPage = () => {
   };
 
   // API - 제출
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   console.log("name:", name, "isNameValid:", isNameValid, "email:", email, "isEmailValid:", isEmailValid);
-  //   console.log("isAuthValid:", isAuthValid);
-  //   console.log("password:", password, "isPasswordValid:", isPasswordValid);
-  //   console.log("confirmPassword:", confirmPassword, "isConfirmPasswordValid:", isConfirmPasswordValid);
-
-  //   // if (!isNameValid || !isEmailValid || !isAuthValid || !isPasswordValid || !isConfirmPasswordValid) {
-  //   //   alert("모든 필드를 올바르게 입력해주세요.");
-  //   //   return;
-  //   // }
-
-  //   // 서버에 전송
-  //   try {
-  //     const response = await fetch("/api/signup/users", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: {
-  //         email,
-  //         password,
-  //         username: name,
-  //       },
-  //     });
-
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       console.error("Error: ", errorData.message);
-  //       alert("회원가입에 실패했습니다.");
-  //       navigate("/join/email"); // 페이지 refresh??
-  //       return;
-  //     }
-
-  //     const data = await response.json();
-  //     console.log("Success:", data);
-
-  //     alert("회원가입이 성공적으로 완료되었습니다!\n로그인 페이지로 이동합니다.");
-  //     navigate("/login");
-  //   } catch (err) {
-  //     console.error("네트워크 또는 서버 오류: ", err);
-  //     alert("서버 요청 중 오류가 발생했습니다. 다시 시도해주세요.");
-  //     // 페이지 refresh??
-  //   }
-  // };
-
-  // MOCK - 제출
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log("회원가입정보");
     console.log("name:", name, "isNameValid:", isNameValid, "email:", email, "isEmailValid:", isEmailValid);
     console.log("isAuthValid:", isAuthValid);
     console.log("password:", password, "isPasswordValid:", isPasswordValid);
     console.log("confirmPassword:", confirmPassword, "isConfirmPasswordValid:", isConfirmPasswordValid);
 
-    // 서버에 전송
+    // if (!isNameValid || !isEmailValid || !isAuthValid || !isPasswordValid || !isConfirmPasswordValid) {
+    //   alert("모든 필드를 올바르게 입력해주세요.");
+    //   return;
+    // }
+
+    // API - 회원가입 후 사용자 DB 등록
     try {
+      const response = await fetch("/api/signup/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: {
+          email,
+          password,
+          name,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error: ", errorData.message);
+        alert("회원가입에 실패했습니다.");
+        navigate("/join/email");
+        return;
+      }
+
+      const data = await response.json();
+      console.log("Success:", data);
+
       alert("회원가입이 성공적으로 완료되었습니다!\n로그인 페이지로 이동합니다.");
       navigate("/login");
     } catch (err) {
       console.error("네트워크 또는 서버 오류: ", err);
       alert("서버 요청 중 오류가 발생했습니다. 다시 시도해주세요.");
-      // 페이지 refresh??
     }
   };
 

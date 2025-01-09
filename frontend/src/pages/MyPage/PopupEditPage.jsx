@@ -227,6 +227,7 @@ const PopupEditPage = () => {
       console.log(`${key}: ${value}`);
     }
     try {
+      // API - 팝업스토어 상세 정보 조회
       const response = await fetch(`/api/stores/${popupId}`, {
         method: "POST",
         body: formDataToSend,
