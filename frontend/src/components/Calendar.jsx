@@ -17,13 +17,13 @@ async function fetchPopup() {
     // const { results } = await response.json();
     // 팝업 id, 이름, 기간
     const data = await response.json();
-    console.log("달력: ", data);
+    console.log("달력: ", data.results);
 
     return data.results.map((popup) => ({
       id: popup.id,
       title: popup.title,
-      start: popup.startDate,
-      end: popup.endDate,
+      start: popup.start,
+      end: popup.end,
     }));
   } catch (err) {
     console.error("", err);
