@@ -3,53 +3,54 @@ const fetch = require('node-fetch'); // fetch가 node 환경에서 사용될 수
 const router = express.Router();
 
 router.get('/getLatLng/:location', async (req, res) => {
-    const query = req.params.location.trim();
-    
-    // 입력값 검증
-    if (!query) {
-        return res.status(400).json({ error: "Location query is required" });
-    }
-
+    const query = req.params.location;
+    console.log("query: ", query);
     const KAKAO_REST_API_KEY = process.env.KAKAO_REST_API_KEY;
-    if (!KAKAO_REST_API_KEY) {
-        return res.status(500).json({ error: "API key is missing" });
-    }
-
     const apiUrl = `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(query)}`;
 
+    // 인증 오류 -> 허용 서버 IP 주소에 localhost를 넣음.
+    // 카카오 API는 도메인 주소가 아닌 공인 IP 주소를 기준으로 인증
+    // 핫스팟(curl -4 ifconfig.me) -> 핫스팟에서 제공되는 공인 IP는 특정 시간 동안 당신의 장치에 할당된 공용 IP
+    //  이 IP 주소는 고정되지 않고 동적이기 때문에 시간이 지나면 변경될 수 있음.
+    // 클라우드 서버의 공인 IP 주소 넣기.
     try {
         const response = await fetch(apiUrl, {
-            method: "GET",
-            headers: {
-                Authorization: `KakaoAK ${KAKAO_REST_API_KEY}`,
-            },
+        method: "GET",
+        headers: {
+            Authorization: `KakaoAK ${KAKAO_REST_API_KEY}`,
+        },
         });
 
-        // 응답이 실패한 경우에 대한 처리를 추가
         if (!response.ok) {
-            const errorMessage = `Failed to fetch Kakao Map data: ${response.statusText}`;
-            console.error(errorMessage);
-            return res.status(response.status).json({ error: errorMessage });
+            throw new Error(`Failed to fetch Kakao Map data: ${response.statusText}`);
         }
 
+        console.log("Kakao api response: ", response.status);
         const data = await response.json();
-        
-        // API 응답에서 데이터가 존재하는지 확인
-        if (data.documents.length === 0) {
-            return res.status(404).json({ error: "Location not found" });
-        }
+        console.log("Kakao api response data: ", data);
 
+        if (data.documents.length === 0) {
+            res.status(404).send("Location not found");
+        }
+        
         const coordinates = {
             x: data.documents[0].x,
             y: data.documents[0].y,
         };
 
-        // 정상적으로 좌표를 반환
-        return res.json(coordinates);
+        // console.log("data: ", data.documents);
+        // console.log("coordinates: ", coordinates);
 
+        if (data.documents.length === 0) {
+            res.status(404).send("Location not found");
+        } else {
+            res.json(coordinates); // 필요한 데이터만 전달
+        }
+
+        // res.send(data);
     } catch (err) {
-        console.error("데이터 로드 실패: ", err.message);
-        return res.status(500).json({ error: "Server Error: " + err.message });
+        console.error("데이터 로드 실패 : ", err.message);
+        res.status(500).send("Server Error");
     }
 });
 
