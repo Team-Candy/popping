@@ -4,7 +4,7 @@ import useAuth from "../../context/useAuth";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { auth, login } = useAuth(); // login 함수 가져옴
+  const { auth, login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,61 +26,41 @@ const LoginPage = () => {
     }
   }, []);
 
-  // API
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (email == "" || password == "") {
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await fetch("/api/auth/login", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         email,
-  //         password,
-  //       }),
-  //     });
-
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       alert(errorData.error || "로그인 실패");
-  //       return;
-  //     }
-
-  //     const data = await response.json();
-
-  //     alert("로그인에 성공했습니다."); // 로그인 성공 메시지
-
-  //     // 로그인 성공 후 JWT(토큰)를 세션 스토리지에 저장
-  //     login(data.username, data.token, data.userId);
-
-  //     navigate("/");
-  //   } catch (err) {
-  //     console.error("로그인 요청 중 오류 발생:", err.message);
-  //     alert("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
-  //   }
-  // };
-
-  // MOCK
+  // API - 로그인
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // 비어있으면 로그인 시도 X
     if (email == "" || password == "") {
       return;
     }
 
     try {
-      // 로그인 후 상태 갱신 (AuthContext의 login 호출)
-      const mockUsername = "홍길동";
-      const mockUserId = "u_1234";
-      login(mockUsername, "mock-token", mockUserId);
+      // const response = await fetch("/api/auth/login", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     email,
+      //     password,
+      //   }),
+      // });
 
-      alert("로그인에 성공했습니다.");
+      // if (!response.ok) {
+      //   const errorData = await response.json();
+      //   throw new Error(errorData.error);
+      // }
+
+      // const data = await response.json();
+
+      // (수정) MOCK
+      const data = { message: "로그인 성공", token: "token1234", user: { u_id: "user.u_id", name: "user.name", email: "user.email" } };
+
+      alert("로그인에 성공했습니다."); // 로그인 성공 메시지
+
+      // 로그인 성공 후 JWT(토큰)를 세션 스토리지에 저장
+      login(data.user.name, data.token, data.user.u_id);
 
       navigate("/");
     } catch (err) {
