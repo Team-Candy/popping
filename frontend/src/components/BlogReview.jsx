@@ -14,7 +14,6 @@ const BlogReview = ({ name }) => {
 
       const data = await response.json();
 
-      // 임시 데이터
       // const data = {
       //   result: [
       //     {
@@ -32,8 +31,6 @@ const BlogReview = ({ name }) => {
       //   ],
       // };
 
-      // console.log(data);
-
       if (data.blogs && Array.isArray(data.blogs)) {
         // {”result” : [{”title”: “(블로그 글 제목)”, “link”: “(블로그 포스트의 URL)”, “description”:”(블로그 포스트 내용 요약 정보)”, “postdate”:”(블로그 포스트 작성된 날짜)” }]}
         setBlogs(data.blogs);
@@ -41,7 +38,7 @@ const BlogReview = ({ name }) => {
         setBlogs([]); // result가 없거나, []이 아닐 경우
       }
     } catch (err) {
-      console.err("Error fetching blogs:", err.message);
+      console.error("Error fetching blogs:", err.message);
       setBlogs([]);
     }
   };
