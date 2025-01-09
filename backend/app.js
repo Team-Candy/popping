@@ -9,8 +9,8 @@ const emailVerificationRoutes = require("./routes/emailVerification");
 const searchRoutes = require("./routes/search");
 const mainRoutes = require("./routes/main");
 const categoryRoutes = require("./routes/category");
-const blogRoutes = require("./routes/blogs"); 
-const calenderRoutes = require("./routes/calender"); 
+const blogRoutes = require("./routes/blogs");
+const calenderRoutes = require("./routes/calender");
 const storesRoutes = require("./routes/stores");
 const mapRoutes = require("./routes/map");
 
@@ -20,14 +20,16 @@ const PORT = process.env.PORT || 3000;
 // 미들웨어 설정
 app.use(morgan("dev"));
 app.use(express.json());
-app.use(cors({
-    origin: "http://localhost:5173", // React 앱의 주소
-})); // CORS를 설정하여 특정 도메
+// app.use(cors({
+//     origin: "http://localhost:5173", // React 앱의 주소
+// })); // CORS를 설정하여 특정 도메
+
+app.use(cors());
 
 app.use((req, res, next) => {
-    console.log("Request Origin: ", req.get("Origin"));
-    next();
-  }); // Origin 헤더를 확인해서 요청이 어디서 왔는지 알 수 있음.
+  console.log("Request Origin: ", req.get("Origin"));
+  next();
+}); // Origin 헤더를 확인해서 요청이 어디서 왔는지 알 수 있음.
 // 정적 파일 제공
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -39,7 +41,7 @@ app.use("/api/search", searchRoutes);
 app.use("/api/main", mainRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/blogs", blogRoutes);
-app.use("/api/calender", calenderRoutes);
+app.use("/api/calendar", calenderRoutes);
 app.use("/api/stores", storesRoutes);
 app.use("/api/map", mapRoutes);
 

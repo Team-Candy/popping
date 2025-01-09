@@ -480,9 +480,7 @@ const PopupDetailPage = () => {
       {/* 버튼, 탭 */}
       <div>
         <button onClick={() => setActiveTab("description")}>상세 설명</button>
-        <button style={{ color: "red" }} onClick={() => setActiveTab("reviews")}>
-          실시간 후기
-        </button>
+        <button onClick={() => setActiveTab("reviews")}>실시간 후기</button>
       </div>
 
       {/* 탭 컨텐츠 */}
