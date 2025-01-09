@@ -8,7 +8,6 @@ async function fetchLatLng(location) {
       throw new Error("Failed to fetch LatLng data");
     }
     const data = response.json();
-    console.log("fetch data: ", data);
     return data;
   } catch (err) {
     console.error("Error fetching data: ", err.message);
@@ -110,7 +109,6 @@ export default Map;
 //       throw new Error("Failed to fetch LatLng data");
 //     }
 //     const data = response.json();
-//     console.log("fetch data: ", data);
 //     return data;
 //   } catch (err) {
 //     console.error("Error fetching data: ", err.message);

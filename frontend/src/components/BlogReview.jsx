@@ -13,7 +13,6 @@ const BlogReview = ({ name }) => {
       }
 
       const data = await response.json();
-      console.log("data: ", data);
 
       // const data = {
       //   result: [

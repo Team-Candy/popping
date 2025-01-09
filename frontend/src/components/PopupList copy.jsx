@@ -384,8 +384,8 @@ const PopupList = ({ category }) => {
     setError(null);
 
     try {
-      // API
-      const response = await fetch(`/api/main/categories/${category}`);
+      // API - 메인 페이지 - 카테고리별 팝업 스토어 그리드 정보
+      const response = await fetch(`http://localhost:3000/api/categories/${category}`);
       if (!response.ok) {
         throw new Error("Failed to fetch categories");
       }

@@ -79,45 +79,58 @@ const router = express.Router();
 //     });
 // });
 
-// 카테고리별 팝업스토어 정보 
+// 카테고리별 팝업스토어 정보
 router.get("/:categoryName", async (req, res) => {
-    const { categoryName } = req.params;
+  const { categoryName } = req.params;
 
-    try {
-        const [rows] = await db.query(
-            `SELECT s.s_id AS StoreId, s.owner AS Owner, s.s_name AS StoreName, 
-                    s.contact AS Contact, s.s_date AS StartDate, s.e_date AS EndDate, 
-                    s.business_hours AS BusinessHours, c.name AS CategoryName, 
-                    JSON_ARRAYAGG(si.image_url) AS Images
-             FROM Store s
-             JOIN Category c ON s.s_id = c.s_id
-             LEFT JOIN Store_Image si ON s.s_id = si.s_id
-             WHERE LOWER(c.name) = LOWER(?)
-             GROUP BY s.s_id`,
-            [categoryName]
-        );
+  console.log(categoryName);
 
-        if (rows.length === 0) {
-            return res.status(404).json({ message: `No stores found for category "${categoryName}"` });
-        }
+  try {
+    let query = `
+            SELECT 
+                s.s_id AS StoreId,
+                s.owner AS Owner,
+                s.s_name AS StoreName,
+                s.contact AS Contact,
+                s.s_date AS StartDate,
+                s.e_date AS EndDate,
+                s.business_hours AS BusinessHours,
+                c.name AS CategoryName,
+                JSON_ARRAYAGG(si.image_url) AS Images
+            FROM Store s
+            JOIN Category c ON s.s_id = c.s_id
+            LEFT JOIN Store_Image si ON s.s_id = si.s_id
+        `;
 
-        const stores = rows.map(row => ({
-            StoreId: row.StoreId,
-            Owner: row.Owner,
-            StoreName: row.StoreName,
-            Contact: row.Contact,
-            StartDate: row.StartDate,
-            EndDate: row.EndDate,
-            BusinessHours: row.BusinessHours,
-            CategoryName: row.CategoryName,
-            Images: JSON.parse(row.Images) || [],
-        }));
-
-        res.json({ stores });
-    } catch (error) {
-        console.error("Database query error:", error);
-        res.status(500).json({ message: "Internal Server Error" });
+    if (categoryName.toLowerCase() !== "whole") {
+      query += ` WHERE LOWER(c.name) = LOWER(?)`;
     }
+
+    query += ` GROUP BY s.s_id, c.name;`;
+
+    const [rows] = await db.promise().query(query, categoryName.toLowerCase() !== "whole" ? [categoryName] : []);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: `No stores found for category "${categoryName}"` });
+    }
+
+    const categories = rows.map((row) => ({
+      id: row.StoreId,
+      owner: row.Owner,
+      name: row.StoreName,
+      contact: row.Contact,
+      startDate: row.StartDate,
+      endDate: row.EndDate,
+      business_hours: row.BusinessHours,
+      type: row.CategoryName,
+      images: row.Images || [],
+    }));
+
+    res.json({ categories });
+  } catch (error) {
+    console.error("Database query error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
 module.exports = router;
