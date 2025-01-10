@@ -224,27 +224,26 @@ const SearchResult = () => {
       return;
     }
 
-    // (수정) API
-    // try {
-    //   const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/likes`);
-    //   if (!response.ok) {
-    //     throw new Error("Failed to fetch liked popups");
-    //   }
+    const fetchLikesData = async () => {
+      try {
+        // API - 유저가 좋아요 누른 게시글 조회
+        // (수정) (최적화) 매번 요청하지 않고 이걸 context 로 모든 페이지에서 볼 수 있도록?
+        const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/likes`);
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error("서버 오류 발생: ", data.error);
+        }
 
-    //   const data = await response.json();
-    //   const likedIds = data.likes.map((store) => store.s_id); // 좋아요 상태 아이디 목록
-    //   setLikedPopups(likedIds); // 좋아요 상태 업데이트
-    // } catch (err) {
-    //   console.error("Error fetching liked popups:", err);
-    // }
+        const likes = data.likes.map((store) => store.s_id);
 
-    // (수정) MOCK
-    const data = {
-      likes: [{ s_id: "100" }, { s_id: "200" }, { s_id: "1" }, { s_id: "6" }, { s_id: "10" }, { s_id: "11" }],
+        setLikedPopups(likes);
+      } catch (err) {
+        console.log("서버 에러 발생: ", err);
+        console.error("Error fetching likes:", err);
+      }
     };
-    const likes = data.likes.map((store) => parseInt(store.s_id));
-    setLikedPopups(likes);
-    console.log("likes: ", likes);
+
+    fetchLikesData();
   };
 
   useEffect(() => {

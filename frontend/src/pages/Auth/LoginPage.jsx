@@ -36,26 +36,27 @@ const LoginPage = () => {
     }
 
     try {
-      // const response = await fetch("/api/auth/login", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     email,
-      //     password,
-      //   }),
-      // });
+      const response = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.error);
-      // }
+      if (!response.ok) {
+        const data = await response.json();
+        alert(data.error); // (수정)
+        throw new Error(data.error);
+      }
 
-      // const data = await response.json();
+      const data = await response.json();
 
       // (수정) MOCK
-      const data = { message: "로그인 성공", token: "token1234", user: { u_id: "user.u_id", name: "user.name", email: "user.email" } };
+      // const data = { message: "로그인 성공", token: "token1234", user: { u_id: "user.u_id", name: "user.name", email: "user.email" } };
 
       alert("로그인에 성공했습니다."); // 로그인 성공 메시지
 

@@ -66,22 +66,29 @@ const PopupList = ({ category }) => {
       return;
     }
 
-    // fetch(`/api/users/${sessionStorage.getItem("userId")}/likes`)
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     const likes = data.likes.map((store) => store.s_id);
-    //     setLikedPopups(likes);
-    //   })
-    //   .catch((err) => console.error("Error fetching likes:", err));
+    const fetchLikesData = async () => {
+      try {
+        // API - 유저가 좋아요 누른 게시글 조회
+        // (수정) (최적화) 매번 요청하지 않고 이걸 context 로 모든 페이지에서 볼 수 있도록?
+        const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/likes`);
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error("서버 오류 발생: ", data.error);
+        }
 
-    // (수정) MOCK
-    const data = {
-      likes: [{ s_id: "18" }, { s_id: "19" }, { s_id: "200" }, { s_id: "6" }, { s_id: "10" }, { s_id: "11" }],
+        const likes = data.likes.map((store) => store.s_id);
+
+        setLikedPopups(likes);
+      } catch (err) {
+        console.log("서버 에러 발생: ", err);
+        console.error("Error fetching likes:", err);
+      }
     };
-    const likes = data.likes.map((store) => parseInt(store.s_id));
-    setLikedPopups(likes);
+
+    fetchLikesData();
   }, [auth.isLoggedIn]);
 
+  // 좋아요 추가
   const handleLikeToggle = async (popupId) => {
     if (!auth.isLoggedIn) {
       navigate("/login");
@@ -99,28 +106,28 @@ const PopupList = ({ category }) => {
     );
 
     // API - 서버에 요청
-    // try {
-    //   const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
-    //     method: isLiked ? "DELETE" : "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   });
+    try {
+      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
+        method: isLiked ? "DELETE" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    //   if (!response.ok) {
-    //     throw new Error(`Failed to ${isLiked ? "unlike" : "like"} popup`);
-    //   }
-    // } catch (error) {
-    //   console.error(error.message);
+      if (!response.ok) {
+        throw new Error(`Failed to ${isLiked ? "unlike" : "like"} popup`);
+      }
+    } catch (error) {
+      console.error(error.message);
 
-    //   // 요청 실패 시 상태 복구
-    //   setLikedPopups(
-    //     (prevLiked) =>
-    //       isLiked
-    //         ? [...prevLiked, popupId] // 좋아요 복구
-    //         : prevLiked.filter((id) => id !== popupId) // 제거 복구
-    //   );
-    // }
+      // 요청 실패 시 상태 복구
+      setLikedPopups(
+        (prevLiked) =>
+          isLiked
+            ? [...prevLiked, popupId] // 좋아요 복구
+            : prevLiked.filter((id) => id !== popupId) // 제거 복구
+      );
+    }
   };
 
   const heartStyle = {
