@@ -174,13 +174,15 @@ const ProfilePage = () => {
     }
 
     try {
-      const response = await fetch("/api/signup/email-code", {
+      const response = await fetch("http://localhost:3000/api/signup/email-code", {
         method: "POST",
         headers: {
-          "Content-Types": "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email }),
       });
+
+      console.log("FE email response: ", response);
 
       if (!response.ok) {
         const data = await response.json();
@@ -215,7 +217,7 @@ const ProfilePage = () => {
     }
 
     try {
-      const response = await fetch("/api/signup/verify-code", {
+      const response = await fetch("http://localhost:3000/api/signup/verify-code", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

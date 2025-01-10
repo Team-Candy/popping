@@ -228,7 +228,7 @@ const PopupEditPage = () => {
     }
     try {
       // API - 팝업스토어 상세 정보 조회
-      const response = await fetch(`/api/stores/${popupId}`, {
+      const response = await fetch(`http://localhost:3000/api/stores/${popupId}`, {
         method: "POST",
         body: formDataToSend,
       });
@@ -282,12 +282,12 @@ const PopupEditPage = () => {
     }
 
     try {
-      const response = await fetch(`/api/store/delete`, {
-        method: "POST",
+      // API - 유저가 작성한 게시글 삭제
+      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ popupId }),
       });
 
       if (!response.ok) {

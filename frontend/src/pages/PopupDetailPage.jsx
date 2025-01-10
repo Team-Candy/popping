@@ -292,7 +292,7 @@ const PopupDetailPage = () => {
   const fetchPopupDetail = async () => {
     // API - 팝업스토어 상세 정보 조회
     try {
-      // const response = await fetch(`/api/stores/${popupId}`);
+      // const response = await fetch(`http://localhost:3000/api/stores/${popupId}`);
       // if (!response.ok) {
       //   throw new Error("Failed to fetch PopupDetail");
       // }
