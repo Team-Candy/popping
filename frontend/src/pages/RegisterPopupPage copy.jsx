@@ -98,10 +98,10 @@ const RegisterPopupPage = () => {
     // API - 서버로 데이터 보내기
     if (isDescriptionValid && selectedCategory && images.length > 0) {
       const formData = new FormData();
-      formData.append("s_name", name);
+      formData.append("name", name);
       formData.append("location", location);
-      formData.append("s_date", startDate);
-      formData.append("e_date", endDate);
+      formData.append("startDate", startDate);
+      formData.append("endDate", endDate);
       formData.append("business_hours", startTime + "-" + endTime);
       formData.append("category", selectedCategory);
       formData.append("owner", owner);
@@ -114,11 +114,6 @@ const RegisterPopupPage = () => {
         console.log(`image[${index}]`, image);
         // formData.append(`image[${index}]`, image);
       });
-
-      // const files = document.querySelector('input[type="file"]').files;
-      // for (let i = 0; i < files.length; i++) {
-      //   formData.append("image[]", files[i]);
-      // }
 
       // 디버깅
       for (let [key, value] of formData.entries()) {

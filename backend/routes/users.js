@@ -165,7 +165,10 @@ router.get("/:u_id/profile", authenticateJWT, async (req, res) => {
 });
 
 // 유저가 팝업스토어어 등록하는 기능
-router.post("/:u_id/stores", upload.array("images", 10), async (req, res) => {
+router.post("/:u_id/stores", upload.array("image[]", 10), async (req, res) => {
+  // console.log("Files: ", req.files); // 업로드된 파일 확인
+  // console.log("Body: ", req.body); // 폼 데이터 확인
+
   const { u_id } = req.params;
   const { s_name, owner, contact, location, s_date, e_date, business_hours, description, category } = req.body;
 
@@ -176,6 +179,7 @@ router.post("/:u_id/stores", upload.array("images", 10), async (req, res) => {
 
   // 이미지 검증
   const imageFiles = req.files;
+  console.log("imageFiles: ", imageFiles);
   if (!imageFiles || imageFiles.length === 0) {
     return res.status(400).json({ error: "At least one image is required" });
   }
@@ -243,11 +247,12 @@ router.get("/:u_id/stores", async (req, res) => {
         LEFT JOIN store_image ON store.s_id = store_image.s_id
         LEFT JOIN category ON store.s_id = category.s_id
         WHERE store.u_id = ?
-        GROUP BY store.s_id
+        GROUP BY store.s_id, category.name
     `;
 
   try {
     const [results] = await db.promise().query(query, [u_id]);
+    console.log("results: ", results);
 
     // 결과가 없을 때
     if (results.length === 0) {
@@ -311,7 +316,7 @@ router.post("/:u_id/stores/:s_id/check-popup-permission", async (req, res) => {
 });
 
 // 유저가 작성한 팝업스토어어 수정
-router.put("/:u_id/stores/:s_id", upload.array("images", 10), async (req, res) => {
+router.put("/:u_id/stores/:s_id", async (req, res) => {
   const { u_id, s_id } = req.params;
   const { s_name, owner, contact, location, s_date, e_date, business_hours, description, category } = req.body;
 
