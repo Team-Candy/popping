@@ -314,6 +314,7 @@ const PopupList = ({ category }) => {
 
       //API
       const data = await response.json();
+<<<<<<< HEAD
       console.log("카테고리 데이터: ", data);
       //  data = {
       //     categories: [
@@ -323,6 +324,8 @@ const PopupList = ({ category }) => {
       //       { id: 1, type: "culture", name: "카카오프렌즈 춘식이 X 해리포터 팝업스토어", imageUrl: "", location: "서울특별시 서초구 강남대로 429 카카오프렌즈 강남플래그십 스토어" },
       //     ],
       //   };
+=======
+>>>>>>> adb110dc91e977765759ad6ea80b7ffaf15313f2
 
       if (data.categories) {
         setPopups(data.categories);

@@ -9,8 +9,8 @@ const emailVerificationRoutes = require("./routes/emailVerification");
 const searchRoutes = require("./routes/search");
 const mainRoutes = require("./routes/main");
 const categoryRoutes = require("./routes/category");
-const blogRoutes = require("./routes/blogs"); 
-const calenderRoutes = require("./routes/calender"); 
+const blogRoutes = require("./routes/blogs");
+const calenderRoutes = require("./routes/calender");
 const storesRoutes = require("./routes/stores");
 const mapRoutes = require("./routes/map");
 
@@ -27,9 +27,9 @@ app.use(express.json());
 app.use(cors());
 
 app.use((req, res, next) => {
-    console.log("Request Origin: ", req.get("Origin"));
-    next();
-  }); // Origin 헤더를 확인해서 요청이 어디서 왔는지 알 수 있음.
+  console.log("Request Origin: ", req.get("Origin"));
+  next();
+}); // Origin 헤더를 확인해서 요청이 어디서 왔는지 알 수 있음.
 // 정적 파일 제공
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
