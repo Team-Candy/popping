@@ -320,9 +320,101 @@ router.post("/:u_id/stores/:s_id/check-popup-permission", async (req, res) => {
 });
 
 // 유저가 작성한 팝업스토어어 수정
+// router.put("/:u_id/stores/:s_id", upload.array("image[]", 10), async (req, res) => {
+//   const { u_id, s_id } = req.params;
+//   const { s_name, owner, contact, location, s_date, e_date, business_hours, description, category, deletedImages } = req.body;
+
+//   // 업로드된 파일 정보
+//   const files = req.files;
+//   console.log("files: ", files);
+//   const newImageUrls = files.map((file) => `/uploads/${file.filename}`); // 새로 업로드된 이미지 URL 생성
+
+//   // 필수 필드 확인
+//   if (!s_name || !owner || !contact || !location || !s_date || !e_date || !business_hours || !description || !category) {
+//     return res.status(400).json({ error: "All fields are required" });
+//   }
+
+//   try {
+//     // 시작 트랜잭션
+//     await db.promise().beginTransaction();
+
+//     const storeQuery = `
+//             UPDATE store
+//             SET s_name = ?, owner = ?, contact = ?, location = ?, s_date = ?, e_date = ?, business_hours = ?, description = ?
+//             WHERE s_id = ? AND u_id = ?
+//         `;
+//     const storeValues = [s_name, owner, contact, location, s_date, e_date, business_hours, description, s_id, u_id];
+
+//     // Store 테이블에 데이터 업데이트
+//     const [storeResult] = await db.promise().query(storeQuery, storeValues);
+
+//     if (storeResult.affectedRows === 0) {
+//       await db.promise().rollback();
+//       return res.status(404).json({ error: "Store not found" });
+//     }
+
+//     // 1. 기존 이미지 URL 가져오기
+//     const getExistingImagesQuery = `SELECT image_url FROM store_image WHERE s_id = ?`;
+//     const [existingImages] = await db.promise().query(getExistingImagesQuery, [s_id]);
+
+//     const existingImageUrls = existingImages.map((image) => image.image_url);
+
+//     // 2. 삭제 대상 이미지 처리
+//     const deletedImageUrls = JSON.parse(deletedImages || "[]"); // 삭제하려는 이미지 URL 목록 (JSON 문자열로 전달된다고 가정)
+//     if (deletedImageUrls.length > 0) {
+//       const deleteImageQuery = `DELETE FROM store_image WHERE s_id = ? AND image_url IN (?)`;
+//       await db.promise().query(deleteImageQuery, [s_id, deletedImageUrls]);
+//     }
+
+//     // 3. 새로 추가된 이미지 처리
+//     const remainingImageUrls = existingImageUrls.filter((url) => !deletedImageUrls.includes(url));
+//     const finalImageUrls = [...remainingImageUrls, ...newImageUrls];
+
+//     if (newImageUrls.length > 0) {
+//       const imageQuery = `
+//                 INSERT INTO store_image (s_id, image_url) VALUES ?
+//             `;
+//       const imageValues = newImageUrls.map((url) => [s_id, url]);
+
+//       await db.promise().query(imageQuery, [imageValues]);
+//     }
+
+//     // 4. 기존 카테고리 삭제 및 새로운 카테고리 추가
+//     const deleteCategoryQuery = `DELETE FROM category WHERE s_id = ?`;
+//     await db.promise().query(deleteCategoryQuery, [s_id]);
+
+//     const insertCategoryQuery = `INSERT INTO category (s_id, name) VALUES (?, ?)`;
+//     await db.promise().query(insertCategoryQuery, [s_id, category]);
+
+//     // 5. 트랜잭션 커밋
+//     await db.promise().commit();
+
+//     res.status(200).json({
+//       message: "Store, images, and category updated successfully",
+//       store: {
+//         s_id,
+//         s_name,
+//         owner,
+//         contact,
+//         location,
+//         s_date,
+//         e_date,
+//         business_hours,
+//         description,
+//         category,
+//       },
+//       images: finalImageUrls,
+//     });
+//   } catch (err) {
+//     console.error("Error during store update:", err.message);
+//     await db.promise().rollback();
+//     res.status(500).json({ error: "Failed to update store, images, or category" });
+//   }
+// });
+
 router.put("/:u_id/stores/:s_id", upload.array("image[]", 10), async (req, res) => {
   const { u_id, s_id } = req.params;
-  const { s_name, owner, contact, location, s_date, e_date, business_hours, description, category, deletedImages } = req.body;
+  const { s_name, owner, contact, location, s_date, e_date, business_hours, description, category, deleteImages } = req.body;
 
   // 업로드된 파일 정보
   const files = req.files;
@@ -360,7 +452,7 @@ router.put("/:u_id/stores/:s_id", upload.array("image[]", 10), async (req, res) 
     const existingImageUrls = existingImages.map((image) => image.image_url);
 
     // 2. 삭제 대상 이미지 처리
-    const deletedImageUrls = JSON.parse(deletedImages || "[]"); // 삭제하려는 이미지 URL 목록 (JSON 문자열로 전달된다고 가정)
+    const deletedImageUrls = JSON.parse(deleteImages || "[]"); // 삭제하려는 이미지 URL 목록 (JSON 문자열로 전달된다고 가정)
     if (deletedImageUrls.length > 0) {
       const deleteImageQuery = `DELETE FROM store_image WHERE s_id = ? AND image_url IN (?)`;
       await db.promise().query(deleteImageQuery, [s_id, deletedImageUrls]);
