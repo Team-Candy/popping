@@ -285,23 +285,27 @@ router.post("/:u_id/stores/:s_id/check-popup-permission", async (req, res) => {
   const { u_id, s_id } = req.params;
 
   try {
-    // 사용자 인증을 통과한 사용자의 u_id와 요청된 u_id가 일치하는지 확인
-    if (u_id !== req.user.u_id) {
+    // store 테이블에 s_id 찾고 그 컬럼에 해당하는 u_id가 req.params.u_id와 일치하면 T, 다르면 F.
+    const query = `SELECT u_id FROM store WHERE s_id = ?`;
+    const [results] = await db.promise().query(query, [s_id]);
+
+    // 결과가 없을 때
+    if (results.length === 0) {
+      return res.status(404).json({
+        hasPermission: false,
+        message: "Store not found",
+      });
+    }
+
+    // 결과가 있는데 사용자 인증을 통과한 사용자의 u_id와 요청된 u_id가 일치하지 않을 때
+    if (results[0].u_id !== parseInt(u_id)) {
       return res.status(403).json({
         hasPermission: false,
         message: "You are not authorized to access this user's data",
       });
     }
 
-    // u_id와 s_id가 숫자 형식인지 확인
-    if (isNaN(u_id) || isNaN(s_id)) {
-      return res.status(400).json({
-        hasPermission: false,
-        message: "Invalid user ID or store ID",
-      });
-    }
-
-    // 모든 조건을 만족하면 권한이 있다는 응답 반환
+    // 결과가 있는데 사용자 인증을 통과한 사용자의 u_id와 요청된 u_id가 일치할 때
     return res.status(200).json({
       hasPermission: true,
       message: "You have permission to edit this popup.",

@@ -68,31 +68,33 @@ const PopupEditPage = () => {
       //     }
 
       // (수정) API
-      //   const response = await fetch(`/api/check-popup-permission`, {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({ popupId, userId }),
-      //   });
+      const userId = sessionStorage.getItem("userId");
+      const response = await fetch(`http://localhost:3000/api/users/${userId}/stores/${popupId}/check-popup-permission`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-      //   const data = await response.json();
-      //   if (response.ok) {
-      //     // 권한 있음
-      //     setHasPermission(data.hasPermission);
-      //   } else {
-      //     // 권한 없음
-      //     setHasPermission(false);
-      //     alert("해당 팝업에 대한 수정 권한이 없습니다.");
-      //     navigate("/myPopup");
-      //   }
+      const data = await response.json();
+
+      if (response.ok) {
+        // 권한 있음
+        setHasPermission(data.hasPermission);
+      } else {
+        // 권한 없음
+        setHasPermission(false);
+        console.log("서버 에러: ", data.message);
+        alert("해당 팝업에 대한 수정 권한이 없습니다.");
+        navigate("/myPopup");
+      }
 
       // (수정) MOCK
-      const data = {
-        hasPermission: true,
-        message: "You have permission to edit this popup.",
-      };
-      setHasPermission(data.hasPermission);
+      // const data = {
+      //   hasPermission: true,
+      //   message: "You have permission to edit this popup.",
+      // };
+      // setHasPermission(data.hasPermission);
     } catch (err) {
       console.error("권한 확인 중 오류 발생", err);
       setHasPermission(false);
