@@ -20,8 +20,6 @@ router.get("/", async (req, res) => {
       end: row.endDate.toISOString().split("T")[0],
     }));
 
-    console.log(results);
-
     res.json({ results });
   } catch (error) {
     console.error("Database query failed:", error);

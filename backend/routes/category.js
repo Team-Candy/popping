@@ -83,8 +83,6 @@ const router = express.Router();
 router.get("/:categoryName", async (req, res) => {
   const { categoryName } = req.params;
 
-  console.log(categoryName);
-
   try {
     let query = `
           SELECT 

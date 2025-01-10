@@ -436,11 +436,9 @@ router.get("/:u_id/stores/:s_id/likes", async (req, res) => {
   }
 
   const query = `SELECT COUNT(*) AS totalLikes FROM likes WHERE u_id = ? AND s_id = ?`;
-  console.log("여기여기");
 
   try {
     const [results] = await db.promise().query(query, [u_id, s_id]);
-    console.log("여기여기2");
 
     if (results[0].totalLikes > 0) {
       return res.status(200).json({ liked: true });

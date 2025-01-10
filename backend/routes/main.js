@@ -43,8 +43,6 @@ router.get("/banners", async (req, res) => {
       Images: row.Images || [], // JSON 배열 파싱
     }));
 
-    console.log(banners);
-
     res.json({ success: true, banners });
   } catch (error) {
     console.error("Database query error:", error);
