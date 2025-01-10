@@ -7,12 +7,11 @@ const db = mysql.createConnection({
     database: process.env.DB_NAME
 });
 
-// DB 연결 테스트
 db.connect((err) => {
     if (err) {
-        console.error("DB connection failed: ", err);
+        console.error("DB 연결 실패: ", err);
     } else {
-        console.log("DB connection successful");
+        console.log("DB 연결 성공");
     }
 });
 

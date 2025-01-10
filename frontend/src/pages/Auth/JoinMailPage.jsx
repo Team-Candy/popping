@@ -103,17 +103,17 @@ const JoinEmailPage = () => {
     }
 
     try {
-      const response = await fetch("/api/signup/email-code", {
+      const response = await fetch("http://localhost:3000/api/signup/email-code", {
         method: "POST",
         headers: {
-          "Content-Types": "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email }),
       });
 
       if (!response.ok) {
         const data = await response.json();
-        setEmailError(data.message || "오류가 발생했습니다.");
+        setEmailError(data.error || "오류가 발생했습니다.");
         return;
       }
 
@@ -143,7 +143,10 @@ const JoinEmailPage = () => {
     }
 
     try {
-      const response = await fetch("/api/signup/verify-code", {
+      console.log("email: ", email);
+      console.log("code: ", authNumber);
+
+      const response = await fetch("http://localhost:3000/api/signup/verify-code", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -155,7 +158,9 @@ const JoinEmailPage = () => {
       });
 
       if (!response.ok) {
-        setAuthError("인증번호가 일치하지 않습니다.");
+        const data = await response.json();
+        // setAuthError("인증번호가 일치하지 않습니다.");
+        setAuthError(data.error);
         setIsAuthValid(false);
         return;
       }
@@ -224,28 +229,29 @@ const JoinEmailPage = () => {
 
     // API - 회원가입 후 사용자 DB 등록
     try {
-      const response = await fetch("/api/signup/users", {
+      const response = await fetch("http://localhost:3000/api/signup/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: {
+        body: JSON.stringify({
           email,
           password,
           name,
-        },
+        }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error: ", errorData.message);
+        // const data = await response.json();
+        // console.error("Error: ", data.error);
         alert("회원가입에 실패했습니다.");
+        alert(data.error);
         navigate("/join/email");
         return;
       }
 
       const data = await response.json();
-      console.log("Success:", data);
+      console.log("Success:", data.message);
 
       alert("회원가입이 성공적으로 완료되었습니다!\n로그인 페이지로 이동합니다.");
       navigate("/login");

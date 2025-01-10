@@ -1,5 +1,3 @@
-// Map.jsx
-
 import PropTypes from "prop-types";
 import { useEffect } from "react";
 

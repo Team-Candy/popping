@@ -1,5 +1,3 @@
-//map.js
-
 const express = require('express');
 const fetch = require('node-fetch'); // fetch가 node 환경에서 사용될 수 있도록 node-fetch 모듈을 추가
 const router = express.Router();

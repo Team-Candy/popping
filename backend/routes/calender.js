@@ -1,5 +1,3 @@
-// calendar.js
-
 const express = require("express");
 const db = require("../config/db");
 
@@ -21,8 +19,6 @@ router.get("/", async (req, res) => {
       start: row.startDate.toISOString().split("T")[0],
       end: row.endDate.toISOString().split("T")[0],
     }));
-
-    console.log(results);
 
     res.json({ results });
   } catch (error) {
