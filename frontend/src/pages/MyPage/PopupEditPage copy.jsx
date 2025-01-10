@@ -43,15 +43,6 @@ const PopupEditPage = () => {
     { label: "기타", value: "others" },
   ];
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString); // 입력된 날짜 문자열을 Date 객체로 변환
-    const year = date.getFullYear(); // 연도
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // 월 (0부터 시작하므로 +1을 해줌) 그리고 두 자릿수로 포맷
-    const day = String(date.getDate()).padStart(2, "0"); // 일, 두 자릿수로 포맷
-
-    return `${year}-${month}-${day}`; // "yyyy-MM-dd" 형식으로 반환
-  };
-
   const handleCategoryClick = (category) => {
     setFormData((prev) => ({ ...prev, category: category }));
   };
@@ -136,20 +127,15 @@ const PopupEditPage = () => {
         category: data.store.category,
         owner: data.store.owner,
         location: data.store.location,
-        s_date: formatDate(data.store.s_date),
-        e_date: formatDate(data.store.e_date),
+        s_date: data.store.s_date,
+        e_date: data.store.e_date,
         business_hours: data.store.business_hours,
         description: data.store.description,
         images: data.store.images,
         contact: data.store.contact,
       });
 
-      // console.log(
-      //   "data.store.images.map((i) => `http://localhost:3000${i}`): ",
-      //   data.store.images.map((i) => `http://localhost:3000${i}`)
-      // );
-
-      setImages(data.store.images.map((i) => `http://localhost:3000${i}`));
+      setImages(data.store.images);
 
       setError(null);
     } catch (err) {
@@ -173,17 +159,10 @@ const PopupEditPage = () => {
 
   // 값 변경 시
   const handleChange = (e) => {
-    // if (e.target.name === "s_date" || e.target.name === "e_date") {
-    //   setFormData({
-    //     ...formData,
-    //     [e.target.name]: formatDate(e.target.value) + ` 00:00:00`,
-    //   });
-    // } else {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
-    // }
   };
 
   // 빈칸 확인
@@ -197,25 +176,25 @@ const PopupEditPage = () => {
 
   // 수정된 데이터 서버로 전송
   const handleSave = async () => {
+    // 디버깅
+    console.log("수정된 데이터:", formData);
+    console.log("이미지 데이터:", formData.images);
+
     if (!validateForm()) return;
 
     const formDataToSend = new FormData();
 
     Object.keys(formData).forEach((key) => {
       if (key === "images") {
-        formData.images.forEach((image) => {
-          // 새로 업로드된 파일은 "image[]"로 보냄
+        formData.images.forEach((image, index) => {
+          // 파일은 "images"로 보냄
           if (image instanceof File) {
-            formDataToSend.append("image[]", image);
+            formDataToSend.append("images", image, `image_${index}.jpg`);
           } else {
-            // 기존 URL은 "uploadedImage"로 보냄
-            formDataToSend.append("uploadedImage", image);
+            // URL은 "imageUrls"로 보냄
+            formDataToSend.append("imageUrls", image);
           }
         });
-      } else if (key === "s_date" || key === "e_date") {
-        formDataToSend.append(key, formData[key] + ` 00:00:00`);
-      } else if (key === "business_hours") {
-        formDataToSend.append(key, startTime + "-" + endTime);
       } else {
         // 나머지는 그대로
         formDataToSend.append(key, formData[key]);
@@ -227,7 +206,7 @@ const PopupEditPage = () => {
       console.log(`${key}: ${value}`);
     }
     try {
-      // API - 수정 정보 전달 (저장하기)
+      // API - 수정 정보 전달
       const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
         method: "PUT",
         body: formDataToSend,
@@ -337,6 +316,15 @@ const PopupEditPage = () => {
     setImages(newImageUrls);
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString); // 입력된 날짜 문자열을 Date 객체로 변환
+    const year = date.getFullYear(); // 연도
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // 월 (0부터 시작하므로 +1을 해줌) 그리고 두 자릿수로 포맷
+    const day = String(date.getDate()).padStart(2, "0"); // 일, 두 자릿수로 포맷
+
+    return `${year}-${month}-${day}`; // "yyyy-MM-dd" 형식으로 반환
+  };
+
   return (
     <div className="form-group">
       <button onClick={() => setEditing((prev) => !prev)}>{editing ? "취소" : "수정하기"}</button>
@@ -382,11 +370,11 @@ const PopupEditPage = () => {
           <div>
             <p>운영 일자</p>
             <label>시작일자:</label>
-            <input type="date" name="s_date" value={formData.s_date} onChange={handleChange} />
+            <input type="date" name="s_date" value={formatDate(formData.s_date)} onChange={handleChange} />
             <br />
             <label>종료일자:</label>
 
-            <input type="date" name="e_date" value={formData.e_date} onChange={handleChange} />
+            <input type="date" name="e_date" value={formatDate(formData.e_date)} onChange={handleChange} />
           </div>
 
           <div>
@@ -414,7 +402,7 @@ const PopupEditPage = () => {
             <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
               {images.map((url, index) => (
                 <div key={index} style={{ position: "relative" }}>
-                  <img src={url} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
+                  <img src={`http://localhost:3000${url}`} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
                   <button
                     onClick={() => handleDeleteImage(index)}
                     style={{
