@@ -20,9 +20,11 @@ const PORT = process.env.PORT || 3000;
 // 미들웨어 설정
 app.use(morgan("dev"));
 app.use(express.json());
-app.use(cors({
-    origin: "http://localhost:5173", // React 앱의 주소
-})); // CORS를 설정하여 특정 도메
+// app.use(cors({
+//     origin: "http://localhost:5173", // React 앱의 주소
+// })); // CORS를 설정하여 특정 도메
+
+app.use(cors());
 
 app.use((req, res, next) => {
     console.log("Request Origin: ", req.get("Origin"));
@@ -39,7 +41,7 @@ app.use("/api/search", searchRoutes);
 app.use("/api/main", mainRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/blogs", blogRoutes);
-app.use("/api/calender", calenderRoutes);
+app.use("/api/calendar", calenderRoutes);
 app.use("/api/stores", storesRoutes);
 app.use("/api/map", mapRoutes);
 

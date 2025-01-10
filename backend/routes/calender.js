@@ -6,7 +6,7 @@ const router = express.Router();
 // 달력 데이터 가져오기
 router.get("/", async (req, res) => {
     try {
-        const [rows] = await db.query(
+        const [rows] = await db.promise().query(
             `SELECT s_id AS id, s_name AS title, s_date AS startDate, e_date AS endDate 
              FROM Store
             `
@@ -16,9 +16,11 @@ router.get("/", async (req, res) => {
         const results = rows.map(row => ({
             id: row.id.toString(),
             title: row.title,
-            startDate: row.startDate.toISOString().split("T")[0],
-            endDate: row.endDate.toISOString().split("T")[0],
+            start: row.startDate.toISOString().split("T")[0],
+            end: row.endDate.toISOString().split("T")[0],
         }));
+
+        console.log(results);
 
         res.json({ results });
     } catch (error) {

@@ -7,34 +7,27 @@ import "../styles/calendar.css";
 
 async function fetchPopup() {
   // // API
-  // try {
-  //   // 우선 존재하는 모든 팝업 정보? => ???
-  //   const response = await fetch(`/api/calendar`);
-  //   if (!response.ok) {
-  //     throw new Error(`Failed to fetch calendar data: ${response.statusText}`);
-  //   }
-  //   const { results } = await response.json();
-  //   // 팝업 id, 이름, 기간
+  try {
+    // 우선 존재하는 모든 팝업 정보? => ???
+    const response = await fetch(`http://localhost:3000/api/calendar`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch calendar data: ${response.statusText}`);
+    }
 
-  //   return results.map((popup) => ({
-  //     id: popup.id,
-  //     title: popup.title,
-  //     start: popup.startDate,
-  //     end: popup.endDate,
-  //   }));
-  // } catch (err) {
-  //   console.error("", err);
-  // }
+    // const { results } = await response.json();
+    // 팝업 id, 이름, 기간
+    const data = await response.json();
+    console.log("달력: ", data);
 
-  // 임시 데이터(개발용)
-  const data = {
-    results: [
-      { id: "18", title: "자주엣홈 SS2025 JAJU적인 집", start: "2025-01-01", end: "2025-01-03" },
-      { id: "19", title: "로지텍 팝업스토어", start: "2025-01-07", end: "2025-01-10" },
-    ],
-  };
-
-  return data.results;
+    return data.results.map((popup) => ({
+      id: popup.id,
+      title: popup.title,
+      start: popup.startDate,
+      end: popup.endDate,
+    }));
+  } catch (err) {
+    console.error("", err);
+  }
 }
 
 const Calendar = () => {
