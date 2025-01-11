@@ -25,9 +25,9 @@ router.get("/", (req, res) => {
             s.e_date AS endDate, 
             JSON_ARRAYAGG(si.image_url) AS images,
             c.name AS category
-        FROM Store s
-        LEFT JOIN Store_Image si ON s.s_id = si.s_id
-        LEFT JOIN Category c ON s.s_id = c.s_id
+        FROM store s
+        LEFT JOIN store_image si ON s.s_id = si.s_id
+        LEFT JOIN category c ON s.s_id = c.s_id
         WHERE 1=1
     `;
     const queryParams = [];
@@ -55,7 +55,7 @@ router.get("/", (req, res) => {
         }
 
         // 총 개수 조회 쿼리
-        let countQuery = `SELECT COUNT(DISTINCT s.s_id) AS total FROM Store s WHERE 1=1`;
+        let countQuery = `SELECT COUNT(DISTINCT s.s_id) AS total FROM store s WHERE 1=1`;
         const countParams = [];
 
         if (region) {
