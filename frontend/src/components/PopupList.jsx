@@ -140,6 +140,14 @@ const PopupList = ({ category }) => {
     zIndex: 10, // 이미지 위에 표시
   };
 
+  function urlConvert(url) {
+    if (url.startsWith("/upload")) {
+      return "http://localhost:3000" + url;
+    } else {
+      return url;
+    }
+  }
+
   return (
     <div>
       {error && <p>Error: {error}</p>}
@@ -154,7 +162,7 @@ const PopupList = ({ category }) => {
                 }}
               >
                 <img
-                  src={popup.images[0]}
+                  src={urlConvert(popup.images[0])}
                   alt={popup.name}
                   style={{
                     width: "100%",

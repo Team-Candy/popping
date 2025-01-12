@@ -1,19 +1,8 @@
 import PropTypes from "prop-types";
-// ESLint, react/prop-types 규칙이 활성화,
-
 import Map from "./Map";
+import { formatDate } from "../utils/util";
 
 const Description = ({ detail }) => {
-  function formatDate(date) {
-    const parsedDate = new Date(date);
-
-    const year = parsedDate.getFullYear();
-    const month = String(parsedDate.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-    const day = String(parsedDate.getDate()).padStart(2, "0");
-
-    return `${year}년 ${month}월 ${day}일`;
-  }
-
   return (
     <div>
       <p>

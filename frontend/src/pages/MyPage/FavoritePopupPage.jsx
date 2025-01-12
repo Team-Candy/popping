@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../context/useAuth";
+import { formatDate } from "../../utils/util";
 
 const FavoritePopupPage = () => {
   const { auth } = useAuth();
@@ -26,6 +27,7 @@ const FavoritePopupPage = () => {
         }
 
         setResults(data.likes);
+        // console.log(data.likes);
 
         const likes = data.likes.map((store) => store.s_id);
         setLikedPopups(likes);
@@ -36,130 +38,6 @@ const FavoritePopupPage = () => {
     };
 
     fetchLikesData();
-
-    // (수정) API - 유저가 좋아요 누른 게시글 조회
-    // try {
-    //   const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/likes`);
-    //   const data = await response.json();
-    //   // likes: results.map(store => ({ s_id: store.s_id,
-    //   //   owner: store.owner,
-    //   //   s_name: store.s_name,
-    //   //   contact: store.contact,
-    //   //    location: store.location,
-    //   //   s_date: store.s_date,
-    //   //   e_date: store.e_date,
-    //   //   business_hours: store.business_hours,
-    //   //   description: store.description,
-    //   //    images: JSON.parse(store.images) || [], // JSON 배열로 파싱}))
-
-    //   if (!response.ok) {
-    //     setError("좋아요된 팝업이 존재하지 않습니다.");
-    //     throw new Error("Failed to fetch liked popups", data.error);
-    //   }
-    //   setResults(data.likes); // 결과
-    //   const likedIds = data.likes.map((store) => store.s_id); // 좋아요 상태 아이디 목록
-    //   setLikedPopups(likedIds); // 좋아요 리스트
-    // } catch (err) {
-    //   console.error("Error fetching liked popups:", err);
-    // }
-
-    // (수정) MOCK
-    // const data = {
-    //   likes: [
-    //     {
-    //       s_id: 100,
-    //       name: "오징어게임2 팝업스토어 in 강남",
-    //       location: "서울 서초구 신반포로 176 신세계백화점 강남점 1층 오픈스테이지",
-    //       s_date: "2024.12.20",
-    //       e_date: "2025.01.12",
-    //       images: ["https://i.ibb.co/tPJYqCB/detail2-1.jpg"],
-    //     },
-    //     {
-    //       s_id: 200,
-    //       name: "바나나맛우유 50주년 팝업스토어",
-    //       location: "서울 종로구 삼일대로28길 28 누디트 익선 B동",
-    //       s_date: "2024.12.21",
-    //       e_date: "2024.12.28",
-    //       images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-    //     },
-    //     {
-    //       s_id: 1,
-    //       name: "서울 팝업스토어",
-    //       location: "서울 강남구",
-    //       category: "패션",
-    //       s_date: "2024-01-01",
-    //       e_date: "2024-01-31",
-    //       images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-    //     },
-    //     {
-    //       s_id: 2,
-    //       name: "서울 음식 팝업스토어",
-    //       location: "서울 종로구",
-    //       category: "음식",
-    //       s_date: "2024-02-01",
-    //       e_date: "2024-02-28",
-    //       images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-    //     },
-    //     {
-    //       s_id: 3,
-    //       name: "서울 뷰티 팝업스토어",
-    //       location: "서울 강서구",
-    //       category: "뷰티",
-    //       s_date: "2024-03-01",
-    //       e_date: "2024-03-15",
-    //       images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-    //     },
-    //     {
-    //       s_id: 4,
-    //       name: "서울 예술 팝업스토어",
-    //       location: "서울 마포구",
-    //       category: "예술",
-    //       s_date: "2024-04-01",
-    //       e_date: "2024-04-30",
-    //       images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-    //     },
-    //     {
-    //       s_id: 5,
-    //       name: "서울 리빙 팝업스토어",
-    //       location: "서울 송파구",
-    //       category: "리빙",
-    //       s_date: "2024-05-01",
-    //       e_date: "2024-05-15",
-    //       images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-    //     },
-    //     {
-    //       s_id: 6,
-    //       name: "서울 테크 팝업스토어",
-    //       location: "서울 용산구",
-    //       category: "테크",
-    //       s_date: "2024-06-01",
-    //       e_date: "2024-06-30",
-    //       images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-    //     },
-    //     {
-    //       s_id: 7,
-    //       name: "서울 패션 팝업스토어",
-    //       location: "서울 동대문구",
-    //       category: "패션",
-    //       s_date: "2024-07-01",
-    //       e_date: "2024-07-15",
-    //       images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-    //     },
-    //     {
-    //       s_id: 8,
-    //       name: "서울 음식 팝업스토어",
-    //       location: "서울 강북구",
-    //       category: "음식",
-    //       s_date: "2024-08-01",
-    //       e_date: "2024-08-31",
-    //       images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-    //     },
-    //   ],
-    // };
-
-    // setResults(data.likes);
-    // const likes = data.likes.map((store) => store.s_id);
-    // setLikedPopups(likes);
   };
 
   // 로그인 상태일 때만 좋아요 데이터 가져오기
@@ -220,6 +98,15 @@ const FavoritePopupPage = () => {
     fontSize: "24px", // 하트 크기
     zIndex: 10, // 이미지 위에 표시
   };
+
+  function urlConvert(url) {
+    if (url.startsWith("/upload")) {
+      return "http://localhost:3000" + url;
+    } else {
+      return url;
+    }
+  }
+
   return (
     <div>
       <h2>관심 팝업</h2>
@@ -244,8 +131,8 @@ const FavoritePopupPage = () => {
                   }}
                 >
                   <img
-                    src={popup.images[0]}
-                    alt={popup.name}
+                    src={urlConvert(popup.images[0])}
+                    alt={popup.s_name}
                     style={{
                       width: "100%",
                       height: "150px",
@@ -264,9 +151,10 @@ const FavoritePopupPage = () => {
                   </button>
                 </div>
                 <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.name}</p>
+                <h3>{popup.s_name}</h3>
                 <p>위치: {popup.location}</p>
                 <p>
-                  기간: {popup.s_date} ~ {popup.e_date}
+                  {formatDate(popup.s_date)} ~ {formatDate(popup.e_date)}
                 </p>
               </div>
             ))
