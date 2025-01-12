@@ -219,6 +219,8 @@ const ProfilePage = () => {
         body: JSON.stringify({ email: emailChange }),
       });
 
+      console.log("FE email response: ", response);
+
       if (!response.ok) {
         const data = await response.json();
         setEmailError(data.error || "오류가 발생했습니다.");

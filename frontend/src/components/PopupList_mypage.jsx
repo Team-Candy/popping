@@ -24,6 +24,14 @@ const PopupList = () => {
         setError("작성된 게시글이 없습니다.");
         throw new Error(data.error);
       }
+      const response = await fetch(`http://localhost:3000/api/users/${userId}/stores`);
+
+      if (!response.ok) {
+        const data = await response.json();
+        setPopups([]);
+        setError("작성된 게시글이 없습니다.");
+        throw new Error(data.error);
+      }
 
       const data = await response.json();
 
@@ -33,6 +41,7 @@ const PopupList = () => {
         return;
       }
 
+      setPopups(data.stores);
       setPopups(data.stores);
     } catch (err) {
       setError("네트워크 오류 발생");
@@ -52,7 +61,10 @@ const PopupList = () => {
         {popups.length > 0 ? (
           popups.map((popup) => (
             <div key={popup.s_id} onClick={() => navigate(`/popup/edit/${popup.s_id}`)} style={{ cursor: "pointer", textAlign: "center", border: "1px solid #ccc", borderRadius: "8px", padding: "8px" }}>
+            <div key={popup.s_id} onClick={() => navigate(`/popup/edit/${popup.s_id}`)} style={{ cursor: "pointer", textAlign: "center", border: "1px solid #ccc", borderRadius: "8px", padding: "8px" }}>
               <img
+                src={`http://localhost:3000${popup.images[0]}`}
+                alt={popup.s_name}
                 src={`http://localhost:3000${popup.images[0]}`}
                 alt={popup.s_name}
                 style={{
@@ -62,6 +74,7 @@ const PopupList = () => {
                   borderRadius: "8px",
                 }}
               />
+              <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.s_name}</p>
               <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.s_name}</p>
               <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.owner}</p>
             </div>

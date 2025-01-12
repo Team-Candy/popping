@@ -37,6 +37,29 @@ const PopupDetailPage = () => {
       console.error("네트워크 에러 발생: ", err.message);
     }
   };
+  const [like, setLike] = useState(false);
+
+  const fetchLikeData = async () => {
+    if (!auth.isLoggedIn) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`);
+
+      if (!response.ok) {
+        const data = await response.json();
+        console.error("서버 에러 발생: ", data.error);
+        return;
+      }
+
+      const data = await response.json();
+
+      setLike(data.liked);
+    } catch (err) {
+      console.error("네트워크 에러 발생: ", err.message);
+    }
+  };
 
   const fetchPopupDetail = async () => {
     // API - 팝업스토어 상세 정보 조회
@@ -62,7 +85,9 @@ const PopupDetailPage = () => {
 
   useEffect(() => {
     fetchLikeData();
+    fetchLikeData();
     fetchPopupDetail();
+  }, []);
   }, []);
 
   // 로딩 중일 때 표시
@@ -108,11 +133,24 @@ const PopupDetailPage = () => {
 
     setLike(
       () =>
+    const isLiked = like; // true,false
+
+    setLike(
+      () =>
         isLiked
+          ? false // 좋아요 복구
+          : true // 제거 복구
           ? false // 좋아요 복구
           : true // 제거 복구
     );
 
+    try {
+      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
+        method: isLiked ? "DELETE" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
     try {
       const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
         method: isLiked ? "DELETE" : "POST",
@@ -126,7 +164,20 @@ const PopupDetailPage = () => {
       }
     } catch (error) {
       console.error(error.message);
+      if (!response.ok) {
+        throw new Error(`Failed to ${isLiked ? "unlike" : "like"} popup`);
+      }
+    } catch (error) {
+      console.error(error.message);
 
+      // 요청 실패 시 상태 복구
+      setLike(
+        () =>
+          isLiked
+            ? true // 좋아요 복구
+            : false // 제거 복구
+      );
+    }
       // 요청 실패 시 상태 복구
       setLike(
         () =>
@@ -188,6 +239,7 @@ const PopupDetailPage = () => {
               handleLikeToggle(popupId); // 하트 상태 토글
             }}
           >
+            {like ? "❤️" : "🤍"}
             {like ? "❤️" : "🤍"}
           </button>
         </div>
