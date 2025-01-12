@@ -26,7 +26,6 @@ const PopupList = () => {
       }
 
       const data = await response.json();
-      console.log("data: ", data.stores);
 
       if (data.error) {
         setPopups([]);

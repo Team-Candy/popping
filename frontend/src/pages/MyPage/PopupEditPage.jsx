@@ -17,6 +17,9 @@ const PopupEditPage = () => {
   // 미리보기 URL 관리
   const [images, setImages] = useState([]);
 
+  // 삭제된 이미지
+  const [deleteImages, setDeleteImages] = useState([]);
+
   const [formData, setFormData] = useState({
     s_name: "",
     category: "",
@@ -101,28 +104,9 @@ const PopupEditPage = () => {
       }
       const data = await response.json();
 
-      console.log("data: ", data.store);
-      // setSelectedCategory(data.category);
-
-      // (수정) MOCK
-      // const data = {
-      //   id: 100,
-      //   type: "culture",
-      //   owner: "netflix",
-      //   name: "오징어게임2 팝업스토어 in 강남",
-      //   location: "서울 서초구 신반포로 176 신세계백화점 강남점 1층 오픈스테이지",
-      //   startDate: "2024.12.20",
-      //   endDate: "2025.01.12",
-      //   business_hours: "10:30-20:00",
-      //   description: "<오징어 게임> 시즌2 팝업, 참여하시겠습니까?",
-      //   images: ["https://i.ibb.co/tPJYqCB/detail2-1.jpg", "https://i.ibb.co/10Xfvwr/detail2-2.jpg", "https://i.ibb.co/mb5c4xj/detail2-3.jpg"],
-      //   contact: "example@naver.com",
-      // };
-
       // 확인용 데이터 상태 저장
       setDetail(data.store);
 
-      // 수정용 데이터 상태 저장
       const splitTimeRange = async (timeRange) => {
         const [sTime, eTime] = timeRange.split("-");
         setStartTime(sTime);
@@ -131,6 +115,7 @@ const PopupEditPage = () => {
 
       splitTimeRange(data.store.business_hours);
 
+      // 수정용 데이터 상태 저장
       setFormData({
         s_name: data.store.s_name,
         category: data.store.category,
@@ -144,11 +129,7 @@ const PopupEditPage = () => {
         contact: data.store.contact,
       });
 
-      // console.log(
-      //   "data.store.images.map((i) => `http://localhost:3000${i}`): ",
-      //   data.store.images.map((i) => `http://localhost:3000${i}`)
-      // );
-
+      // 미리보기 데이터 저장 - 기존에 있던 거 '/upload/
       setImages(data.store.images.map((i) => `http://localhost:3000${i}`));
 
       setError(null);
@@ -173,12 +154,6 @@ const PopupEditPage = () => {
 
   // 값 변경 시
   const handleChange = (e) => {
-    // if (e.target.name === "s_date" || e.target.name === "e_date") {
-    //   setFormData({
-    //     ...formData,
-    //     [e.target.name]: formatDate(e.target.value) + ` 00:00:00`,
-    //   });
-    // } else {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -222,10 +197,17 @@ const PopupEditPage = () => {
       }
     });
 
+    // deleteImages.forEach((image) => {
+    //   formDataToSend.append("deleteImages", image);
+    // });
+
+    formDataToSend.append("deleteImages", JSON.stringify(deleteImages));
+
     // FormData의 내용 출력
     for (const [key, value] of formDataToSend.entries()) {
       console.log(`${key}: ${value}`);
     }
+
     try {
       // API - 수정 정보 전달 (저장하기)
       const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
@@ -328,6 +310,11 @@ const PopupEditPage = () => {
 
   // 이미지 삭제
   const handleDeleteImage = (index) => {
+    // 기존 이미지 중 삭제된 url 관리
+    if (formData.images[index].startsWith("/upload")) {
+      setDeleteImages([...deleteImages, formData.images[index]]);
+    }
+
     // formData에서 이미지 파일 삭제
     const newImages = formData.images.filter((_, i) => i !== index);
     setFormData({ ...formData, images: newImages });
