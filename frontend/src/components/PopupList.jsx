@@ -29,7 +29,6 @@ const PopupList = ({ category }) => {
       if (!response.ok) {
         throw new Error("Failed to fetch categories");
       }
-      console.log("카테고리 response: ", response);
 
       // category type
       // whole, food, education, culture, digital, clothing, interior, sports, fashion miscellaneous goods, characters, others

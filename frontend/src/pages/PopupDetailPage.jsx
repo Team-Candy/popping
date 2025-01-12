@@ -49,21 +49,6 @@ const PopupDetailPage = () => {
       }
 
       const data = await response.json();
-      console.log("디테일페이지 data: ", data);
-
-      //"store: { s_id: store.s_id,
-      // owner: store.owner,
-      // s_name: store.s_name,
-      // contact: store.contact,
-      // location: store.location,
-      // s_date: store.s_date,
-      // e_date: store.e_date,
-      // business_hours: store.business_hours,
-      // description: store.description },
-      // images: [   ,   ,    ,  ] }"
-
-      // 임시 데이터
-      // const data = filterById(popupId);
 
       setDetail(data.store); // 데이터 저장
       setError(null); // 에러 초기화
@@ -162,6 +147,25 @@ const PopupDetailPage = () => {
     zIndex: 10, // 이미지 위에 표시
   };
 
+  function formatCategory(category) {
+    const korean = [
+      { label: "전체", value: "whole" },
+      { label: "식품", value: "food" },
+      { label: "교육", value: "education" },
+      { label: "문화", value: "culture" },
+      { label: "디지털", value: "digital" },
+      { label: "의류", value: "clothing" },
+      { label: "인테리어", value: "interior" },
+      { label: "스포츠", value: "sports" },
+      { label: "패션잡화", value: "miscellaneous" },
+      { label: "캐릭터", value: "characters" },
+      { label: "기타", value: "others" },
+    ];
+
+    const foundCategory = korean.find((item) => item.value === category);
+    return foundCategory ? foundCategory.label : "Unknown";
+  }
+
   return (
     <div>
       <div>
@@ -190,7 +194,7 @@ const PopupDetailPage = () => {
 
         <p>
           {/* (수정) 영문 -> 한글 */}
-          <strong style={{ color: "red" }}>카테고리:</strong> {detail.category}
+          <strong>카테고리:</strong> {formatCategory(detail.category)}
         </p>
 
         <p>

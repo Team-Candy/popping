@@ -68,7 +68,8 @@ const PopupList = () => {
             </div>
           ))
         ) : (
-          <p>No Popup available for this category.</p>
+          // <p>No Popup available for this category.</p>
+          <div>로딩중...</div>
         )}
       </div>
     </div>

@@ -4,10 +4,20 @@ import PropTypes from "prop-types";
 import Map from "./Map";
 
 const Description = ({ detail }) => {
+  function formatDate(date) {
+    const parsedDate = new Date(date);
+
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(parsedDate.getDate()).padStart(2, "0");
+
+    return `${year}년 ${month}월 ${day}일`;
+  }
+
   return (
     <div>
       <p>
-        <strong>운영 기간:</strong> {detail.s_date} ~ {detail.e_date}
+        <strong>운영 기간:</strong> {formatDate(detail.s_date)} ~ {formatDate(detail.e_date)}
       </p>
 
       <p>
