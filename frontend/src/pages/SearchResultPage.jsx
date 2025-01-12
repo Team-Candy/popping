@@ -3,193 +3,31 @@ import { useState, useEffect } from "react";
 import useAuth from "../context/useAuth";
 
 async function fetchData(query, page = 1, limit = 10) {
-  // // API 요청
-  // try {
-  //   const response = await fetch(`/api/search?query=${query}&page=${page}&limit=${limit}`);
-  //   if (!response.ok) {
-  //     throw new Error("Failed to fetch data");
-  //   }
-  //   const data = await response.json();
+  // API 요청
+  try {
+    console.log("query: ", query);
+    const response = await fetch(`http://localhost:3000/api/search?value=${encodeURIComponent(query)}&page=${page}&limit=${limit}`);
 
-  //   return data;
-  // } catch (err) {
-  //   console.error(err);
-  //   return { results: [], pagination: { currentPage: 1, totalPages: 0, totalItem: 0 } };
-  // }
+    if (!response.ok) {
+      throw new Error("Failed to fetch data");
+    }
+    const data = await response.json();
 
-  // 임시 데이터
-  const data = {
-    results: [
-      {
-        id: 100,
-        name: "오징어게임2 팝업스토어 in 강남",
-        location: "서울 서초구 신반포로 176 신세계백화점 강남점 1층 오픈스테이지",
-        startDate: "2024.12.20",
-        endDate: "2025.01.12",
-        images: ["https://i.ibb.co/tPJYqCB/detail2-1.jpg"],
-      },
-      {
-        id: 200,
-        name: "바나나맛우유 50주년 팝업스토어",
-        location: "서울 종로구 삼일대로28길 28 누디트 익선 B동",
-        startDate: "2024.12.21",
-        endDate: "2024.12.28",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 1,
-        name: "서울 팝업스토어",
-        location: "서울 강남구",
-        category: "패션",
-        startDate: "2024-01-01",
-        endDate: "2024-01-31",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 2,
-        name: "서울 음식 팝업스토어",
-        location: "서울 종로구",
-        category: "음식",
-        startDate: "2024-02-01",
-        endDate: "2024-02-28",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 3,
-        name: "서울 뷰티 팝업스토어",
-        location: "서울 강서구",
-        category: "뷰티",
-        startDate: "2024-03-01",
-        endDate: "2024-03-15",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 4,
-        name: "서울 예술 팝업스토어",
-        location: "서울 마포구",
-        category: "예술",
-        startDate: "2024-04-01",
-        endDate: "2024-04-30",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 5,
-        name: "서울 리빙 팝업스토어",
-        location: "서울 송파구",
-        category: "리빙",
-        startDate: "2024-05-01",
-        endDate: "2024-05-15",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 6,
-        name: "서울 테크 팝업스토어",
-        location: "서울 용산구",
-        category: "테크",
-        startDate: "2024-06-01",
-        endDate: "2024-06-30",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 7,
-        name: "서울 패션 팝업스토어",
-        location: "서울 동대문구",
-        category: "패션",
-        startDate: "2024-07-01",
-        endDate: "2024-07-15",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 8,
-        name: "서울 음식 팝업스토어",
-        location: "서울 강북구",
-        category: "음식",
-        startDate: "2024-08-01",
-        endDate: "2024-08-31",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 9,
-        name: "서울 스포츠 팝업스토어",
-        location: "서울 서초구",
-        category: "스포츠",
-        startDate: "2024-09-01",
-        endDate: "2024-09-30",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 10,
-        name: "서울 영화 팝업스토어",
-        location: "서울 강동구",
-        category: "영화",
-        startDate: "2024-10-01",
-        endDate: "2024-10-15",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 11,
-        name: "서울 패션 팝업스토어",
-        location: "서울 관악구",
-        category: "패션",
-        startDate: "2024-11-01",
-        endDate: "2024-11-30",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 12,
-        name: "서울 책 팝업스토어",
-        location: "서울 성동구",
-        category: "도서",
-        startDate: "2024-12-01",
-        endDate: "2024-12-15",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 13,
-        name: "서울 카페 팝업스토어",
-        location: "서울 중구",
-        category: "음식",
-        startDate: "2025-01-01",
-        endDate: "2025-01-15",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 14,
-        name: "서울 뷰티 팝업스토어",
-        location: "서울 은평구",
-        category: "뷰티",
-        startDate: "2025-02-01",
-        endDate: "2025-02-28",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-      {
-        id: 15,
-        name: "서울 여행 팝업스토어",
-        location: "서울 노원구",
-        category: "여행",
-        startDate: "2025-03-01",
-        endDate: "2025-03-15",
-        images: ["https://i.ibb.co/2df8xYG/detail1.jpg"],
-      },
-    ],
-    pagination: {
-      currentPage: 1,
-      totalPages: 3,
-      totalItems: 15,
-    },
-  };
+    const startIndex = (page - 1) * limit;
+    const paginatedResults = data.results.slice(startIndex, startIndex + limit);
 
-  const startIndex = (page - 1) * limit;
-  const paginatedResults = data.results.slice(startIndex, startIndex + limit);
-
-  return {
-    results: paginatedResults,
-    pagination: {
-      currentPage: page,
-      totalPages: data.pagination.totalPages,
-      totalItems: data.pagination.totalItems,
-    },
-  };
+    return {
+      results: paginatedResults,
+      pagination: {
+        currentPage: page,
+        totalPages: data.pagination.totalPages,
+        totalItems: data.pagination.totalItems,
+      },
+    };
+  } catch (err) {
+    console.error(err);
+    return { results: [], pagination: { currentPage: 1, totalPages: 0, totalItem: 0 } };
+  }
 }
 
 const SearchResult = () => {
@@ -274,28 +112,28 @@ const SearchResult = () => {
     );
 
     // API - 서버에 요청
-    // try {
-    //   const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
-    //     method: isLiked ? "DELETE" : "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   });
+    try {
+      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
+        method: isLiked ? "DELETE" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    //   if (!response.ok) {
-    //     throw new Error(`Failed to ${isLiked ? "unlike" : "like"} popup`);
-    //   }
-    // } catch (error) {
-    //   console.error(error.message);
+      if (!response.ok) {
+        throw new Error(`Failed to ${isLiked ? "unlike" : "like"} popup`);
+      }
+    } catch (error) {
+      console.error(error.message);
 
-    //   // 요청 실패 시 상태 복구
-    //   setLikedPopups(
-    //     (prevLiked) =>
-    //       isLiked
-    //         ? [...prevLiked, popupId] // 좋아요 복구
-    //         : prevLiked.filter((id) => id !== popupId) // 제거 복구
-    //   );
-    // }
+      // 요청 실패 시 상태 복구
+      setLikedPopups(
+        (prevLiked) =>
+          isLiked
+            ? [...prevLiked, popupId] // 좋아요 복구
+            : prevLiked.filter((id) => id !== popupId) // 제거 복구
+      );
+    }
   };
 
   const heartStyle = {

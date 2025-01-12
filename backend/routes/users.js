@@ -96,6 +96,10 @@ router.delete("/:u_id", authenticateJWT, async (req, res) => {
     const deleteLikesQuery = `DELETE FROM likes WHERE u_id = ?`;
     await db.promise().query(deleteLikesQuery, [u_id]);
 
+    // 카테고리 삭제
+    const deleteCategoriesQuery = `DELETE FROM category WHERE s_id IN (SELECT s_id FROM store WHERE u_id = ?)`;
+    await db.promise().query(deleteCategoriesQuery, [u_id]);
+
     // 스토어 이미지 삭제
     const deleteStoreImagesQuery = `DELETE FROM store_image WHERE s_id IN (SELECT s_id FROM store WHERE u_id = ?)`;
     await db.promise().query(deleteStoreImagesQuery, [u_id]);

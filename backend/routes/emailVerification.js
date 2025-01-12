@@ -15,7 +15,7 @@ function generateCode() {
 
 router.post("/email-code", async (req, res) => {
   const { email } = req.body;
-  console.log(email);
+  console.log("email: ", email);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email || !emailRegex.test(email)) {

@@ -10,7 +10,7 @@ export const formatDate = (date) => {
 
 // 프론트엔드와 백엔드 통신 관련
 export const fetchWithAuth = (url, options = {}) => {
-  const token = sessionStorage.getItem("token");
+  const token = sessionStorage.getItem("authToken");
   return fetch(url, {
     ...options,
     headers: {
