@@ -2,20 +2,10 @@ import PropTypes from "prop-types";
 import { useEffect } from "react";
 import { formatDate } from "../utils/util";
 
-// 지역에 따른 좌표 데이터
-const regionCoordinates = {
-  total: { lat: 37.5665, lng: 126.9788 }, // 서울의 중심 좌표
-  seoul: { lat: 37.5665, lng: 126.9788 },
-  busan: { lat: 35.1796, lng: 129.0756 },
-  jeju: { lat: 33.4996, lng: 126.5312 },
-  incheon: { lat: 37.4563, lng: 126.7052 },
-};
-
 const Map = ({ region, location }) => {
   useEffect(() => {
     // 이미 스크립트가 로드되었는지 확인
     if (document.getElementById("kakao-map-script")) {
-      console.log("여기임");
       initializeMap(region, location); // 맵 초기화 함수 호출
       return;
     }
@@ -34,7 +24,11 @@ const Map = ({ region, location }) => {
         mapContainer.innerHTML = ""; // 맵 컨테이너 정리
       }
     };
-  }, []);
+  }, [location]);
+
+  useEffect(() => {
+    console.log("region: ", region);
+  }, [region]);
 
   return (
     <div>
@@ -50,48 +44,45 @@ Map.propTypes = {
 
 export default Map;
 
+// lat,lng 찾기 함수
 async function fetchLatLng(location) {
-  try {
-    console.log("location: ", location);
-    const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/map/getLatLng/${encodeURIComponent(location)}`);
-    if (!response.ok) {
+  const cachedCoords = JSON.parse(localStorage.getItem("coords")) || {};
+
+  if (cachedCoords && cachedCoords[location]) {
+    return cachedCoords[location]; // 로컬 스토리지에서 좌표 반환
+  } else {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/map/getLatLng/${encodeURIComponent(location)}`);
+      if (!response.ok) {
+        const data = await response.json();
+        console.error("서버 오류 발생: ", data.error);
+        return;
+      }
       const data = await response.json();
-      console.error("서버 오류 발생: ", data.error);
-      return;
+
+      cachedCoords[location] = data;
+      localStorage.setItem("coords", JSON.stringify(cachedCoords)); // 업데이트된 좌표 객체를 로컬 스토리지에 저장
+      return data; // {lng: , lat: }
+    } catch (err) {
+      console.error("네트워크 오류", err.message);
     }
-    const data = await response.json();
-    return data;
-  } catch (err) {
-    console.error("네트워크 오류", err.message);
   }
 }
 
-// lat,lng 찾기 함수 (지역 좌표 찾을 때 사용)
-// const getCoordinates = async (region) => {
-//   // regionCoordinates에 좌표가 없으면 fetchLatLng로 좌표를 찾음
-//   // return regionCoordinates[region] || (await fetchLatLng(region));
-//   const coordinates = regionCoordinates[region];
-//   if (coordinates) {
-//     return coordinates;
-//   } else {
-//     const data = await fetchLatLng(region);
-//     return data;
-//   }
-// };
-
-const getCoordinates = (region) => {
-  const cachedCoords = localStorage.getItem(region);
-  if (cachedCoords) {
-    return Promise.resolve(JSON.parse(cachedCoords)); // 로컬 스토리지에서 좌표 반환
-  }
+// 포커스용 lat,lng 찾기 함수
+const getCoordinates = async (region) => {
+  const regionCoordinates = {
+    seoul: { lat: 37.5665, lng: 126.9788 },
+    busan: { lat: 35.1796, lng: 129.0756 },
+    jeju: { lat: 33.4996, lng: 126.5312 },
+    incheon: { lat: 37.4563, lng: 126.7052 },
+  };
 
   if (regionCoordinates[region]) {
-    return Promise.resolve(regionCoordinates[region]);
+    return regionCoordinates[region];
   } else {
-    return fetchLatLng(region).then((coords) => {
-      localStorage.setItem(region, JSON.stringify(coords)); // 로컬 스토리지에 좌표 저장
-      return coords;
-    });
+    const data = await fetchLatLng(region);
+    return data;
   }
 };
 
@@ -110,11 +101,18 @@ const initializeMap = async (region = "seoul", location) => {
       level: 6,
     };
 
-    // 마커가 표시될 위치
+    // 지도 생성
     const map = new window.kakao.maps.Map(container, options);
 
+    // 줌 컨트롤 추가
+    const zoomControl = new window.kakao.maps.ZoomControl();
+    map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
+
     // location 배열에 있는 각 위치에 대해 마커 및 인포윈도우 추가
-    location.forEach((item) => {
+    // const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    location.forEach(async (item) => {
+      // await delay(index * 100); // 호출 간 100ms 지연
       const { id, name, location, startDate, endDate, images } = item;
 
       fetchLatLng(location).then((coords) => {
@@ -131,10 +129,10 @@ const initializeMap = async (region = "seoul", location) => {
             <div style="flex: 1; margin-right: 5px;">
               ${name}<br>
               ${formatDate(startDate)}~${formatDate(endDate)}<br>
-              <a href="/popup/${id}" style="color:blue" target="_blank">상세보기</a><br>
-              <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="color:blue" target="_blank">큰지도보기</a>
-               | 
-              <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="color:blue" target="_blank">길찾기</a><br>
+              <a href="/popup/${id}" style="color:blue" target="_blank" >상세보기</a><br>
+              <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="color:blue" target="_blank" >큰지도보기</a>
+               |
+              <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="color:blue" target="_blank" >길찾기</a><br>
             </div>
             <div>
               <img src="${images}" alt="popupStore image" style="width:100px;height:100px; border-radius:10px;"/>
@@ -145,6 +143,7 @@ const initializeMap = async (region = "seoul", location) => {
         const infowindow = new window.kakao.maps.InfoWindow({
           position: new window.kakao.maps.LatLng(lat, lng),
           content: iwContent,
+          disableAutoPan: true, // 인포윈도우 열릴 때 지도 중심 이동 방지
         });
 
         marker.setMap(map); // 마커 맵에 표시

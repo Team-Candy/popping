@@ -15,9 +15,18 @@ const Region = ({ onSelectRegion }) => {
       {/* 검색 */}
       <div>
         <input
+          placeholder="주소를 입력해주세요."
           type="text"
           onChange={(e) => {
             setLocation(e.target.value);
+          }}
+          tabIndex="0" // 키보드 포커스를 받을 수 있도록 설정
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              onSelectRegion(location);
+              // document.getElementById("search-button").click();
+            }
           }}
         />
         <button

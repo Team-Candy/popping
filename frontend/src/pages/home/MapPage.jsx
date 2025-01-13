@@ -19,7 +19,7 @@ const MapPage = () => {
 
         const data = await response.json();
         // 팝업고유 id, 팝업 이름, 주소, startDate, endDate, 이미지 url
-        console.log("categories: ", data.categories);
+        // console.log("categories: ", data.categories);
 
         setLocation(data.categories);
       } catch (err) {

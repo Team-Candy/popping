@@ -61,6 +61,10 @@ const PopupDetailPage = () => {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0); // 페이지 이동 시 맨 위로 스크롤 이동
+  }, []);
+
+  useEffect(() => {
     fetchLikeData();
     fetchPopupDetail();
   }, []);
