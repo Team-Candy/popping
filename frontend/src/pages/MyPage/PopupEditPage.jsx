@@ -163,16 +163,20 @@ const PopupEditPage = () => {
 
   // 빈칸 확인
   const validateForm = () => {
-    if (!formData.s_name || !formData.location || !formData.s_date) {
-      alert("빈 항목이 있습니다.");
+    console.log("formData.images: ", formData.images);
+    if (formData.s_name && formData.category && formData.owner && formData.business_hours && formData.location && formData.s_date && formData.e_date && formData.images.some((image) => image !== null) && formData.contact) {
+      return true;
+    } else {
+      alert("빈 항목을 확인해주세요.");
       return false;
     }
-    return true;
   };
 
   // 수정된 데이터 서버로 전송
   const handleSave = async () => {
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      return;
+    }
 
     const formDataToSend = new FormData();
 
@@ -196,10 +200,6 @@ const PopupEditPage = () => {
         formDataToSend.append(key, formData[key]);
       }
     });
-
-    // deleteImages.forEach((image) => {
-    //   formDataToSend.append("deleteImages", image);
-    // });
 
     formDataToSend.append("deleteImages", JSON.stringify(deleteImages));
 
