@@ -22,7 +22,7 @@ const PopupDetailPage = () => {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`);
+      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`);
 
       if (!response.ok) {
         const data = await response.json();
@@ -41,7 +41,7 @@ const PopupDetailPage = () => {
   const fetchPopupDetail = async () => {
     // API - 팝업스토어 상세 정보 조회
     try {
-      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/stores/${popupId}`);
+      const response = await fetch(`http://localhost:3000/api/stores/${popupId}`);
 
       if (!response.ok) {
         const data = await response.json();
@@ -114,7 +114,7 @@ const PopupDetailPage = () => {
     );
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
+      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
         method: isLiked ? "DELETE" : "POST",
         headers: {
           "Content-Type": "application/json",
@@ -187,6 +187,7 @@ const PopupDetailPage = () => {
               e.stopPropagation(); // 부모 클릭 이벤트 방지
               handleLikeToggle(popupId); // 하트 상태 토글
             }}
+            aria-label={like ? "좋아요 취소" : "좋아요"} // ARIA 레이블 추가
           >
             {like ? "❤️" : "🤍"}
           </button>

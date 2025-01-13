@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 async function fetchLatLng(location) {
   try {
-    const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/map/getLatLng/${location}`);
+    const response = await fetch(`http://localhost:3000/api/map/getLatLng/${location}`);
     if (!response.ok) {
       throw new Error("Failed to fetch LatLng data");
     }

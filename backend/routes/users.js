@@ -256,7 +256,6 @@ router.get("/:u_id/stores", async (req, res) => {
 
   try {
     const [results] = await db.promise().query(query, [u_id]);
-    console.log("results: ", results);
 
     // 결과가 없을 때
     if (results.length === 0) {

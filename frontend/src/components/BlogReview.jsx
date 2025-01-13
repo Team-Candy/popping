@@ -7,7 +7,7 @@ const BlogReview = ({ name }) => {
   // API 호출 - blog data 받기
   const fetchBlogs = async (name) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/blogs?query=${encodeURIComponent(name)}`);
+      const response = await fetch(`http://localhost:3000/api/blogs?query=${encodeURIComponent(name)}`);
       if (!response.ok) {
         throw new Error("Failed to fetch blogs data");
       }
@@ -55,7 +55,8 @@ const BlogReview = ({ name }) => {
             </li>
           ))
         ) : (
-          <p>검색 결과가 없습니다.</p>
+          <p></p>
+          // <p>검색 결과가 없습니다.</p>
         )}
       </ul>
     </div>

@@ -27,7 +27,7 @@ const MyPageButton = ({ auth }) => {
         <div className="menu">
           <ul>
             <li>
-              <button style={{ color: "red" }} onClick={handleClick} name="profile">
+              <button onClick={handleClick} name="profile">
                 프로필
               </button>
             </li>

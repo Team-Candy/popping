@@ -13,7 +13,7 @@ const HomeBanner = () => {
     const fetchBanners = async () => {
       try {
         // API - 메인 페이지 - 배너 (image & image_url)
-        const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/main/banners`);
+        const response = await fetch("http://localhost:3000/api/main/banners");
         if (!response.ok) {
           throw new Error("Failed tp fetch banners");
         }
@@ -139,7 +139,7 @@ export default HomeBanner;
 //         ]);
 
 //         // API - 메인 페이지 - 배너 (image & image_url)
-//         // const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/main/banners`);
+//         // const response = await fetch("http://localhost:3000/api/main/banners");
 //         // if (!response.ok) {
 //         //   throw new Error("Failed tp fetch banners");
 //         // }
