@@ -46,6 +46,7 @@ const Map = ({ region, location }) => {
   useEffect(() => {
     // 이미 스크립트가 로드되었는지 확인
     if (document.getElementById("kakao-map-script")) {
+      console.log("여기임");
       initializeMap(region, location); // 맵 초기화 함수 호출
       return;
     }
@@ -82,7 +83,7 @@ export default Map;
 
 async function fetchLatLng(location) {
   try {
-    const response = await fetch(`http://localhost:3000/api/map/getLatLng/${location}`);
+    const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/map/getLatLng/${encodeURIComponent(location)}`);
     if (!response.ok) {
       throw new Error("Failed to fetch LatLng data");
     }
@@ -165,9 +166,9 @@ const initializeMap = async (region, location) => {
     //
     // location 배열에 있는 각 위치에 대해 마커 및 인포윈도우 추가
     location.forEach((item) => {
-      const { id, name, location: place, startDate, endDate, image } = item;
+      const { id, name, location, startDate, endDate, images } = item;
 
-      fetchLatLng(place).then((coords) => {
+      fetchLatLng(location).then((coords) => {
         const { x: lng, y: lat } = coords;
 
         // 마커 생성
@@ -182,12 +183,12 @@ const initializeMap = async (region, location) => {
               ${name}<br>
               ${startDate}~${endDate}<br>
               <a href="/popup/${id}" style="color:blue" target="_blank">상세보기</a><br>
-              <a href="https://map.kakao.com/link/map/${place},${lat},${lng}" style="color:blue" target="_blank">큰지도보기</a>
+              <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="color:blue" target="_blank">큰지도보기</a>
                | 
-              <a href="https://map.kakao.com/link/to/${place},${lat},${lng}" style="color:blue" target="_blank">길찾기</a><br>
+              <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="color:blue" target="_blank">길찾기</a><br>
             </div>
             <div>
-              <img src="${image}" alt="popupStore image" style="width:100px;height:100px; border-radius:10px;"/>
+              <img src="${images}" alt="popupStore image" style="width:100px;height:100px; border-radius:10px;"/>
             </div>
           </div>
         `;

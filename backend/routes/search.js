@@ -28,9 +28,6 @@ router.get("/", (req, res) => {
         FROM store s
         LEFT JOIN store_image si ON s.s_id = si.s_id
         LEFT JOIN category c ON s.s_id = c.s_id
-        FROM store s
-        LEFT JOIN store_image si ON s.s_id = si.s_id
-        LEFT JOIN category c ON s.s_id = c.s_id
         WHERE 1=1
     `;
   const queryParams = [];

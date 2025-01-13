@@ -13,8 +13,9 @@ function generateCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-router.post("/email-code", (req, res) => {
+router.post("/email-code", async (req, res) => {
   const { email } = req.body;
+  console.log("email: ", email);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email || !emailRegex.test(email)) {
@@ -22,123 +23,130 @@ router.post("/email-code", (req, res) => {
   }
 
   const code = generateCode();
-  const timestamp = Date.now();
+  console.log(code);
 
-  // 인증된 이메일인지 확인
-  const checkVerifiedQuery = `SELECT * FROM EmailVerification WHERE email = ? AND verified = 1`;
-  db.query(checkVerifiedQuery, [email], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: "이메일 인증 상태 조회 실패" });
-    }
+  // 트랜잭션 시작
+  try {
+    await db.promise().beginTransaction(); // 트랜잭션 시작
+
+    // 인증된 이메일인지 확인
+    const checkVerifiedQuery = `SELECT * FROM user WHERE email = ? `;
+    const [results] = await db.promise().query(checkVerifiedQuery, [email]);
+
     if (results.length > 0) {
       return res.status(400).json({ error: "이미 인증된 이메일입니다." });
     }
 
     // 기존 이메일 코드 삭제 후 새 코드 삽입
     const upsertQuery = `
-            INSERT INTO EmailVerification (email, code, timestamp, verified)
-            VALUES (?, ?, ?, 0)
-            ON DUPLICATE KEY UPDATE code = ?, timestamp = ?, verified = 0
+            INSERT INTO emailverification (email, code, created_at, verified)
+            VALUES (?, ?, CURRENT_TIMESTAMP, 0)
+            ON DUPLICATE KEY UPDATE code = ?, created_at = CURRENT_TIMESTAMP
         `;
-    db.query(upsertQuery, [email, code, timestamp, code, timestamp], (err) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Failed to save verification code" });
-      }
+    await db.promise().query(upsertQuery, [email, code, code]);
 
-      console.log(`인증코드 발송: ${email} -> ${code}`);
+    console.log(`인증코드 발송: ${email} -> ${code}`);
 
-      // 이메일 발송 여부 확인
-      const emailEnabled = process.env.EMAIL_ENABLED === "true";
+    // 이메일 발송 여부 확인
+    const emailEnabled = process.env.EMAIL_ENABLED === "true";
 
-      if (emailEnabled) {
-        const sendEmail = async () => {
-          try {
-            await transporter.sendMail({
-              from: process.env.NAVER_EMAIL,
-              to: email,
-              subject: "이메일 인증 코드",
-              html: `
-                                <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px;">
-                                    <h2 style="color: #4CAF50;">서비스 가입을 환영합니다!</h2>
-                                    <p>아래의 6자리 코드를 입력하여 인증을 완료해주세요:</p>
-                                    <h1 style="color: #333; letter-spacing: 5px;">${code}</h1>
-                                    <p>이 요청을 본인이 하지 않았다면, 이 메일을 무시하세요.</p>
-                                </div>
-                            `,
-            });
-            res.json({ success: true, message: "인증 코드가 이메일로 전송되었습니다" });
-          } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: "이메일 전송 실패" });
-          }
-        };
-        sendEmail();
-      } else {
-        console.log("이메일 발송 비활성화: 코드가 전송되지 않았습니다.");
-        res.json({ success: true, message: `이메일 발송이 비활성화 되었습니다. Code: ${code}` });
-      }
-    });
-  });
+    if (emailEnabled) {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "이메일 인증 코드",
+        html: `
+                    <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px;">
+                        <h2 style="color: #4CAF50;">서비스 가입을 환영합니다!</h2>
+                        <p>아래의 6자리 코드를 입력하여 인증을 완료해주세요:</p>
+                        <h1 style="color: #333; letter-spacing: 5px;">${code}</h1>
+                        <p>이 요청을 본인이 하지 않았다면, 이 메일을 무시하세요.</p>
+                    </div>
+                `,
+      });
+      res.json({ success: true, message: "인증 코드가 이메일로 전송되었습니다" });
+    } else {
+      console.log("이메일 발송 비활성화: 코드가 전송되지 않았습니다.");
+      res.json({ success: true, message: `이메일 발송이 비활성화 되었습니다. Code: ${code}` });
+    }
+
+    await db.promise().commit(); // 트랜잭션 커밋
+  } catch (error) {
+    await db.promise().rollback(); // 오류 발생 시 롤백
+    console.error(error);
+    res.status(500).json({ error: "처리 중 오류가 발생했습니다." });
+  }
 });
 
-router.post("/verify-code", (req, res) => {
+router.post("/verify-code", async (req, res) => {
   const { email, code } = req.body;
+  console.log("email: ", email);
+  console.log("code: ", code);
 
   if (!email || !code) {
     return res.status(400).json({ error: "이메일과 코드를 입력해주세요." });
   }
 
-  const query = `
-        SELECT code, timestamp, verified
-        FROM EmailVerification
-        WHERE email = ?
-    `;
-  db.query(query, [email], (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Failed to verify code" });
-    }
+  try {
+    await db.promise().beginTransaction(); // 트랜잭션 시작
+
+    // 이메일과 인증 코드 조회
+    const query = `
+          SELECT code, created_at, verified
+          FROM emailverification
+          WHERE email = ?
+      `;
+    const [results] = await db.promise().query(query, [email]);
 
     if (results.length === 0) {
+      await db.promise().rollback(); // 오류 발생 시 롤백
       return res.status(400).json({ error: "인증 코드가 존재하지 않습니다." });
     }
 
-    const { code: savedCode, timestamp, verified } = results[0];
+    const { code: savedCode, created_at, verified } = results[0];
+
     if (verified) {
+      await db.promise().rollback(); // 오류 발생 시 롤백
       return res.status(400).json({ error: "이미 인증된 이메일입니다." });
     }
 
-    const currentTime = Date.now();
-    const isExpired = currentTime - timestamp > 10 * 60 * 1000; // 10분 유효
+    // 인증 코드 만료 확인 (10분 유효)
+    const currentTime = Date.now() / 1000;
+    const createdAtMillis = new Date(created_at).getTime() / 1000; // 문자열 -> 밀리초 변환
+    const tenMinute = 6004802;
+    const isExpired = parseInt(currentTime - createdAtMillis) > tenMinute; // 10분 유효
+    console.log("isExpired: ", isExpired, "currentTime: ", currentTime, "createdAtMillis: ", createdAtMillis);
+    console.log("currentTime - createdAtMillis: ", currentTime - createdAtMillis);
 
     if (isExpired) {
+      await db.promise().rollback(); // 오류 발생 시 롤백
       return res.status(400).json({ error: "인증 코드가 만료되었습니다." });
     }
 
     if (savedCode !== code) {
+      await db.promise().rollback(); // 오류 발생 시 롤백
       return res.status(400).json({ error: "인증 코드가 일치하지 않습니다." });
     }
 
     // 인증 상태 업데이트
     const updateQuery = `
-            UPDATE EmailVerification
-            SET verified = 1
-            WHERE email = ?
-        `;
-    db.query(updateQuery, [email], (err) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Failed to update verification status" });
-      }
+          UPDATE emailverification
+          SET verified = 1
+          WHERE email = ?
+      `;
+    await db.promise().query(updateQuery, [email]);
 
-      res.json({ success: true, message: "인증되었습니다." });
-    });
-  });
+    await db.promise().commit(); // 트랜잭션 커밋
+
+    res.json({ success: true, message: "인증되었습니다." });
+  } catch (err) {
+    await db.promise().rollback(); // 오류 발생 시 롤백
+    console.error(err);
+    res.status(500).json({ error: "인증 처리 중 오류가 발생했습니다." });
+  }
 });
-
 // 회원가입 후 사용자 db에 저장
-router.post("/users", (req, res) => {
+router.post("/users", async (req, res) => {
   const { email, password, name } = req.body;
 
   if (!email || !password || !name) {
@@ -150,52 +158,44 @@ router.post("/users", (req, res) => {
     return res.status(400).json({ error: "비밀번호는 최소 8자, 대문자, 숫자, 특수문자를 포함해야 합니다." });
   }
 
-  db.getConnection((err, connection) => {
-    if (err) return res.status(500).json({ error: "Failed to connect to database" });
+  try {
+    await db.promise().beginTransaction(); // 트랜잭션 시작
 
-    connection.beginTransaction((err) => {
-      if (err) return res.status(500).json({ error: "Failed to start transaction" });
+    // 이메일 인증 확인
+    const verifyQuery = `SELECT verified FROM emailverification WHERE email = ?`;
+    const [verifyResults] = await db.promise().query(verifyQuery, [email]);
 
-      // 이메일 인증 확인
-      const verifyQuery = `SELECT verified FROM EmailVerification WHERE email = ?`;
-      connection.query(verifyQuery, [email], (err, results) => {
-        if (err) return connection.rollback(() => res.status(500).json({ error: "Failed to verify email" }));
+    if (verifyResults.length === 0 || verifyResults[0].verified === 0) {
+      await db.promise().rollback(); // 오류 발생 시 롤백
+      return res.status(400).json({ error: "이메일 인증을 완료해주세요." });
+    }
 
-        if (results.length === 0 || !results[0].verified) {
-          return connection.rollback(() => res.status(400).json({ error: "이메일 인증을 완료해주세요." }));
-        }
+    // 중복 가입 확인
+    const checkUserQuery = `SELECT email FROM user WHERE email = ?`;
+    const [userResults] = await db.promise().query(checkUserQuery, [email]);
 
-        // 중복 가입 확인
-        const checkUserQuery = `SELECT email FROM User WHERE email = ?`;
-        connection.query(checkUserQuery, [email], (err, userResults) => {
-          if (err) return connection.rollback(() => res.status(500).json({ error: "Failed to check existing users" }));
+    if (userResults.length > 0) {
+      await db.promise().rollback(); // 오류 발생 시 롤백
+      return res.status(400).json({ error: "이미 등록된 이메일 입니다." });
+    }
 
-          if (userResults.length > 0) {
-            return connection.rollback(() => res.status(400).json({ error: "이미 등록된 이메일 입니다." }));
-          }
+    // 사용자 정보 저장
+    const insertUserQuery = `INSERT INTO user (email, password, name) VALUES (?, ?, ?)`;
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    await db.promise().query(insertUserQuery, [email, hashedPassword, name]);
 
-          // 사용자 정보 저장
-          const insertUserQuery = `INSERT INTO User (email, password, name) VALUES (?, ?, ?)`;
-          const hashedPassword = bcrypt.hashSync(password, 10);
-          connection.query(insertUserQuery, [email, hashedPassword, name], (err) => {
-            if (err) return connection.rollback(() => res.status(500).json({ error: "Failed to register user" }));
+    // 인증 데이터 삭제
+    const deleteCodeQuery = `DELETE FROM emailverification WHERE email = ?`;
+    await db.promise().query(deleteCodeQuery, [email]);
 
-            // 인증 데이터 삭제
-            const deleteCodeQuery = `DELETE FROM EmailVerification WHERE email = ?`;
-            connection.query(deleteCodeQuery, [email], (err) => {
-              if (err) return connection.rollback(() => res.status(500).json({ error: "Failed to delete verification data" }));
+    await db.promise().commit(); // 트랜잭션 커밋
 
-              connection.commit((err) => {
-                if (err) return connection.rollback(() => res.status(500).json({ error: "Failed to commit transaction" }));
-
-                res.status(201).json({ message: "User registered successfully" });
-              });
-            });
-          });
-        });
-      });
-    });
-  });
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (err) {
+    await db.promise().rollback(); // 오류 발생 시 롤백
+    console.error(err);
+    res.status(500).json({ error: "회원가입 처리 중 오류가 발생했습니다." });
+  }
 });
 
 module.exports = router;

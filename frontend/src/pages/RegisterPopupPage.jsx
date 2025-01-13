@@ -128,7 +128,7 @@ const RegisterPopupPage = () => {
         console.log("formData: ", formData);
 
         // API - 사용자가 팝업 게시물 등록
-        const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores`, {
+        const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores`, {
           method: "POST",
           //   headers 자동설정됨
           body: formData, // FormData 객체 전송

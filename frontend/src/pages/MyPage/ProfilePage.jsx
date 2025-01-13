@@ -37,14 +37,14 @@ const ProfilePage = () => {
     const fetchUserProfile = async () => {
       try {
         //  API - 유저의 프로필 정보 조회
-        const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/profile`, {
+        const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
           },
         });
-        // const response = await fetchWithAuth(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/profile`);
+        // const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch");
@@ -76,7 +76,7 @@ const ProfilePage = () => {
 
     // API - 유저 정보 삭제
     try {
-      const response = await fetchWithAuth(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -102,7 +102,7 @@ const ProfilePage = () => {
     try {
       if (nameEditing) {
         // 이름 수정
-        const response = await fetchWithAuth(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/profile`, {
+        const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -123,7 +123,7 @@ const ProfilePage = () => {
           return;
         }
 
-        const response = await fetchWithAuth(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/profile`, {
+        const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -172,38 +172,6 @@ const ProfilePage = () => {
   };
 
   // API - 이메일 인증코드 발송
-  // const handleEmailVerification = async () => {
-  //   if (!isEmailValid) {
-  //     setEmailError("유효한 이메일을 입력해주세요.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await fetch("http://localhost:3000/api/signup/email-code", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ email }),
-  //     });
-
-  //     console.log("FE email response: ", response);
-
-  //     if (!response.ok) {
-  //       const data = await response.json();
-  //       setEmailError("오류가 발생했습니다.");
-  //       throw new Error(data.message);
-  //     }
-
-  //     // 인증번호 발송 성공
-  //     setSendNumber(true);
-  //     // alert("인증번호가 발송되었습니다.");
-  //   } catch (err) {
-  //     setEmailError("네트워크 오류가 발생했습니다.");
-  //     console.error("Error 발생: ", err);
-  //   }
-  // };
-
   const handleEmailVerification = async () => {
     if (!isEmailValid) {
       setEmailError("유효한 이메일을 입력해주세요.");
@@ -211,15 +179,13 @@ const ProfilePage = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/signup/email-code", {
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/signup/email-code`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email: emailChange }),
       });
-
-      console.log("FE email response: ", response);
 
       if (!response.ok) {
         const data = await response.json();
@@ -253,7 +219,7 @@ const ProfilePage = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/signup/verify-code", {
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/signup/verify-code`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

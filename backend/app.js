@@ -13,7 +13,6 @@ const blogRoutes = require("./routes/blogs");
 const calenderRoutes = require("./routes/calender");
 const storesRoutes = require("./routes/stores");
 const mapRoutes = require("./routes/map");
-const kakaoAuthRoutes = require('./routes/kakaoAuth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -45,7 +44,6 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/calendar", calenderRoutes);
 app.use("/api/stores", storesRoutes);
 app.use("/api/map", mapRoutes);
-app.use('/api/auth2', kakaoAuthRoutes);
 
 // 기본 라우트
 app.get("/", (req, res) => res.send("API Running..."));

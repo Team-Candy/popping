@@ -17,7 +17,7 @@ const FavoritePopupPage = () => {
       try {
         // API - 유저가 좋아요 누른 게시글 조회
         // (수정) (최적화) 매번 요청하지 않고 이걸 context 로 모든 페이지에서 볼 수 있도록?
-        const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/likes`);
+        const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/likes`);
 
         const data = await response.json();
 
@@ -101,7 +101,7 @@ const FavoritePopupPage = () => {
 
   function urlConvert(url) {
     if (url.startsWith("/upload")) {
-      return "http://localhost:3000" + url;
+      return `${import.meta.env.VITE_BE_PORT}` + url;
     } else {
       return url;
     }

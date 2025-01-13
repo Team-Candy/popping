@@ -19,7 +19,7 @@ const PopupDetailPage = () => {
   const fetchPopupDetail = async () => {
     // API - 팝업스토어 상세 정보 조회
     try {
-      const response = await fetch(`http://localhost:3000/api/stores/${popupId}`);
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/stores/${popupId}`);
 
       if (!response.ok) {
         const data = await response.json();
@@ -63,7 +63,7 @@ const PopupDetailPage = () => {
       try {
         // API - 유저가 좋아요 누른 게시글 조회
         // (수정) (최적화) 매번 요청하지 않고 이걸 context 로 모든 페이지에서 볼 수 있도록?
-        const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/likes`);
+        const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/likes`);
         const data = await response.json();
         if (!response.ok) {
           throw new Error("서버 오류 발생: ", data.error);
@@ -134,7 +134,7 @@ const PopupDetailPage = () => {
     );
 
     try {
-      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
         method: isLiked ? "DELETE" : "POST",
         headers: {
           "Content-Type": "application/json",

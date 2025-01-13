@@ -23,12 +23,8 @@ const PopupEditPage = () => {
   const [formData, setFormData] = useState({
     s_name: "",
     category: "",
-    s_name: "",
-    category: "",
     owner: "",
     location: "",
-    s_date: "",
-    e_date: "",
     s_date: "",
     e_date: "",
     business_hours: "",
@@ -59,17 +55,7 @@ const PopupEditPage = () => {
     return `${year}-${month}-${day}`; // "yyyy-MM-dd" 형식으로 반환
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString); // 입력된 날짜 문자열을 Date 객체로 변환
-    const year = date.getFullYear(); // 연도
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // 월 (0부터 시작하므로 +1을 해줌) 그리고 두 자릿수로 포맷
-    const day = String(date.getDate()).padStart(2, "0"); // 일, 두 자릿수로 포맷
-
-    return `${year}-${month}-${day}`; // "yyyy-MM-dd" 형식으로 반환
-  };
-
   const handleCategoryClick = (category) => {
-    setFormData((prev) => ({ ...prev, category: category }));
     setFormData((prev) => ({ ...prev, category: category }));
   };
 
@@ -81,31 +67,13 @@ const PopupEditPage = () => {
     const userId = sessionStorage.getItem("userId");
 
     try {
-      const response = await fetch(`http://localhost:3000/api/users/${userId}/stores/${popupId}/check-popup-permission`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const response = await fetch(`http://localhost:3000/api/users/${userId}/stores/${popupId}/check-popup-permission`, {
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/users/${userId}/stores/${popupId}/check-popup-permission`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // 권한 있음
-        setHasPermission(data.hasPermission);
-      } else {
-        // 권한 없음
-        setHasPermission(false);
-        console.log("서버 에러: ", data.message);
-        alert("해당 팝업에 대한 수정 권한이 없습니다.");
-        navigate("/myPopup");
-      }
       const data = await response.json();
 
       if (response.ok) {
@@ -130,14 +98,13 @@ const PopupEditPage = () => {
   const fetchPopupDetail = async () => {
     try {
       // (수정) API
-      const response = await fetch(`http://localhost:3000/api/stores/${popupId}`);
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/stores/${popupId}`);
       if (!response.ok) {
         throw new Error("Failed to fetch PopupDetail");
       }
       const data = await response.json();
 
       // 확인용 데이터 상태 저장
-      setDetail(data.store);
       setDetail(data.store);
 
       const splitTimeRange = async (timeRange) => {
@@ -160,20 +127,10 @@ const PopupEditPage = () => {
         description: data.store.description,
         images: data.store.images,
         contact: data.store.contact,
-        s_name: data.store.s_name,
-        category: data.store.category,
-        owner: data.store.owner,
-        location: data.store.location,
-        s_date: formatDate(data.store.s_date),
-        e_date: formatDate(data.store.e_date),
-        business_hours: data.store.business_hours,
-        description: data.store.description,
-        images: data.store.images,
-        contact: data.store.contact,
       });
 
       // 미리보기 데이터 저장 - 기존에 있던 거 '/upload/
-      setImages(data.store.images.map((i) => `http://localhost:3000${i}`));
+      setImages(data.store.images.map((i) => `${import.meta.env.VITE_BE_PORT}${i}`));
 
       setError(null);
     } catch (err) {
@@ -202,12 +159,10 @@ const PopupEditPage = () => {
       [e.target.name]: e.target.value,
     });
     // }
-    // }
   };
 
   // 빈칸 확인
   const validateForm = () => {
-    if (!formData.s_name || !formData.location || !formData.s_date) {
     if (!formData.s_name || !formData.location || !formData.s_date) {
       alert("빈 항목이 있습니다.");
       return false;
@@ -225,22 +180,13 @@ const PopupEditPage = () => {
       if (key === "images") {
         formData.images.forEach((image) => {
           // 새로 업로드된 파일은 "image[]"로 보냄
-        formData.images.forEach((image) => {
-          // 새로 업로드된 파일은 "image[]"로 보냄
           if (image instanceof File) {
-            formDataToSend.append("image[]", image);
             formDataToSend.append("image[]", image);
           } else {
             // 기존 URL은 "uploadedImage"로 보냄
             formDataToSend.append("uploadedImage", image);
-            // 기존 URL은 "uploadedImage"로 보냄
-            formDataToSend.append("uploadedImage", image);
           }
         });
-      } else if (key === "s_date" || key === "e_date") {
-        formDataToSend.append(key, formData[key] + ` 00:00:00`);
-      } else if (key === "business_hours") {
-        formDataToSend.append(key, startTime + "-" + endTime);
       } else if (key === "s_date" || key === "e_date") {
         formDataToSend.append(key, formData[key] + ` 00:00:00`);
       } else if (key === "business_hours") {
@@ -264,10 +210,7 @@ const PopupEditPage = () => {
 
     try {
       // API - 수정 정보 전달 (저장하기)
-      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
-        method: "PUT",
-      // API - 수정 정보 전달 (저장하기)
-      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
         method: "PUT",
         body: formDataToSend,
       });
@@ -322,10 +265,7 @@ const PopupEditPage = () => {
 
     try {
       // API - 유저가 작성한 게시글 삭제
-      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
-        method: "DELETE",
-      // API - 유저가 작성한 게시글 삭제
-      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -393,7 +333,6 @@ const PopupEditPage = () => {
           <div>
             <label>제목: </label>
             <input type="text" name="s_name" value={formData.s_name} onChange={handleChange} />
-            <input type="text" name="s_name" value={formData.s_name} onChange={handleChange} />
           </div>
 
           <div>
@@ -403,7 +342,6 @@ const PopupEditPage = () => {
                 key={category.value}
                 onClick={() => handleCategoryClick(category.value)}
                 style={{
-                  backgroundColor: formData.category === category.value ? "lightPink" : "transparent", // 선택된 카테고리 배경색 변경
                   backgroundColor: formData.category === category.value ? "lightPink" : "transparent", // 선택된 카테고리 배경색 변경
                   color: "black",
                   border: "1px solid #ccc",
@@ -432,11 +370,9 @@ const PopupEditPage = () => {
             <p>운영 일자</p>
             <label>시작일자:</label>
             <input type="date" name="s_date" value={formData.s_date} onChange={handleChange} />
-            <input type="date" name="s_date" value={formData.s_date} onChange={handleChange} />
             <br />
             <label>종료일자:</label>
 
-            <input type="date" name="e_date" value={formData.e_date} onChange={handleChange} />
             <input type="date" name="e_date" value={formData.e_date} onChange={handleChange} />
           </div>
 
@@ -497,8 +433,7 @@ const PopupEditPage = () => {
             {/* 이미지 */}
             <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
               {detail.images.map((url, index) => (
-                <img key={index} src={`http://localhost:3000${url}`} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
-                <img key={index} src={`http://localhost:3000${url}`} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
+                <img key={index} src={`${import.meta.env.VITE_BE_PORT}${url}`} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
               ))}
             </div>
           </div>
@@ -506,10 +441,8 @@ const PopupEditPage = () => {
           <div>
             {/* 글 */}
             <h1>제목: {detail.s_name}</h1>
-            <h1>제목: {detail.s_name}</h1>
 
             <p>
-              <strong>카테고리:</strong> {detail.category}
               <strong>카테고리:</strong> {detail.category}
             </p>
 
@@ -523,10 +456,8 @@ const PopupEditPage = () => {
 
             <p>
               <strong>시작일자:</strong> {formatDate(detail.s_date)}
-              <strong>시작일자:</strong> {formatDate(detail.s_date)}
             </p>
             <p>
-              <strong>종료일자:</strong> {formatDate(detail.e_date)}
               <strong>종료일자:</strong> {formatDate(detail.e_date)}
             </p>
 
