@@ -170,12 +170,20 @@ const PopupDetailPage = () => {
     return foundCategory ? foundCategory.label : "Unknown";
   }
 
+  const formatURL = (url) => {
+    if (url.startsWith("/upload")) {
+      return `http://localhost:3000` + url;
+    } else {
+      return url;
+    }
+  };
+
   return (
     <div>
       <div>
         <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
           {detail.images.map((url, index) => (
-            <img key={index} src={url} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
+            <img key={index} src={formatURL(url)} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
           ))}
         </div>
       </div>
