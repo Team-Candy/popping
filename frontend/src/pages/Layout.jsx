@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
-import Header from "../components/common/Header";
-import Footer from "../components/common/Footer";
-import NavBar from "../components/common/NavBar";
+import Header from "../components/layout/Header";
+import Footer from "../components/layout/Footer";
+import NavBar from "../components/layout/NavBar";
 
 const Layout = () => {
   return (

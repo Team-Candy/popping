@@ -19,3 +19,11 @@ export const fetchWithAuth = (url, options = {}) => {
     },
   });
 };
+
+export const formatURL = (url) => {
+  if (url.startsWith("/upload")) {
+    return `http://localhost:3000` + url;
+  } else {
+    return url;
+  }
+};

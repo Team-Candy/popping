@@ -12,7 +12,7 @@ function Header() {
     <header className="header">
       <div className="header-top">
         <Link to="/">
-          <img style={{ width: "200px" }} src="../../public/popping_logo(original).svg" alt="POPPING 로고"></img>
+          <img style={{ width: "200px" }} src="/popping_logo(original).svg" alt="POPPING 로고"></img>
         </Link>
         {/* <div className="logo">POPPING</div> */}
         <div className="header-actions">
