@@ -11,8 +11,10 @@ function Header() {
   return (
     <header className="header">
       <div className="header-top">
+        <div className="text-3xl font-bold !underline">Tailwind 테스트</div>
+
         <Link to="/">
-          <img style={{ width: "200px" }} src="../../public/popping_logo(original).svg" alt="POPPING 로고"></img>
+          <img style={{ width: "200px" }} src="../../public/popping.svg" alt="POPPING 로고"></img>
         </Link>
         {/* <div className="logo">POPPING</div> */}
         <div className="header-actions">

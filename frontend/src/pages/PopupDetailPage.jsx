@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import BlogReview from "../components/BlogReview";
 import Description from "../components/Description";
 import useAuth from "../context/useAuth";
+import { formatURL } from "../utils/util";
 
 const PopupDetailPage = () => {
   const { popupId } = useParams(); // URL에서 popupId 가져옴, string type임
@@ -169,14 +170,6 @@ const PopupDetailPage = () => {
     const foundCategory = korean.find((item) => item.value === category);
     return foundCategory ? foundCategory.label : "Unknown";
   }
-
-  const formatURL = (url) => {
-    if (url.startsWith("/upload")) {
-      return `http://localhost:3000` + url;
-    } else {
-      return url;
-    }
-  };
 
   return (
     <div>
