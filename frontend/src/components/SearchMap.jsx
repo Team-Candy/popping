@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { useEffect, useRef } from "react";
-import { formatDate } from "../utils/util";
+import { formatDate, formatURL } from "../utils/util";
 
 const Map = ({ region, location }) => {
   const mapRef = useRef(null); // To store the map instance
@@ -144,7 +144,7 @@ const Map = ({ region, location }) => {
               <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="color:blue" target="_blank" >길찾기</a><br>
             </div>
             <div>
-              <img src="${images}" alt="popupStore image" style="width:100px;height:100px; border-radius:10px;"/>
+              <img src="${formatURL(images[0])}" alt="popupStore image" style="width:100px;height:100px; border-radius:10px;"/>
             </div>
           </div>
         `;

@@ -32,7 +32,7 @@ const MapPage = () => {
 
   return (
     <div>
-      <h2 style={{ color: "red" }}>지도</h2>
+      <h2>지도</h2>
       <Region onSelectRegion={setSelectedRegion}></Region>
       <Map region={selectedRegion} location={location}></Map>
     </div>
