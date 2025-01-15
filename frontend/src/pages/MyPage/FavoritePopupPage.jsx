@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../context/useAuth";
-import { formatDate } from "../../utils/util";
+import { formatDate, formatURL } from "../../utils/util";
 
 const FavoritePopupPage = () => {
   const { auth } = useAuth();
@@ -131,7 +131,7 @@ const FavoritePopupPage = () => {
                   }}
                 >
                   <img
-                    src={urlConvert(popup.images[0])}
+                    src={formatURL(popup.images[0])}
                     alt={popup.s_name}
                     style={{
                       width: "100%",

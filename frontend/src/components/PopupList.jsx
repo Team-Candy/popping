@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import useAuth from "../context/useAuth";
-import { useNavigate } from "react-router-dom";
-
 import PropTypes from "prop-types";
+import useAuth from "../context/useAuth";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { formatURL } from "../utils/util";
 
 const PopupList = ({ category }) => {
   const { auth } = useAuth(); // 로그인 정보
@@ -129,25 +129,6 @@ const PopupList = ({ category }) => {
     }
   };
 
-  const heartStyle = {
-    position: "absolute",
-    bottom: "8px", // 이미지 하단 여백
-    right: "8px", // 이미지 오른쪽 여백
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "24px", // 하트 크기
-    zIndex: 10, // 이미지 위에 표시
-  };
-
-  function urlConvert(url) {
-    if (url.startsWith("/upload")) {
-      return "http://localhost:3000" + url;
-    } else {
-      return url;
-    }
-  }
-
   return (
     <div>
       {error && <p>Error: {error}</p>}
@@ -156,23 +137,10 @@ const PopupList = ({ category }) => {
         {popups.length > 0 ? (
           popups.map((popup) => (
             <div key={popup.id} onClick={() => navigate(`/popup/${popup.id}`)} style={{ cursor: "pointer", textAlign: "center", border: "1px solid #ccc", borderRadius: "8px", padding: "8px" }}>
-              <div
-                style={{
-                  position: "relative", // 이미지 컨테이너를 기준으로 버튼 배치
-                }}
-              >
-                <img
-                  src={urlConvert(popup.images[0])}
-                  alt={popup.name}
-                  style={{
-                    width: "100%",
-                    height: "150px",
-                    objectFit: "cover",
-                    borderRadius: "8px",
-                  }}
-                />
+              <div className="h-[252px] flex-col justify-center items-start gap-2 inline-flex">
+                <img src={formatURL(popup.images[0])} alt={popup.name} className="self-stretch h-[180px] rounded-2xl" />
+
                 <button
-                  style={heartStyle}
                   onClick={(e) => {
                     e.stopPropagation(); // 부모 클릭 이벤트 방지
                     handleLikeToggle(popup.id); // 하트 상태 토글
@@ -180,8 +148,13 @@ const PopupList = ({ category }) => {
                 >
                   {likedPopups.includes(popup.id) ? "❤️" : "🤍"}
                 </button>
+
+                <div className="w-[162px] justify-between items-center inline-flex">
+                  <div className="text-center text-black text-xs font-light font-['Pretendard'] leading-normal">팝업 주최명</div>
+                </div>
+
+                <p className="text-center text-black text-xs font-bold font-['Pretendard'] leading-loose">{popup.name}</p>
               </div>
-              <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.name}</p>
             </div>
           ))
         ) : (
@@ -191,6 +164,37 @@ const PopupList = ({ category }) => {
     </div>
   );
 };
+
+{
+  /* <div key={popup.id} onClick={() => navigate(`/popup/${popup.id}`)} style={{ cursor: "pointer", textAlign: "center", border: "1px solid #ccc", borderRadius: "8px", padding: "8px" }}>
+<div
+  style={{
+    position: "relative", // 이미지 컨테이너를 기준으로 버튼 배치
+  }}
+>
+  <img
+    src={urlConvert(popup.images[0])}
+    alt={popup.name}
+    style={{
+      width: "100%",
+      height: "150px",
+      objectFit: "cover",
+      borderRadius: "8px",
+    }}
+  />
+  <button
+    style={heartStyle}
+    onClick={(e) => {
+      e.stopPropagation(); // 부모 클릭 이벤트 방지
+      handleLikeToggle(popup.id); // 하트 상태 토글
+    }}
+  >
+    {likedPopups.includes(popup.id) ? "❤️" : "🤍"}
+  </button>
+</div>
+<p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.name}</p>
+</div> */
+}
 
 // category prop의 타입을 string으로 지정
 PopupList.propTypes = {
