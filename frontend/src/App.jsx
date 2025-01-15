@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import "./index.css";
 
 import Layout from "./pages/Layout";
 import PopupDetailPage from "./pages/PopupDetailPage";
@@ -27,12 +26,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <div className="text-3xl font-bold !underline">Tailwind 테스트</div>
-
         <Routes>
           {/* Route 정의 */}
           {/* 기본 경로 */}
-
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
             <Route path="calendar" element={<CalendarPage />} />
