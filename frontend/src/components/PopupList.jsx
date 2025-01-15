@@ -1,4 +1,5 @@
-<<<<<<< HEAD
+import PropTypes from "prop-types";
+import useAuth from "../context/useAuth";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -286,6 +287,7 @@ function filterByCategory(category) {
 
   return popupData.filter((item) => item.type === category);
 }
+import { formatURL } from "../utils/util";
 
 const PopupList = ({ category }) => {
   const [popups, setPopups] = useState([]);
@@ -412,7 +414,6 @@ const PopupList = ({ category }) => {
     }
   };
 
->>>>>>> ce39ece (style: tailwind 적용중)
   return (
     <div>
       {error && <p>Error: {error}</p>}
@@ -421,19 +422,6 @@ const PopupList = ({ category }) => {
         {popups.length > 0 ? (
           popups.map((popup) => (
             <div key={popup.id} onClick={() => navigate(`/popup/${popup.id}`)} style={{ cursor: "pointer", textAlign: "center", border: "1px solid #ccc", borderRadius: "8px", padding: "8px" }}>
-<<<<<<< HEAD
-              <img
-                src={popup.images[0]}
-                alt={popup.name}
-                style={{
-                  width: "100%",
-                  height: "150px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                }}
-              />
-              <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.name}</p>
-=======
               <div className="h-[252px] flex-col justify-center items-start gap-2 inline-flex">
                 <img src={formatURL(popup.images[0])} alt={popup.name} className="self-stretch h-[180px] rounded-2xl" />
 
@@ -452,7 +440,6 @@ const PopupList = ({ category }) => {
 
                 <p className="text-center text-black text-xs font-bold font-['Pretendard'] leading-loose">{popup.name}</p>
               </div>
->>>>>>> ce39ece (style: tailwind 적용중)
             </div>
           ))
         ) : (
