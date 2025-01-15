@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import "../../styles/HomeBanner.css";
+import { formatURL } from "../../utils/util";
+// import "../../styles/HomeBanner.css";
 
 const HomeBanner = () => {
   const [banners, setBanners] = useState([]); // 배너 데이터 저장
@@ -82,17 +83,45 @@ const HomeBanner = () => {
           }}
         ></div>
       ) : (
+<<<<<<< HEAD
         <div>
           <a key={banners[currentIndex].id} href={banners[currentIndex].redirectUrl} target="_blank" rel="noopener noreferrer">
             {/* noopener: 보안, noreferrer: 프라이버시 */}
             <img src={banners[currentIndex].imageUrl} alt={`Banner ${banners[currentIndex].id}`} />
             {/* alt: 배너 설명 */}
+=======
+        <div className="flex flex-col justify-center items-center mt-8">
+          <a className="text-center" key={banners[currentIndex].StoreId} href={`/popup/${banners[currentIndex].StoreId}`} target="_blank" rel="noopener noreferrer">
+            <img className="mb-4 " style={imgStyle} src={formatURL(banners[currentIndex].Images[0])} alt={`Banner ${banners[currentIndex].StoreId}`} />
+            <p className="font-semibold">{banners[currentIndex].StoreName}</p>
+            <p>
+              {formatDate(banners[currentIndex].StartDate)} - {formatDate(banners[currentIndex].EndDate)}
+            </p>
+>>>>>>> ce39ece (style: tailwind 적용중)
           </a>
-          <div>
-            <button onClick={goToPrevBanner}>Prev</button>
-            <button onClick={goToNextBanner}>Next</button>
+          <div className="flex gap-4 mt-4">
+            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" onClick={goToPrevBanner}>
+              Prev
+            </button>
+            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" onClick={goToNextBanner}>
+              Next
+            </button>
           </div>
         </div>
+
+        // <div>
+        //   <a key={banners[currentIndex].StoreId} href={`/popup/${banners[currentIndex].StoreId}`} target="_blank" rel="noopener noreferrer">
+        //     <img style={imgStyle} src={banners[currentIndex].Images[0]} alt={`Banner ${banners[currentIndex].StoreId}`} />
+        //     <p>{banners[currentIndex].StoreName}</p>
+        //     <p>
+        //       {formatDate(banners[currentIndex].StartDate)} - {formatDate(banners[currentIndex].EndDate)}
+        //     </p>
+        //   </a>
+        //   <div>
+        //     <button onClick={goToPrevBanner}>Prev</button>
+        //     <button onClick={goToNextBanner}>Next</button>
+        //   </div>
+        // </div>
       )}
     </div>
   );

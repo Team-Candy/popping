@@ -28,13 +28,18 @@ const Category = () => {
 
   return (
     <div>
+      <div className="text-center text-black text-2xl font-semibold font-['Pretendard'] leading-9">카테고리로 찾기</div>
       {/* 카테고리 버튼 목록 */}
       <div>
-        {categories.map((item) => (
-          <button key={item.value} onClick={() => handleCategoryClick(item.value)}>
-            {item.label}
-          </button>
-        ))}
+        <div className="h-20 p-4 justify-center items-center gap-4 inline-flex">
+          {categories.map((item) => (
+            <div key={item.value} className="p-3 rounded-lg border border-[#b3b3b3] justify-center items-center gap-3 flex">
+              <button className="text-center text-black text-xs font-normal font-['Pretendard'] leading-normal" onClick={() => handleCategoryClick(item.value)}>
+                {item.label}
+              </button>
+            </div>
+          ))}
+        </div>
         {/* 선택된 카테고리가 있으면 PopupList 컴포넌트를 렌더링 */}
         {selectedCategory && <PopupList category={selectedCategory}></PopupList>}
       </div>
