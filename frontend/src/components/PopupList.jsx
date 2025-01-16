@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import useAuth from "../context/useAuth";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { formatURL } from "../utils/util";
+import { fetchWithAuth, formatURL } from "../utils/util";
 
 const PopupList = ({ category }) => {
   const { auth } = useAuth(); // 로그인 정보
@@ -24,7 +24,7 @@ const PopupList = ({ category }) => {
 
     try {
       // API - 메인 페이지 - 카테고리별 팝업 스토어 그리드 정보
-      const response = await fetch(`http://localhost:3000/api/categories/${category}`);
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/categories/${category}`);
 
       if (!response.ok) {
         throw new Error("Failed to fetch categories");
@@ -35,6 +35,7 @@ const PopupList = ({ category }) => {
       // popular, scheduled
 
       const data = await response.json();
+      console.log(data);
 
       if (data.categories) {
         setPopups(data.categories);
@@ -48,7 +49,7 @@ const PopupList = ({ category }) => {
     if (category) {
       // API
       setError(null);
-      fetch(`http://localhost:3000/api/categories/${category}`)
+      fetch(`${import.meta.env.VITE_BE_PORT}/api/categories/${category}`)
         .then((res) => res.json())
         .then((data) => setPopups(data.categories))
         .catch((err) => {
@@ -69,7 +70,7 @@ const PopupList = ({ category }) => {
       try {
         // API - 유저가 좋아요 누른 게시글 조회
         // (수정) (최적화) 매번 요청하지 않고 이걸 context 로 모든 페이지에서 볼 수 있도록?
-        const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/likes`);
+        const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/likes`);
         const data = await response.json();
         if (!response.ok) {
           throw new Error("서버 오류 발생: ", data.error);
@@ -106,7 +107,7 @@ const PopupList = ({ category }) => {
 
     // API - 서버에 요청
     try {
-      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
         method: isLiked ? "DELETE" : "POST",
         headers: {
           "Content-Type": "application/json",
@@ -150,7 +151,7 @@ const PopupList = ({ category }) => {
                 </button>
 
                 <div className="w-[162px] justify-between items-center inline-flex">
-                  <div className="text-center text-black text-xs font-light font-['Pretendard'] leading-normal">팝업 주최명</div>
+                  <div className="text-center text-black text-xs font-light font-['Pretendard'] leading-normal">{popup.owner}</div>
                 </div>
 
                 <p className="text-center text-black text-xs font-bold font-['Pretendard'] leading-loose">{popup.name}</p>

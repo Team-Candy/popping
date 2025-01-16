@@ -169,7 +169,7 @@ router.get("/:u_id/profile", authenticateJWT, async (req, res) => {
 });
 
 // 유저가 팝업스토어어 등록하는 기능
-router.post("/:u_id/stores", upload.array("image[]", 10), async (req, res) => {
+router.post("/:u_id/stores", upload.array("image[]", 10), authenticateJWT, async (req, res) => {
   // console.log("Files: ", req.files); // 업로드된 파일 확인
   // console.log("Body: ", req.body); // 폼 데이터 확인
 
@@ -231,7 +231,7 @@ router.post("/:u_id/stores", upload.array("image[]", 10), async (req, res) => {
 });
 
 // 유저가 작성한 팝업스토어어 조회
-router.get("/:u_id/stores", async (req, res) => {
+router.get("/:u_id/stores", authenticateJWT, async (req, res) => {
   const { u_id } = req.params;
 
   const query = `
@@ -256,6 +256,7 @@ router.get("/:u_id/stores", async (req, res) => {
 
   try {
     const [results] = await db.promise().query(query, [u_id]);
+    console.log("results: ", results);
 
     // 결과가 없을 때
     if (results.length === 0) {
@@ -284,7 +285,7 @@ router.get("/:u_id/stores", async (req, res) => {
 });
 
 // 유저가 작성한 팝업스토어 수정 접근 권한 확인
-router.post("/:u_id/stores/:s_id/check-popup-permission", async (req, res) => {
+router.post("/:u_id/stores/:s_id/check-popup-permission", authenticateJWT, async (req, res) => {
   const { u_id, s_id } = req.params;
 
   try {
@@ -323,7 +324,7 @@ router.post("/:u_id/stores/:s_id/check-popup-permission", async (req, res) => {
 });
 
 // 유저가 작성한 팝업스토어어 수정
-router.put("/:u_id/stores/:s_id", upload.array("image[]", 10), async (req, res) => {
+router.put("/:u_id/stores/:s_id", upload.array("image[]", 10), authenticateJWT, async (req, res) => {
   const { u_id, s_id } = req.params;
   const { s_name, owner, contact, location, s_date, e_date, business_hours, description, category, deleteImages } = req.body;
 
@@ -415,178 +416,8 @@ router.put("/:u_id/stores/:s_id", upload.array("image[]", 10), async (req, res) 
   }
 });
 
-// router.put("/:u_id/stores/:s_id", upload.array("image[]", 10), async (req, res) => {
-//   const { u_id, s_id } = req.params;
-//   const { s_name, owner, contact, location, s_date, e_date, business_hours, description, category } = req.body;
-
-//   // 업로드된 파일 정보
-//   const files = req.files;
-//   console.log("files: ", files);
-//   const imageUrls = files.map((file) => `/uploads/${file.filename}`); // 저장된 이미지 URL 생성
-
-//   // 필수 필드 확인
-//   if (!s_name || !owner || !contact || !location || !s_date || !e_date || !business_hours || !description || !category) {
-//     return res.status(400).json({ error: "All fields are required" });
-//   }
-
-//   try {
-//     // 시작 트랜잭션
-//     await db.promise().beginTransaction();
-
-//     const storeQuery = `
-//             UPDATE store
-//             SET s_name = ?, owner = ?, contact = ?, location = ?, s_date = ?, e_date = ?, business_hours = ?, description = ?
-//             WHERE s_id = ? AND u_id = ?
-//         `;
-//     const storeValues = [s_name, owner, contact, location, s_date, e_date, business_hours, description, s_id, u_id];
-
-//     // Store 테이블에 데이터 업데이트
-//     const [storeResult] = await db.promise().query(storeQuery, storeValues);
-
-//     if (storeResult.affectedRows === 0) {
-//       await db.promise().rollback();
-//       return res.status(404).json({ error: "Store not found" });
-//     }
-
-//     // 1. 기존 이미지 URL 가져오기
-//     const getExistingImagesQuery = `SELECT image_url FROM store_image WHERE s_id = ?`;
-//     const [existingImages] = await db.promise().query(getExistingImagesQuery, [s_id]);
-
-//     const existingImageUrls = existingImages.map((image) => image.image_url);
-//     const allImageUrls = [...existingImageUrls, ...imageUrls];
-
-//     // 2. store_image 테이블에 새 이미지 추가
-//     const imageQuery = `
-//             INSERT INTO store_image (s_id, image_url) VALUES ?
-//         `;
-//     const imageValues = allImageUrls.map((url) => [s_id, url]);
-
-//     await db.promise().query(imageQuery, [imageValues]);
-
-//     // 3. 기존 카테고리 삭제 및 새로운 카테고리 추가
-//     const deleteCategoryQuery = `DELETE FROM category WHERE s_id = ?`;
-//     await db.promise().query(deleteCategoryQuery, [s_id]);
-
-//     const insertCategoryQuery = `INSERT INTO category (s_id, name) VALUES (?, ?)`;
-//     await db.promise().query(insertCategoryQuery, [s_id, category]);
-
-//     // 4. 트랜잭션 커밋
-//     await db.promise().commit();
-
-//     res.status(200).json({
-//       message: "Store, images, and category updated successfully",
-//       store: {
-//         s_id,
-//         s_name,
-//         owner,
-//         contact,
-//         location,
-//         s_date,
-//         e_date,
-//         business_hours,
-//         description,
-//         category,
-//       },
-//       images: allImageUrls,
-//     });
-//   } catch (err) {
-//     console.error("Error during store update:", err.message);
-//     await db.promise().rollback();
-//     res.status(500).json({ error: "Failed to update store, images, or category" });
-//   }
-// });
-
-// router.put("/:u_id/stores/:s_id", upload.array("image[]", 10), async (req, res) => {
-//   const { u_id, s_id } = req.params;
-//   const { s_name, owner, contact, location, s_date, e_date, business_hours, description, category, existingImageUrls = [] } = req.body;
-
-//   // 업로드된 파일 정보
-//   const files = req.files;
-//   const newImageUrls = files.map((file) => `/uploads/${file.filename}`); // 새로 추가된 이미지 URL
-//   const allImageUrls = [...existingImageUrls, ...newImageUrls];
-
-//   if (!s_name || !owner || !contact || !location || !s_date || !e_date || !business_hours || !description || !category) {
-//     return res.status(400).json({ error: "All fields are required" });
-//   }
-
-//   try {
-//     // 시작 트랜잭션
-//     await db.promise().beginTransaction();
-
-//     const storeQuery = `
-//           UPDATE store
-//           SET s_name = ?, owner = ?, contact = ?, location = ?, s_date = ?, e_date = ?, business_hours = ?, description = ?
-//           WHERE s_id = ? AND u_id = ?
-//       `;
-//     const storeValues = [s_name, owner, contact, location, s_date, e_date, business_hours, description, s_id, u_id];
-
-//     const [storeResult] = await db.promise().query(storeQuery, storeValues);
-
-//     if (storeResult.affectedRows === 0) {
-//       await db.promise().rollback();
-//       return res.status(404).json({ error: "Store not found" });
-//     }
-
-//     // 1. 기존 이미지 URL 가져오기
-//     const getExistingImagesQuery = `SELECT image_url FROM store_image WHERE s_id = ?`;
-//     const [existingImages] = await db.promise().query(getExistingImagesQuery, [s_id]);
-
-//     const dbImageUrls = existingImages.map((image) => image.image_url);
-
-//     // 2. 삭제된 이미지 URL 계산
-//     const deletedImageUrls = dbImageUrls.filter((url) => !existingImageUrls.includes(url));
-
-//     if (deletedImageUrls.length > 0) {
-//       const deleteImageQuery = `
-//               DELETE FROM store_image WHERE s_id = ? AND image_url IN (?)
-//           `;
-//       await db.promise().query(deleteImageQuery, [s_id, deletedImageUrls]);
-//     }
-
-//     // 3. 새 이미지 URL 추가
-//     if (newImageUrls.length > 0) {
-//       const imageQuery = `
-//               INSERT INTO store_image (s_id, image_url) VALUES ?
-//           `;
-//       const imageValues = newImageUrls.map((url) => [s_id, url]);
-//       await db.promise().query(imageQuery, [imageValues]);
-//     }
-
-//     // 4. 기존 카테고리 삭제 및 새로운 카테고리 추가
-//     const deleteCategoryQuery = `DELETE FROM category WHERE s_id = ?`;
-//     await db.promise().query(deleteCategoryQuery, [s_id]);
-
-//     const insertCategoryQuery = `INSERT INTO category (s_id, name) VALUES (?, ?)`;
-//     await db.promise().query(insertCategoryQuery, [s_id, category]);
-
-//     // 5. 트랜잭션 커밋
-//     await db.promise().commit();
-
-//     res.status(200).json({
-//       message: "Store, images, and category updated successfully",
-//       store: {
-//         s_id,
-//         s_name,
-//         owner,
-//         contact,
-//         location,
-//         s_date,
-//         e_date,
-//         business_hours,
-//         description,
-//         category,
-//       },
-//       images: allImageUrls,
-//     });
-//   } catch (err) {
-//     console.error("Error during store update:", err.message);
-//     await db.promise().rollback();
-//     res.status(500).json({ error: "Failed to update store, images, or category" });
-//   }
-// });
-
 // 유저가 작성한 게시글 삭제
-router.delete("/:u_id/stores/:s_id", async (req, res) => {
+router.delete("/:u_id/stores/:s_id", authenticateJWT, async (req, res) => {
   const { u_id, s_id } = req.params;
 
   try {
@@ -621,7 +452,7 @@ router.delete("/:u_id/stores/:s_id", async (req, res) => {
   }
 });
 
-router.get("/:u_id/stores/:s_id/likes", async (req, res) => {
+router.get("/:u_id/stores/:s_id/likes", authenticateJWT, async (req, res) => {
   const { u_id, s_id } = req.params;
 
   // 입력 검증
@@ -646,7 +477,7 @@ router.get("/:u_id/stores/:s_id/likes", async (req, res) => {
 });
 
 // 사용자가 팝업 스토어에 좋아요 추가
-router.post("/:u_id/stores/:s_id/likes", async (req, res) => {
+router.post("/:u_id/stores/:s_id/likes", authenticateJWT, async (req, res) => {
   const { u_id, s_id } = req.params;
 
   // 입력 검증
@@ -674,7 +505,7 @@ router.post("/:u_id/stores/:s_id/likes", async (req, res) => {
 });
 
 // 사용자가 팝업 스토어에 좋아요 취소
-router.delete("/:u_id/stores/:s_id/likes", async (req, res) => {
+router.delete("/:u_id/stores/:s_id/likes", authenticateJWT, async (req, res) => {
   const { u_id, s_id } = req.params;
 
   // 입력 검증
@@ -706,7 +537,7 @@ router.delete("/:u_id/stores/:s_id/likes", async (req, res) => {
 });
 
 // 사용자가 좋아요 누른 게시글 조회
-router.get("/:u_id/likes", async (req, res) => {
+router.get("/:u_id/likes", authenticateJWT, async (req, res) => {
   const { u_id } = req.params;
 
   // 입력 검증
@@ -725,14 +556,12 @@ router.get("/:u_id/likes", async (req, res) => {
             store.e_date, 
             store.business_hours, 
             store.description,
-            JSON_ARRAYAGG(store_image.image_url) AS images,
-            category.name AS category
+            JSON_ARRAYAGG(store_image.image_url) AS images
         FROM store
         JOIN likes ON store.s_id = likes.s_id
         LEFT JOIN store_image ON store.s_id = store_image.s_id
-        LEFT JOIN category ON store.s_id = category.s_id
         WHERE likes.u_id = ?
-        GROUP BY store.s_id, category.name
+        GROUP BY store.s_id
     `;
 
   try {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../context/useAuth";
-import { formatDate, formatURL } from "../../utils/util";
+import { fetchWithAuth, formatDate, formatURL } from "../../utils/util";
 
 const FavoritePopupPage = () => {
   const { auth } = useAuth();
@@ -17,7 +17,7 @@ const FavoritePopupPage = () => {
       try {
         // API - 유저가 좋아요 누른 게시글 조회
         // (수정) (최적화) 매번 요청하지 않고 이걸 context 로 모든 페이지에서 볼 수 있도록?
-        const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/likes`);
+        const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/likes`);
 
         const data = await response.json();
 
@@ -64,7 +64,7 @@ const FavoritePopupPage = () => {
 
     // API - 팝업 스토어 좋아요 추가 / 삭제
     try {
-      const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
+      const response = await fetchWithAuth(`/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
         method: isLiked ? "DELETE" : "POST",
         headers: {
           "Content-Type": "application/json",
@@ -98,14 +98,6 @@ const FavoritePopupPage = () => {
     fontSize: "24px", // 하트 크기
     zIndex: 10, // 이미지 위에 표시
   };
-
-  function urlConvert(url) {
-    if (url.startsWith("/upload")) {
-      return "http://localhost:3000" + url;
-    } else {
-      return url;
-    }
-  }
 
   return (
     <div>

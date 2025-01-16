@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../../styles/PopupEditPage.css";
+import { fetchWithAuth } from "../../utils/util";
 
 const PopupEditPage = () => {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ const PopupEditPage = () => {
     const userId = sessionStorage.getItem("userId");
 
     try {
-      const response = await fetch(`http://localhost:3000/api/users/${userId}/stores/${popupId}/check-popup-permission`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${userId}/stores/${popupId}/check-popup-permission`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -98,7 +99,7 @@ const PopupEditPage = () => {
   const fetchPopupDetail = async () => {
     try {
       // (수정) API
-      const response = await fetch(`http://localhost:3000/api/stores/${popupId}`);
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/stores/${popupId}`);
       if (!response.ok) {
         throw new Error("Failed to fetch PopupDetail");
       }
@@ -130,7 +131,7 @@ const PopupEditPage = () => {
       });
 
       // 미리보기 데이터 저장 - 기존에 있던 거 '/upload/
-      setImages(data.store.images.map((i) => `http://localhost:3000${i}`));
+      setImages(data.store.images.map((i) => `${import.meta.env.VITE_BE_PORT}${i}`));
 
       setError(null);
     } catch (err) {
@@ -210,7 +211,7 @@ const PopupEditPage = () => {
 
     try {
       // API - 수정 정보 전달 (저장하기)
-      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
         method: "PUT",
         body: formDataToSend,
       });
@@ -265,7 +266,7 @@ const PopupEditPage = () => {
 
     try {
       // API - 유저가 작성한 게시글 삭제
-      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -433,7 +434,7 @@ const PopupEditPage = () => {
             {/* 이미지 */}
             <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
               {detail.images.map((url, index) => (
-                <img key={index} src={`http://localhost:3000${url}`} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
+                <img key={index} src={`${import.meta.env.VITE_BE_PORT}${url}`} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
               ))}
             </div>
           </div>

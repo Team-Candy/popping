@@ -23,7 +23,7 @@ export const fetchWithAuth = (url, options = {}) => {
 // 이미지 불러오기
 export const formatURL = (url) => {
   if (url.startsWith("/upload")) {
-    return `http://localhost:3000` + url;
+    return `${import.meta.env.VITE_BE_PORT}` + url;
   } else {
     return url;
   }
