@@ -9,7 +9,6 @@ const HomeBanner = () => {
   const [currentIndex, setCurrentIndex] = useState(0); // 현재 배너 인덱스
 
   // (수정) 배너 로딩 느림, 부자연스러움
-
   useEffect(() => {
     const fetchBanners = async () => {
       try {
@@ -19,10 +18,6 @@ const HomeBanner = () => {
           throw new Error("Failed tp fetch banners");
         }
         const data = await response.json();
-        // StoreId
-        // StoreName
-        // StartDate:"2024-11-28T15:00:00.000Z"
-        // EndDate:"2024-11-28T15:00:00.000Z"
 
         setBanners(data.banners); // 배너 데이터 저장
       } catch (err) {

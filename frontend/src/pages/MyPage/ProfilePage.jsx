@@ -306,14 +306,24 @@ const ProfilePage = () => {
 
           {emailEditing ? (
             <div>
-              <button onClick={handleChange}>완료</button>
-              <button onClick={() => setEmailEditing((prev) => !prev)}>취소</button>
+              <button onClick={handleChange} disabled={!isEmailValid}>
+                완료
+              </button>
+              <button
+                onClick={() => {
+                  setEmailEditing((prev) => !prev);
+                  setIsEmailValid(true);
+                }}
+              >
+                취소
+              </button>
             </div>
           ) : (
             <button
               onClick={() => {
                 setEmailChange(email);
-                setEmailEditing((prev) => !prev);
+                setIsEmailValid(false);
+                setEmailEditing(true);
               }}
             >
               변경

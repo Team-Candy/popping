@@ -11,6 +11,7 @@ const PopupList = ({ category }) => {
   const [popups, setPopups] = useState([]);
   const [error, setError] = useState(null);
   const [likedPopups, setLikedPopups] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // API - 팝업 데이터 가져오기
   useEffect(() => {
@@ -42,12 +43,13 @@ const PopupList = ({ category }) => {
       }
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false); // 로딩 완료
     }
   };
 
   useEffect(() => {
     if (category) {
-      // API
       setError(null);
       fetch(`${import.meta.env.VITE_BE_PORT}/api/categories/${category}`)
         .then((res) => res.json())
@@ -72,8 +74,12 @@ const PopupList = ({ category }) => {
         // (수정) (최적화) 매번 요청하지 않고 이걸 context 로 모든 페이지에서 볼 수 있도록?
         const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/likes`);
         const data = await response.json();
+
         if (!response.ok) {
-          throw new Error("서버 오류 발생: ", data.error);
+          if (data.error === "Likes not found") {
+            return;
+          }
+          throw new Error("Failed to fetch liked popups", data.error);
         }
 
         const likes = data.likes.map((store) => store.s_id);
@@ -88,7 +94,7 @@ const PopupList = ({ category }) => {
     fetchLikesData();
   }, [auth.isLoggedIn]);
 
-  // 좋아요 추가
+  // 좋아요 추가 함수
   const handleLikeToggle = async (popupId) => {
     if (!auth.isLoggedIn) {
       navigate("/login");
@@ -159,7 +165,7 @@ const PopupList = ({ category }) => {
             </div>
           ))
         ) : (
-          <p>No Popup available for this category.</p>
+          <div>{loading ? <></> : <p>해당 카테고리에 대한 팝업이 없습니다.</p>}</div>
         )}
       </div>
     </div>
@@ -197,9 +203,8 @@ const PopupList = ({ category }) => {
 </div> */
 }
 
-// category prop의 타입을 string으로 지정
 PopupList.propTypes = {
-  category: PropTypes.string.isRequired, // category는 필수로 string이어야 함
+  category: PropTypes.string.isRequired,
 };
 
 export default PopupList;
