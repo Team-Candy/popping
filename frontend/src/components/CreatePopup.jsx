@@ -18,9 +18,8 @@ const CreatePopup = () => {
   return (
     <>
       <div>
-        {/* <div className="text-3xl bg-blue-500">Tailwind Css 적용 테스트</div> */}
-        <div className="px-4 py-2 bg-[#f0f0f0] rounded-full justify-center items-center gap-2 flex">
-          <button className="text-center text-red text-sm font-medium font-['Pretendard'] leading-normal" onClick={handleClick}>
+        <div className="px-2 py-1 bg-[#f0f0f0] rounded-full justify-center items-center gap-2 flex hover:scale-105 hover:shadow-sm transition-all">
+          <button className="text-center text-red text-xs font-medium font-['Pretendard'] leading-normal" onClick={handleClick}>
             팝업 올리기
           </button>
         </div>

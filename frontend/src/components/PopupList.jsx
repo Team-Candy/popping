@@ -147,7 +147,7 @@ const PopupList = ({ category }) => {
               </div>
               <div className="flex w-full justify-between items-center inline-flex">
                 <div>
-                  <p className="text-xs text-[#808080]">{popup.owner}</p>
+                  <p className="mt-2 text-xs text-[#808080]">{popup.owner}</p>
                 </div>
 
                 {/* 하트 버튼 */}
@@ -169,40 +169,6 @@ const PopupList = ({ category }) => {
       )}
     </div>
   );
-  // return (
-  //   <div className="mx-auto grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-7 gap-7">
-  //     {error && <p>Error: {error}</p>}
-  //     {popups.length > 0 ? (
-  //       popups.map((popup) => (
-  //         <div className="mb-2 hover:cursor-pointer max-w-[150px] max-h-[200px]" key={popup.id} onClick={() => navigate(`/popup/${popup.id}`)}>
-  //           <div>
-  //             <div className="max-w-[150px] max-h-[150px] aspect-square overflow-hidden rounded-md">
-  //               <img src={formatURL(popup.images[0])} alt={popup.name} className="w-full h-full object-cover" />
-  //             </div>
-  //             <div className="flex w-full justify-between items-center inline-flex">
-  //               <div>
-  //                 <p className="text-xs text-[#808080]">{popup.owner}</p>
-  //               </div>
-
-  //               {/* 하트 버튼 */}
-  //               <button
-  //                 onClick={(e) => {
-  //                   e.stopPropagation(); // 부모 클릭 이벤트 방지
-  //                   handleLikeToggle(popup.id); // 하트 상태 토글
-  //                 }}
-  //               >
-  //                 {likedPopups.includes(popup.id) ? "❤️" : "🤍"}
-  //               </button>
-  //             </div>
-  //             <p className="text-[13px] font-bold">{popup.name}</p>
-  //           </div>
-  //         </div>
-  //       ))
-  //     ) : (
-  //       <div>{loading ? <></> : <p>해당 카테고리에 대한 팝업이 없습니다.</p>}</div>
-  //     )}
-  //   </div>
-  // );
 };
 
 PopupList.propTypes = {
