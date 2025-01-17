@@ -1,11 +1,8 @@
-<<<<<<< HEAD
-=======
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../context/useAuth";
 import { formatDate, formatURL } from "../../utils/util";
 
->>>>>>> ce39ece (style: tailwind 적용중)
 const FavoritePopupPage = () => {
   const titleStyle = { fontWeight: "bold", fontSize: 19 };
   return (
@@ -27,8 +24,6 @@ const FavoritePopupPage = () => {
       <div>
         <p style={titleStyle}>종료된 팝업</p>
       </div>
-<<<<<<< HEAD
-=======
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
@@ -77,7 +72,6 @@ const FavoritePopupPage = () => {
       ) : (
         <div>Calendar view coming soon...</div>
       )}
->>>>>>> ce39ece (style: tailwind 적용중)
     </div>
   );
 };
