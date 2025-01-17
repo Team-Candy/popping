@@ -18,13 +18,16 @@ const PopupEditPage = () => {
   // 미리보기 URL 관리
   const [images, setImages] = useState([]);
 
+  // 삭제된 이미지
+  const [deleteImages, setDeleteImages] = useState([]);
+
   const [formData, setFormData] = useState({
-    name: "",
-    type: "",
+    s_name: "",
+    category: "",
     owner: "",
     location: "",
-    startDate: "",
-    endDate: "",
+    s_date: "",
+    e_date: "",
     business_hours: "",
     description: "",
     contact: "",
@@ -44,8 +47,17 @@ const PopupEditPage = () => {
     { label: "기타", value: "others" },
   ];
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString); // 입력된 날짜 문자열을 Date 객체로 변환
+    const year = date.getFullYear(); // 연도
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // 월 (0부터 시작하므로 +1을 해줌) 그리고 두 자릿수로 포맷
+    const day = String(date.getDate()).padStart(2, "0"); // 일, 두 자릿수로 포맷
+
+    return `${year}-${month}-${day}`; // "yyyy-MM-dd" 형식으로 반환
+  };
+
   const handleCategoryClick = (category) => {
-    setFormData((prev) => ({ ...prev, type: category }));
+    setFormData((prev) => ({ ...prev, category: category }));
   };
 
   // (수정) 보안 2가지 방식
@@ -56,44 +68,25 @@ const PopupEditPage = () => {
     const userId = sessionStorage.getItem("userId");
 
     try {
-      //   200 OK
-      //     {
-      //       "hasPermission": true,
-      //       "message": "You have permission to edit this popup."
-      //     }
+      const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${userId}/stores/${popupId}/check-popup-permission`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-      //   403 Forbidden
-      //     {
-      //       "hasPermission": false,
-      //       "message": "You do not have permission to edit this popup."
-      //     }
+      const data = await response.json();
 
-      // (수정) API
-      //   const response = await fetch(`/api/check-popup-permission`, {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({ popupId, userId }),
-      //   });
-
-      //   const data = await response.json();
-      //   if (response.ok) {
-      //     // 권한 있음
-      //     setHasPermission(data.hasPermission);
-      //   } else {
-      //     // 권한 없음
-      //     setHasPermission(false);
-      //     alert("해당 팝업에 대한 수정 권한이 없습니다.");
-      //     navigate("/myPopup");
-      //   }
-
-      // (수정) MOCK
-      const data = {
-        hasPermission: true,
-        message: "You have permission to edit this popup.",
-      };
-      setHasPermission(data.hasPermission);
+      if (response.ok) {
+        // 권한 있음
+        setHasPermission(data.hasPermission);
+      } else {
+        // 권한 없음
+        setHasPermission(false);
+        console.log("서버 에러: ", data.message);
+        alert("해당 팝업에 대한 수정 권한이 없습니다.");
+        navigate("/myPopup");
+      }
     } catch (err) {
       console.error("권한 확인 중 오류 발생", err);
       setHasPermission(false);
@@ -106,58 +99,39 @@ const PopupEditPage = () => {
   const fetchPopupDetail = async () => {
     try {
       // (수정) API
-      //   const response = await fetch(`api/stores/${popupId}`);
-      //   if (!response.ok) {
-      //     throw new Error("Failed to fetch PopupDetail");
-      //   }
-      //   const data = await response.json();
-      //   setSelectedCategory(data.type);
-
-      // (수정) MOCK
-      const data = {
-        id: 100,
-        type: "culture",
-        owner: "netflix",
-        name: "오징어게임2 팝업스토어 in 강남",
-        location: "서울 서초구 신반포로 176 신세계백화점 강남점 1층 오픈스테이지",
-        startDate: "2024.12.20",
-        endDate: "2025.01.12",
-        business_hours: "10:30-20:00",
-        description: "<오징어 게임> 시즌2 팝업, 참여하시겠습니까?",
-        images: ["https://i.ibb.co/tPJYqCB/detail2-1.jpg", "https://i.ibb.co/10Xfvwr/detail2-2.jpg", "https://i.ibb.co/mb5c4xj/detail2-3.jpg"],
-        contact: "example@naver.com",
-      };
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/stores/${popupId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch PopupDetail");
+      }
+      const data = await response.json();
 
       // 확인용 데이터 상태 저장
-      setDetail(data);
+      setDetail(data.store);
 
-      // 수정용 데이터 상태 저장
       const splitTimeRange = async (timeRange) => {
         const [sTime, eTime] = timeRange.split("-");
         setStartTime(sTime);
         setEndTime(eTime);
       };
 
-      splitTimeRange(data.business_hours);
+      splitTimeRange(data.store.business_hours);
 
-      const convertDateFormat = (date) => {
-        return date.replace(/\./g, "-");
-      };
-
+      // 수정용 데이터 상태 저장
       setFormData({
-        name: data.name,
-        type: data.type,
-        owner: data.owner,
-        location: data.location,
-        startDate: convertDateFormat(data.startDate),
-        endDate: convertDateFormat(data.endDate),
-        business_hours: data.business_hours,
-        description: data.description,
-        images: data.images,
-        contact: data.contact,
+        s_name: data.store.s_name,
+        category: data.store.category,
+        owner: data.store.owner,
+        location: data.store.location,
+        s_date: formatDate(data.store.s_date),
+        e_date: formatDate(data.store.e_date),
+        business_hours: data.store.business_hours,
+        description: data.store.description,
+        images: data.store.images,
+        contact: data.store.contact,
       });
 
-      setImages(data.images);
+      // 미리보기 데이터 저장 - 기존에 있던 거 '/upload/
+      setImages(data.store.images.map((i) => `${import.meta.env.VITE_BE_PORT}${i}`));
 
       setError(null);
     } catch (err) {
@@ -185,51 +159,60 @@ const PopupEditPage = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
+    // }
   };
 
   // 빈칸 확인
   const validateForm = () => {
-    if (!formData.name || !formData.location || !formData.startDate) {
-      alert("빈 항목이 있습니다.");
+    console.log("formData.images: ", formData.images);
+    if (formData.s_name && formData.category && formData.owner && formData.business_hours && formData.location && formData.s_date && formData.e_date && formData.images.some((image) => image !== null) && formData.contact) {
+      return true;
+    } else {
+      alert("빈 항목을 확인해주세요.");
       return false;
     }
-    return true;
   };
 
   // 수정된 데이터 서버로 전송
   const handleSave = async () => {
-    // 디버깅
-    console.log("수정된 데이터:", formData);
-    console.log("이미지 데이터:", formData.images);
-
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      return;
+    }
 
     const formDataToSend = new FormData();
 
     Object.keys(formData).forEach((key) => {
       if (key === "images") {
-        formData.images.forEach((image, index) => {
-          // 파일은 "images"로 보냄
+        formData.images.forEach((image) => {
+          // 새로 업로드된 파일은 "image[]"로 보냄
           if (image instanceof File) {
-            formDataToSend.append("images", image, `image_${index}.jpg`);
+            formDataToSend.append("image[]", image);
           } else {
-            // URL은 "imageUrls"로 보냄
-            formDataToSend.append("imageUrls", image);
+            // 기존 URL은 "uploadedImage"로 보냄
+            formDataToSend.append("uploadedImage", image);
           }
         });
+      } else if (key === "s_date" || key === "e_date") {
+        formDataToSend.append(key, formData[key] + ` 00:00:00`);
+      } else if (key === "business_hours") {
+        formDataToSend.append(key, startTime + "-" + endTime);
       } else {
         // 나머지는 그대로
         formDataToSend.append(key, formData[key]);
       }
     });
 
+    formDataToSend.append("deleteImages", JSON.stringify(deleteImages));
+
     // FormData의 내용 출력
     for (const [key, value] of formDataToSend.entries()) {
       console.log(`${key}: ${value}`);
     }
+
     try {
-      const response = await fetch(`/api/stores/${popupId}`, {
-        method: "POST",
+      // API - 수정 정보 전달 (저장하기)
+      const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
+        method: "PUT",
         body: formDataToSend,
       });
 
@@ -282,12 +265,12 @@ const PopupEditPage = () => {
     }
 
     try {
-      const response = await fetch(`/api/store/delete`, {
-        method: "POST",
+      // API - 유저가 작성한 게시글 삭제
+      const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ popupId }),
       });
 
       if (!response.ok) {
@@ -328,6 +311,11 @@ const PopupEditPage = () => {
 
   // 이미지 삭제
   const handleDeleteImage = (index) => {
+    // 기존 이미지 중 삭제된 url 관리
+    if (formData.images[index].startsWith("/upload")) {
+      setDeleteImages([...deleteImages, formData.images[index]]);
+    }
+
     // formData에서 이미지 파일 삭제
     const newImages = formData.images.filter((_, i) => i !== index);
     setFormData({ ...formData, images: newImages });
@@ -345,7 +333,7 @@ const PopupEditPage = () => {
         <div>
           <div>
             <label>제목: </label>
-            <input type="text" name="name" value={formData.name} onChange={handleChange} />
+            <input type="text" name="s_name" value={formData.s_name} onChange={handleChange} />
           </div>
 
           <div>
@@ -355,7 +343,7 @@ const PopupEditPage = () => {
                 key={category.value}
                 onClick={() => handleCategoryClick(category.value)}
                 style={{
-                  backgroundColor: formData.type === category.value ? "lightPink" : "transparent", // 선택된 카테고리 배경색 변경
+                  backgroundColor: formData.category === category.value ? "lightPink" : "transparent", // 선택된 카테고리 배경색 변경
                   color: "black",
                   border: "1px solid #ccc",
                   borderRadius: "8px",
@@ -382,11 +370,11 @@ const PopupEditPage = () => {
           <div>
             <p>운영 일자</p>
             <label>시작일자:</label>
-            <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} />
+            <input type="date" name="s_date" value={formData.s_date} onChange={handleChange} />
             <br />
             <label>종료일자:</label>
 
-            <input type="date" name="endDate" value={formData.endDate} onChange={handleChange} />
+            <input type="date" name="e_date" value={formData.e_date} onChange={handleChange} />
           </div>
 
           <div>
@@ -446,17 +434,17 @@ const PopupEditPage = () => {
             {/* 이미지 */}
             <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
               {detail.images.map((url, index) => (
-                <img key={index} src={url} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
+                <img key={index} src={`${import.meta.env.VITE_BE_PORT}${url}`} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
               ))}
             </div>
           </div>
 
           <div>
             {/* 글 */}
-            <h1>제목: {detail.name}</h1>
+            <h1>제목: {detail.s_name}</h1>
 
             <p>
-              <strong>카테고리:</strong> {detail.type}
+              <strong>카테고리:</strong> {detail.category}
             </p>
 
             <p>
@@ -468,10 +456,10 @@ const PopupEditPage = () => {
             </p>
 
             <p>
-              <strong>시작일자:</strong> {detail.startDate}
+              <strong>시작일자:</strong> {formatDate(detail.s_date)}
             </p>
             <p>
-              <strong>종료일자:</strong> {detail.endDate}
+              <strong>종료일자:</strong> {formatDate(detail.e_date)}
             </p>
 
             <p>

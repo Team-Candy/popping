@@ -23,6 +23,7 @@ const AuthProvider = ({ children }) => {
     sessionStorage.setItem("userId", userId); // 사용자 고유 ID 저장
 
     // 디버깅
+    console.log("login, auth.isLoggedIn: ", auth.isLoggedIn);
     console.log("login, authToken: ", sessionStorage.getItem("authToken"));
     console.log("login, username: ", sessionStorage.getItem("username"));
     console.log("login, userId: ", sessionStorage.getItem("userId"));
@@ -30,12 +31,13 @@ const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setAuth({ isLoggedIn: false, username: "" });
-    sessionStorage.removeItem("authToken"); // 토큰 제거
-    sessionStorage.removeItem("username"); // 사용자 이름 제거
+    sessionStorage.clear(); // sessionStorage 비우기
+    // sessionStorage.removeItem("authToken"); // 토큰 제거
+    // sessionStorage.removeItem("username"); // 사용자 이름 제거
 
     // 디버깅
-    console.log("logout, authToken: ", localStorage.getItem("authToken"));
-    console.log("logout, username: ", localStorage.getItem("username"));
+    // console.log("logout, authToken: ", localStorage.getItem("authToken"));
+    // console.log("logout, username: ", localStorage.getItem("username"));
   };
   return <AuthContext.Provider value={{ auth, login, logout }}>{children}</AuthContext.Provider>;
   // children으로 감싼 컴포넌트들에게 로그인 상태를 전달하는 역할

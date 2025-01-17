@@ -2,46 +2,34 @@ import PropTypes from "prop-types";
 import useAuth from "../context/useAuth";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-import PropTypes from "prop-types";
-import useAuth from "../context/useAuth";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { formatURL } from "../utils/util";
-
-function filterByCategory(category) {
-  if (!category || category === "whole") {
-    return popupData;
-  }
-
-  return popupData.filter((item) => item.type === category);
-}
-import { formatURL } from "../utils/util";
+import { fetchWithAuth, formatURL } from "../utils/util";
 
 const PopupList = ({ category }) => {
+  const { auth } = useAuth(); // 로그인 정보
+  const navigate = useNavigate();
+
   const [popups, setPopups] = useState([]);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [likedPopups, setLikedPopups] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // API - 팝업 데이터 가져오기
+  useEffect(() => {
+    if (category) {
+      fetchCategoryData(category);
+    }
+  }, [category]);
 
   const fetchCategoryData = async (category) => {
     setError(null);
 
     try {
-      const response = await fetch(`/api/main/categories/${category}`);
+      // API - 메인 페이지 - 카테고리별 팝업 스토어 그리드 정보
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/categories/${category}`);
+
       if (!response.ok) {
         throw new Error("Failed to fetch categories");
       }
-
-      //API
-      // const data = response.json();
-      //  data = {
-      //     categories: [
-      //       { id: 100, type: "culture", name: "오징어게임2 팝업스토어 in 강남", imageUrl: "https://i.ibb.co/grpvWqW/list1.jpg", location: "" },
-      //       { id: 200, type: "food", name: "바나나맛우유 50주년 팝업스토어", imageUrl: "https://i.ibb.co/vJrZYn3/list2.jpg", location: "" },
-      //       { id: 300, type: "characters", name: "카카오프렌즈 춘식이 X 해리포터 팝업스토어", imageUrl: "", location: "서울특별시 서초구 강남대로 429 카카오프렌즈 강남플래그십 스토어" },
-      //       { id: 1, type: "culture", name: "카카오프렌즈 춘식이 X 해리포터 팝업스토어", imageUrl: "", location: "서울특별시 서초구 강남대로 429 카카오프렌즈 강남플래그십 스토어" },
-      //     ],
-      //   };
 
       // category type
       // whole, food, education, culture, digital, clothing, interior, sports, fashion miscellaneous goods, characters, others
@@ -49,23 +37,26 @@ const PopupList = ({ category }) => {
 
       const data = await response.json();
 
-      // api
-      // if (data.categories) {
-      // setPopups(data.categories);
-
-      if (data) {
-        setPopups(data);
-      } else {
-        setPopups([]);
+      if (data.categories) {
+        setPopups(data.categories);
       }
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false); // 로딩 완료
     }
   };
 
   useEffect(() => {
     if (category) {
-      fetchCategoryData(category);
+      setError(null);
+      fetch(`${import.meta.env.VITE_BE_PORT}/api/categories/${category}`)
+        .then((res) => res.json())
+        .then((data) => setPopups(data.categories))
+        .catch((err) => {
+          console.error("Error fetching popups:", err);
+          setError(err.message);
+        });
     }
   }, [category]);
 
@@ -80,10 +71,14 @@ const PopupList = ({ category }) => {
       try {
         // API - 유저가 좋아요 누른 게시글 조회
         // (수정) (최적화) 매번 요청하지 않고 이걸 context 로 모든 페이지에서 볼 수 있도록?
-        const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/likes`);
+        const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/likes`);
         const data = await response.json();
+
         if (!response.ok) {
-          throw new Error("서버 오류 발생: ", data.error);
+          if (data.error === "Likes not found") {
+            return;
+          }
+          throw new Error("Failed to fetch liked popups", data.error);
         }
 
         const likes = data.likes.map((store) => store.s_id);
@@ -98,7 +93,7 @@ const PopupList = ({ category }) => {
     fetchLikesData();
   }, [auth.isLoggedIn]);
 
-  // 좋아요 추가
+  // 좋아요 추가 함수
   const handleLikeToggle = async (popupId) => {
     if (!auth.isLoggedIn) {
       navigate("/login");
@@ -117,7 +112,7 @@ const PopupList = ({ category }) => {
 
     // API - 서버에 요청
     try {
-      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
         method: isLiked ? "DELETE" : "POST",
         headers: {
           "Content-Type": "application/json",
@@ -211,7 +206,7 @@ const PopupList = ({ category }) => {
 };
 
 PopupList.propTypes = {
-  category: PropTypes.string.isRequired, // category는 필수로 string이어야 함
+  category: PropTypes.string.isRequired,
 };
 
 export default PopupList;

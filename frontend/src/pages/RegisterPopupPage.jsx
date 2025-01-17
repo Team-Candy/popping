@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchWithAuth } from "../utils/util";
 
 const RegisterPopupPage = () => {
   const navigate = useNavigate();
@@ -98,11 +99,11 @@ const RegisterPopupPage = () => {
     // API - 서버로 데이터 보내기
     if (isDescriptionValid && selectedCategory && images.length > 0) {
       const formData = new FormData();
-      formData.append("name", name);
+      formData.append("s_name", name);
       formData.append("location", location);
-      formData.append("startDate", startDate);
-      formData.append("endDate", endDate);
-      formData.append("business_hour", startTime + "-" + endTime);
+      formData.append("s_date", startDate);
+      formData.append("e_date", endDate);
+      formData.append("business_hours", startTime + "-" + endTime);
       formData.append("category", selectedCategory);
       formData.append("owner", owner);
       formData.append("contact", contact);
@@ -110,15 +111,25 @@ const RegisterPopupPage = () => {
 
       // 이미지 추가
       images.forEach((image, index) => {
-        formData.append(`image[${index}]`, image);
+        formData.append(`image[]`, image);
+        console.log(`image[${index}]`, image);
+        // formData.append(`image[${index}]`, image);
       });
+
+      // const files = document.querySelector('input[type="file"]').files;
+      // for (let i = 0; i < files.length; i++) {
+      //   formData.append("image[]", files[i]);
+      // }
 
       // 디버깅
       for (let [key, value] of formData.entries()) {
         console.log(`${key}: ${value}`);
       }
       try {
-        const response = await fetch("/api/stores", {
+        console.log("formData: ", formData);
+
+        // API - 사용자가 팝업 게시물 등록
+        const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores`, {
           method: "POST",
           //   headers 자동설정됨
           body: formData, // FormData 객체 전송
@@ -135,7 +146,7 @@ const RegisterPopupPage = () => {
         console.log("응답 데이터: ", data);
 
         alert("등록 성공했습니다.");
-        navigate("/");
+        navigate("/myPopup");
       } catch (err) {
         //네트워크 오류 처리
         console.error("네트워크 오류: ", err);
@@ -174,7 +185,6 @@ const RegisterPopupPage = () => {
     <div>
       <form onSubmit={handleSubmit}>
         <h2>팝업 등록하기</h2>
-        {/* <p style={{ fontSize: 20, fontWeight: "bold" }}>어떤 팝업을 올리고 싶나요?</p> */}
 
         <div>
           <p style={style}>카테고리를 선택해주세요.</p>
@@ -185,7 +195,6 @@ const RegisterPopupPage = () => {
               style={{
                 backgroundColor: selectedCategory === category.value ? "lightPink" : "transparent", // 선택된 카테고리 배경색 변경
                 color: "black",
-                // color: selectedCategory === category.value ? "white" : "black", // 선택된 카테고리 텍스트 색 변경
                 border: "1px solid #ccc",
                 borderRadius: "8px",
                 padding: "10px 20px",

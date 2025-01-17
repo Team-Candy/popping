@@ -1,55 +1,357 @@
 import { useState, useEffect } from "react";
+import useAuth from "../../context/useAuth"; // 로그인 상태;
+import { useNavigate } from "react-router-dom";
+import { fetchWithAuth } from "../../utils/util";
+
 const ProfilePage = () => {
-  const [user, setUser] = useState({});
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
-  // // API - 유저 정보 요청(이름, 이메일)
+  // 이름
+  const [name, setName] = useState("");
+  const [nameChange, setNameChange] = useState("");
+  const [nameEditing, setNameEditing] = useState(false);
+  // (수정) 이름 유효성 검사
 
-  useEffect(() => {
-    const data = { name: "홍길동", email: "hong@naver.com" };
-    setUser(data);
-  }, []);
+  // 이메일
+  const [email, setEmail] = useState(""); // 기존 이메일
+  const [emailChange, setEmailChange] = useState(""); // 변경된 이메일
+  const [emailEditing, setEmailEditing] = useState(false); // 이메일 수정 상태 T/F
+  const [isEmailValid, setIsEmailValid] = useState(true); // 유효성
+  const [emailError, setEmailError] = useState("");
 
-  // (수정)
-  // handle
-  // API 요청
-  // 이름 변경 요청(유효성검사 필요)
-  // 이메일 변경 요청(유효성검사, 인증 필요)
-  //비밀번호(유효성검사, 재확인 필요)
-  // 회원탈퇴
+  // 이메일 인증
+  const [sendNumber, setSendNumber] = useState(false); // 인증번호 전송 T/F
+  const [authNumber, setAuthNumber] = useState("");
+  const [isAuthValid, setIsAuthValid] = useState(false);
+  const [authError, setAuthError] = useState("");
+
+  // 비밀번호
+  // const [password, setPassword] = useState("");
+  // const [passwordEditing, setPasswordEditing] = useState(false);
 
   const titleStyle = { fontWeight: "bold", fontSize: 19 };
 
+  // 개인정보 기본값 설정
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        //  API - 유저의 프로필 정보 조회
+        const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch");
+        }
+
+        const data = await response.json();
+        console.log("data", data);
+
+        if (data && data.user) {
+          setName(data.user.name);
+          setEmail(data.user.email);
+          // setPassword(data.user.password);
+        } else {
+          console.error("Invalid data format:", data);
+        }
+      } catch (err) {
+        console.error("에러 발생: ", err.message);
+      }
+    };
+    fetchUserProfile();
+  }, []);
+
+  // 회원 탈퇴
+  const handleDeleteUser = async () => {
+    const isConfirmed = window.confirm("정말 탈퇴하시겠습니까?");
+    if (!isConfirmed) {
+      return;
+    }
+
+    try {
+      // API - 유저 정보 삭제
+      const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch delete user");
+      }
+
+      alert("회원 탈퇴에 성공하였습니다.");
+      logout();
+      navigate("/");
+    } catch (err) {
+      console.error("오류가 발생했습니다.", err.message);
+      alert("회원 탈퇴에 실패하였습니다.\n다시시도해주세요.");
+    }
+  };
+
+  // 변경 handle
+  // API - 유저의 정보 수정
+  const handleChange = async () => {
+    try {
+      if (nameEditing) {
+        // 이름 수정
+        const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name: nameChange, email: email }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch name change");
+        }
+
+        setName(nameChange);
+        setNameEditing(false);
+      } else if (emailEditing) {
+        if (!isEmailValid) {
+          alert("이메일 검증 후 다시 시도해주세요.");
+          return;
+        }
+
+        // 이메일 수정
+        const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name: name, email: emailChange }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch name change");
+        }
+
+        setEmail(emailChange);
+        setEmailEditing(false);
+
+        setIsEmailValid(false);
+        setSendNumber(false);
+        setEmailError("");
+      }
+    } catch (err) {
+      console.error("에러 발생: ", err.message);
+      alert("변경에 실패하였습니다.\n다시시도 해주세요.");
+      navigate("/profile");
+    }
+  };
+
+  // 이메일
+  const handleEmailChange = (e) => {
+    const inputEmail = e.target.value;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (!emailRegex.test(inputEmail)) {
+      setEmailError("유효한 이메일 주소를 입력해주세요.");
+      setIsEmailValid(false);
+    } else {
+      setEmailError("");
+      setIsEmailValid(true);
+    }
+
+    // 이메일 상태 업데이트
+    setEmailChange(inputEmail);
+
+    // 메일이 수정되면
+    setSendNumber(false); // 인증메일 발송상태 초기화
+    setAuthNumber(false);
+    setIsAuthValid(false); // 인증상태 초기화
+  };
+
+  const handleEmailVerification = async () => {
+    if (!isEmailValid) {
+      setEmailError("유효한 이메일을 입력해주세요.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/signup/email-code`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: emailChange }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setEmailError(data.error || "오류가 발생했습니다.");
+        return;
+      }
+
+      setSendNumber(true); // 인증번호 발송 성공
+      // alert("인증번호가 발송되었습니다.");
+    } catch (err) {
+      setEmailError("네트워크 오류가 발생했습니다.");
+      console.error(err);
+    }
+  };
+
+  // 인증번호 입력
+  const handleAuthNumberChange = (e) => {
+    const inputNumber = e.target.value;
+    setAuthNumber(inputNumber);
+
+    // input값 변경시
+    setIsAuthValid(false); // 인증 초기화
+    setAuthError("");
+  };
+
+  // API - 이메일 인증코드 확인
+  const handleAuthSubmit = async () => {
+    if (authNumber == "") {
+      setAuthError("인증번호를 입력해주세요.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/signup/verify-code`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: emailChange,
+          code: authNumber,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        // 실패시 {"error": "Invalid verification code"}
+        setAuthError("인증번호가 일치하지 않습니다.");
+        setIsAuthValid(false);
+        throw new Error(data.error);
+      }
+
+      setAuthError("");
+      setIsAuthValid(true);
+    } catch (err) {
+      setAuthError("네트워크 오류가 발생했습니다.");
+      setIsAuthValid(false);
+      console.error("error 발생: ", err);
+    }
+  };
+
   return (
     <div>
-      <h2 style={{ color: "red" }}>프로필</h2>
+      <h2>프로필</h2>
       <hr />
       <div>
         <p style={titleStyle}>이름</p>
         <div style={{ display: "flex", width: 250, justifyContent: "space-between" }}>
-          <p>{user.name}</p>
-          <button>변경</button>
+          {nameEditing ? (
+            <div>
+              <input type="text" value={nameChange} placeholder="이름을 입력하세요." onChange={(e) => setNameChange(e.target.value)} />
+            </div>
+          ) : (
+            <p>{name}</p>
+          )}
+
+          {nameEditing ? (
+            <div>
+              <button onClick={handleChange}>완료</button>
+              <button onClick={() => setNameEditing((prev) => !prev)}>취소</button>
+            </div>
+          ) : (
+            <button
+              onClick={() => {
+                setNameChange(name);
+                setNameEditing((prev) => !prev);
+              }}
+            >
+              변경
+            </button>
+          )}
         </div>
       </div>
       <hr />
       <div>
         <p style={titleStyle}>이메일</p>
         <div style={{ display: "flex", width: 250, justifyContent: "space-between" }}>
-          <p>{user.email}</p>
-          <button>변경</button>
+          {emailEditing ? (
+            <div>
+              <input type="email" placeholder="이메일 주소를 입력해주세요." value={emailChange} onChange={handleEmailChange} style={{ borderColor: emailError ? "red" : "" }} />
+              <button type="button" onClick={handleEmailVerification} disabled={sendNumber}>
+                인증번호 발송
+              </button>
+              {emailError && <p style={{ color: "red" }}>{emailError}</p>} {/* 이미 존재하는 이메일입니다.*/}
+              {sendNumber && <p style={{ color: "green" }}>인증번호가 발송되었습니다.</p>}
+              {sendNumber && (
+                <div>
+                  <input type="number" placeholder="인증번호 입력" value={authNumber} onChange={handleAuthNumberChange} />
+                  <button type="button" onClick={handleAuthSubmit}>
+                    인증
+                  </button>
+                  {authError && <p style={{ color: "red" }}>{authError}</p>} {/* 인증 오류 메시지 */}
+                  {isAuthValid && <p style={{ color: "green" }}>인증번호가 일치합니다.</p>} {/* 인증 성공 메시지 */}
+                </div>
+              )}
+            </div>
+          ) : (
+            <p>{email}</p>
+          )}
+
+          {emailEditing ? (
+            <div>
+              <button onClick={handleChange} disabled={!isEmailValid}>
+                완료
+              </button>
+              <button
+                onClick={() => {
+                  setEmailEditing((prev) => !prev);
+                  setIsEmailValid(true);
+                }}
+              >
+                취소
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => {
+                setEmailChange(email);
+                setIsEmailValid(false);
+                setEmailEditing(true);
+              }}
+            >
+              변경
+            </button>
+          )}
         </div>
       </div>
       <hr />
-      <div>
+
+      {/* (수정) 비밀번호 수정 */}
+      {/* <div>
         <div style={{ display: "flex", width: 250, justifyContent: "space-between" }}>
           <p style={titleStyle}>비밀번호</p>
-          <button>변경</button>
+          {passwordEditing ? (
+            <div>
+              <button onClick={handlePasswordChange}>완료</button>
+              <button onClick={() => setPasswordEditing((prev) => !prev)}>취소</button>
+            </div>
+          ) : (
+            <button onClick={() => setPasswordEditing((prev) => !prev)}>변경</button>
+          )}
         </div>
       </div>
-      <hr />
+      <hr /> */}
+
       <div>
         <div style={{ display: "flex", width: 250, justifyContent: "space-between" }}>
-          <p style={titleStyle}>회원탈퇴</p>
-          <button>변경</button>
+          <button onClick={handleDeleteUser}>회원 탈퇴</button>
         </div>
       </div>
     </div>
