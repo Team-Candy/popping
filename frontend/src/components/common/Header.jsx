@@ -11,7 +11,7 @@ function Header() {
     <header>
       <div className="mb-5 mx-auto max-w-[1200px] self-stretch px-8 justify-between items-center flex">
         <Link to="/">
-          <img className="w-[200px]" src="../../public/popping.svg" alt="POPPING 로고"></img>
+          <img className="min-w-[100px] w-[200px]" src="../../public/popping.svg" alt="POPPING 로고"></img>
         </Link>
         <div className="self-stretch justify-center items-center gap-2 flex">
           <CreatePopup />

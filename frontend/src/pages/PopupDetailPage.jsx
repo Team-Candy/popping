@@ -81,7 +81,8 @@ const PopupDetailPage = () => {
 
   // 로딩 중일 때 표시
   if (loading) {
-    return <p>로딩 중...</p>;
+    return <p></p>;
+    // return <p>로딩 중...</p>;
   }
 
   // 에러 발생 시 표시

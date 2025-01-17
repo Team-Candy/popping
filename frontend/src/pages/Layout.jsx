@@ -12,7 +12,7 @@ const Layout = () => {
       </div>
 
       {/* 라우팅된 콘텐츠*/}
-      <div className="pt-[150px]">
+      <div className="pt-[200px]">
         <main>
           <Outlet />
         </main>

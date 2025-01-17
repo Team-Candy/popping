@@ -239,11 +239,12 @@ const PopupEditPage = () => {
   };
 
   if (loading) {
-    return <p>로딩 중...</p>;
+    return <p></p>;
+    // return <p>로딩 중...</p>;
   }
 
   if (error) {
-    return <p>에러: {error}</p>;
+    return <p>오류가 발생하였습니다: {error}</p>;
   }
 
   // 권한이 없을 때

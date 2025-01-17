@@ -3,17 +3,11 @@ import { useNavigate } from "react-router-dom";
 import MyPageButton from "./MyPageButton";
 
 const AuthButton = () => {
-  const { auth, logout } = useAuth();
+  const { auth } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = () => {
     navigate("/login");
-  };
-
-  const handleLogout = () => {
-    logout();
-    alert("로그아웃되었습니다.");
-    navigate("/");
   };
 
   return (
@@ -21,7 +15,6 @@ const AuthButton = () => {
       {auth.isLoggedIn ? (
         <div>
           <MyPageButton auth={auth} />
-          <button onClick={handleLogout}> 로그아웃</button>
         </div>
       ) : (
         <div className="px-2 py-1 bg-[#c8a0c8] rounded-full justify-center items-center gap-2 flex  hover:scale-105 hover:shadow-sm transition-all">

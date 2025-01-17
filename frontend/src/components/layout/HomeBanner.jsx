@@ -95,20 +95,6 @@ const HomeBanner = () => {
             </button>
           </div>
         </div>
-
-        // <div>
-        //   <a key={banners[currentIndex].StoreId} href={`/popup/${banners[currentIndex].StoreId}`} target="_blank" rel="noopener noreferrer">
-        //     <img style={imgStyle} src={banners[currentIndex].Images[0]} alt={`Banner ${banners[currentIndex].StoreId}`} />
-        //     <p>{banners[currentIndex].StoreName}</p>
-        //     <p>
-        //       {formatDate(banners[currentIndex].StartDate)} - {formatDate(banners[currentIndex].EndDate)}
-        //     </p>
-        //   </a>
-        //   <div>
-        //     <button onClick={goToPrevBanner}>Prev</button>
-        //     <button onClick={goToNextBanner}>Next</button>
-        //   </div>
-        // </div>
       )}
     </div>
   );
