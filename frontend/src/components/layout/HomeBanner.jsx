@@ -78,19 +78,21 @@ const HomeBanner = () => {
           }}
         ></div>
       ) : (
-        <div className="flex flex-col justify-center items-center mt-8">
-          <a className="text-center" key={banners[currentIndex].StoreId} href={`/popup/${banners[currentIndex].StoreId}`} target="_blank" rel="noopener noreferrer">
-            <img className="mb-4 " style={imgStyle} src={formatURL(banners[currentIndex].Images[0])} alt={`Banner ${banners[currentIndex].StoreId}`} />
-            <p className="font-semibold">{banners[currentIndex].StoreName}</p>
-            <p>
-              {formatDate(banners[currentIndex].StartDate)} - {formatDate(banners[currentIndex].EndDate)}
-            </p>
+        <div className="flex flex-col items-center mt-8 space-y-6">
+          <a className="block text-center max-w-sm rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300" key={banners[currentIndex].StoreId} href={`/popup/${banners[currentIndex].StoreId}`} target="_blank" rel="noopener noreferrer">
+            <img className="w-full object-cover" style={imgStyle} src={formatURL(banners[currentIndex].Images[0])} alt={`Banner ${banners[currentIndex].StoreId}`} />
+            <div className="bg-white p-4">
+              <h3 className="font-bold text-lg text-gray-800 mb-2">{banners[currentIndex].StoreName}</h3>
+              <p className="text-gray-600">
+                {formatDate(banners[currentIndex].StartDate)} - {formatDate(banners[currentIndex].EndDate)}
+              </p>
+            </div>
           </a>
-          <div className="flex gap-4 mt-4">
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" onClick={goToPrevBanner}>
+          <div className="flex gap-4">
+            <button className="px-6 py-2 bg-blue-500 text-white text-sm font-medium rounded-full shadow-md hover:bg-blue-600 hover:shadow-lg transition-all duration-300" onClick={goToPrevBanner}>
               Prev
             </button>
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" onClick={goToNextBanner}>
+            <button className="px-6 py-2 bg-blue-500 text-white text-sm font-medium rounded-full shadow-md hover:bg-blue-600 hover:shadow-lg transition-all duration-300" onClick={goToNextBanner}>
               Next
             </button>
           </div>
