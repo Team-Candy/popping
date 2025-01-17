@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "../../styles/PopupEditPage.css";
+// import "../../styles/PopupEditPage.css";
 import { fetchWithAuth } from "../../utils/util";
 
 const PopupEditPage = () => {

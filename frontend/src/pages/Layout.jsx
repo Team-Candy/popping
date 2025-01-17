@@ -8,17 +8,15 @@ const Layout = () => {
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {/* 공통 Header */}
-      <header style={{ backgroundColor: "#f8f9fa", padding: "16px 16px 24px", borderBottom: "1px solid #ddd" }}>
+      <div style={{ backgroundColor: "#f8f9fa", padding: "16px 16px ", borderBottom: "1px solid #ddd" }}>
         <Header />
-      </header>
 
-      {/* <div className="w-[1280px] px-8 justify-between items-center inline-flex"> - 원래*/}
-      {/* <div className="self-stretch justify-center items-center gap-4 flex"> - 위 버튼들*/}
-      <div className="self-stretch px-8 justify-between items-center gap-4 flex">
-        <nav aria-label="Main navigation">
+        {/* <div className="w-[1280px] px-8 justify-between items-center inline-flex"> - 원래*/}
+        {/* <div className="self-stretch justify-center items-center gap-4 flex"> - 위 버튼들*/}
+        <div className="self-stretch px-8 justify-between items-center gap-4 flex">
           <NavBar />
-        </nav>
-        <SearchBar />
+          <SearchBar />
+        </div>
       </div>
 
       {/* 라우팅된 콘텐츠(페이지별) */}

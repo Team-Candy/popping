@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"; // Link 컴포넌트
 import CreatePopup from "../CreatePopup"; // 팝업 올리기
 import AuthButton from "../AuthButton"; // 로그인/회원가입
 
-import "../../styles/common/Header.css";
+// import "../../styles/common/Header.css";
 
 function Header() {
   return (

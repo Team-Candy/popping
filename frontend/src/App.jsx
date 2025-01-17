@@ -54,26 +54,3 @@ function App() {
 }
 
 export default App;
-
-// const routes = [
-//   { path: "/", element: <Layout /> },
-//   { path: "calendar", element: <CalendarPage /> },
-//   { path: "map", element: <MapPage /> },
-//   { path: "popup/:popupId", element: <PopupDetailPage /> },
-//   { path: "popup/search", element: <SearchResult /> },
-//   { path: "login", element: <LoginPage /> },
-//   { path: "signup", element: <SignUpPage /> },
-//   { path: "join/email", element: <JoinEmailPage /> },
-//   { path: "mypage", element: <MyPage /> },
-//   { path: "*", element: <NotFoundPage /> },
-// ];
-
-// <BrowserRouter>
-//   <AuthProvider>
-//     <Routes>
-//       {routes.map((route, index) => (
-//         <Route key={index} path={route.path} element={route.element} />
-//       ))}
-//     </Routes>
-//   </AuthProvider>
-// </BrowserRouter>

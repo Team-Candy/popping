@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 const NavBar = () => {
   const navigate = useNavigate();
   return (
-    <nav>
+    <nav aria-label="Main navigation">
       <ul
         id="menu"
         style={{

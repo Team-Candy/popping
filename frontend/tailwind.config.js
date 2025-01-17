@@ -5,7 +5,11 @@ module.exports = {
     "./public/index.html", // public/index.html도 포함
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["Pretendard", "Noto Sans KR", "Arial", "sans-serif"], // 기본 sans-serif 계열
+      },
+    },
   },
   plugins: [],
 };
