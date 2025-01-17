@@ -17,7 +17,14 @@ const CreatePopup = () => {
 
   return (
     <>
-      <button onClick={handleClick}>팝업 올리기</button>
+      <div>
+        {/* <div className="text-3xl bg-blue-500">Tailwind Css 적용 테스트</div> */}
+        <div className="px-4 py-2 bg-[#f0f0f0] rounded-full justify-center items-center gap-2 flex">
+          <button className="text-center text-red text-sm font-medium font-['Pretendard'] leading-normal" onClick={handleClick}>
+            팝업 올리기
+          </button>
+        </div>
+      </div>
     </>
   );
 };

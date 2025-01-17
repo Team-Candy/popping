@@ -2,12 +2,12 @@ import FullCalendar from "@fullcalendar/react"; // FullCalendar React 컴포넌�
 import dayGridPlugin from "@fullcalendar/daygrid"; // dayGrid 플러그인
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/calendar.css";
+// import "../styles/calendar.css";
 
 async function fetchPopup() {
   // API - 팝업 스토어 정보 가져와 캘린더에 넣기
   try {
-    const response = await fetch(`http://localhost:3000/api/calendar`);
+    const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/calendar`);
     if (!response.ok) {
       throw new Error(`Failed to fetch calendar data: ${response.statusText}`);
     }

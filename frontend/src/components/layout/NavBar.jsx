@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
+  const navigate = useNavigate();
   return (
-    <nav>
+    <nav aria-label="Main navigation">
       <ul
         id="menu"
         style={{
@@ -13,31 +14,26 @@ const NavBar = () => {
           margin: 0,
         }}
       >
-        <li>
-          <Link to="/" style={linkStyle}>
+        <div className="justify-center items-end gap-8 flex">
+          {/* <div className="w-9 h-14 px-4 pb-4 border-b-2 border-black flex-col justify-start items-center inline-flex"> */}
+          <button className="text-center text-black text-2s font-medium font-['Pretendard'] leading-9" onClick={() => navigate("/")}>
             홈
-          </Link>
-        </li>
-        <li>
-          <Link to="/calendar" style={linkStyle}>
+          </button>
+          {/* </div> */}
+          {/* <div className="w-9 h-14 px-4 pb-4 flex-col justify-start items-center inline-flex"> */}
+          <button className="text-center text-black text-2s font-medium font-['Pretendard'] leading-9" onClick={() => navigate("/calendar")}>
             달력
-          </Link>
-        </li>
-        <li>
-          <Link to="/map" style={linkStyle}>
+          </button>
+          {/* </div> */}
+          {/* <div className="w-9 h-14 px-4 pb-4 flex-col justify-start items-center inline-flex"> */}
+          <button className="text-center text-black text-2s font-medium font-['Pretendard'] leading-9" onClick={() => navigate("/map")}>
             지도
-          </Link>
-        </li>
+          </button>
+          {/* </div> */}
+        </div>
       </ul>
     </nav>
   );
-};
-
-// 링크 스타일
-const linkStyle = {
-  textDecoration: "none",
-  color: "#007bff",
-  fontWeight: "bold",
 };
 
 export default NavBar;
