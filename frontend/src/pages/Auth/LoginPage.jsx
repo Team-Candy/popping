@@ -72,7 +72,8 @@ const LoginPage = () => {
 
   return (
     <div>
-      <h3>이메일 로그인</h3>
+      <p className="text-xl font-bold text-gray-800 mb-4">이메일 로그인</p>
+
       <form onSubmit={handleSubmit}>
         <div style={{ display: "flex" }}>
           <input type="text" name="email" value={email} onChange={handleChange} placeholder="email" autoComplete="current-password" />

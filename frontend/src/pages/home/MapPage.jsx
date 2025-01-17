@@ -32,7 +32,8 @@ const MapPage = () => {
 
   return (
     <div>
-      <h2>지도</h2>
+      <p className="text-xl font-bold text-gray-800 mb-4">지도</p>
+
       <Region onSelectRegion={setSelectedRegion}></Region>
       <Map region={selectedRegion} location={location}></Map>
     </div>
