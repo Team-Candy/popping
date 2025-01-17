@@ -9,7 +9,7 @@ import SearchBar from "../SearchBar"; // 검색
 =======
 >>>>>>> ce39ece (style: tailwind 적용중)
 
-import "../../styles/common/Header.css";
+// import "../../styles/common/Header.css";
 
 function Header() {
   // const [isLoggedIn, setIsLoggedIn] = useState(false);
