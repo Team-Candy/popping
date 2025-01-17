@@ -1,4 +1,3 @@
-// Calendar.jsx
 import FullCalendar from "@fullcalendar/react"; // FullCalendar React 컴포넌트
 import dayGridPlugin from "@fullcalendar/daygrid"; // dayGrid 플러그인
 import { useState, useEffect } from "react";

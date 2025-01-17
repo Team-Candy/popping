@@ -1,4 +1,4 @@
-import HomeBanner from "../../components/layout/HomeBanner.jsx";
+import HomeBanner from "../../components/HomeBanner.jsx";
 import Category from "../../components/Category.jsx";
 import PopupList from "../../components/PopupList.jsx";
 
