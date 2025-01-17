@@ -155,7 +155,6 @@ const RegisterPopupPage = () => {
     }
   };
 
-  const style = { fontSize: 20, fontWeight: "bold", padding: 0, marginBottom: 5 };
   const dateStyle = { padding: "8px", fontSize: "14px", borderRadius: "4px", border: "1px solid #ccc" };
   const descriptionStyle = {
     width: "100%",
@@ -187,7 +186,7 @@ const RegisterPopupPage = () => {
         <h2>팝업 등록하기</h2>
 
         <div>
-          <p style={style}>카테고리를 선택해주세요.</p>
+          <p>카테고리를 선택해주세요.</p>
           {categories.map((category) => (
             <button
               key={category.value}
@@ -208,27 +207,27 @@ const RegisterPopupPage = () => {
         </div>
 
         <div>
-          <p style={style}>팝업스토어 이름</p>
+          <p>팝업스토어 이름</p>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
         <div>
-          <p style={style}>장소</p>
+          <p>장소</p>
           <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} />
         </div>
 
         <div>
-          <p style={style}>주최자</p>
+          <p>주최자</p>
           <input type="text" value={owner} onChange={(e) => setOwner(e.target.value)} />
         </div>
 
         <div>
-          <p style={style}>문의 연락처</p>
+          <p>문의 연락처</p>
           <input type="text" value={contact} placeholder="email, etc ..." onChange={(e) => setContact(e.target.value)} />
         </div>
 
         <div>
-          <p style={style}>운영 기간</p>
+          <p>운영 기간</p>
           <label>시작일자 </label>
           <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={dateStyle} />
           <br />
@@ -237,7 +236,7 @@ const RegisterPopupPage = () => {
         </div>
 
         <div>
-          <p style={style}>운영 시간</p>
+          <p>운영 시간</p>
           <label>시작시간</label>
           <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
           <br />
@@ -246,13 +245,13 @@ const RegisterPopupPage = () => {
         </div>
 
         <div>
-          <p style={style}>팝업을 소개해주세요.</p>
+          <p>팝업을 소개해주세요.</p>
           <textarea value={description} onChange={handleDescription} placeholder="20자 이상 작성해주세요." style={descriptionStyle} />
           {descriptionError && <p style={{ color: "red" }}>{descriptionError}</p>}
         </div>
 
         <div>
-          <p style={style}>이미지를 업로드해주세요.</p>
+          <p>이미지를 업로드해주세요.</p>
 
           {/* 이미지 업로드 입력란 */}
           {images.map((image, index) => (
