@@ -14,6 +14,7 @@ const Map = ({ region, location }) => {
 
     // 스크립트 태그 동적으로 추가
     const script = document.createElement("script");
+    script.id = "kakao-map-script"; // 고유 ID 추가
     script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_JS_KEY}&autoload=false`;
     script.async = true;
     script.onload = () => initializeMap(region, location); // 스크립트 로드 후 지도 초기화
