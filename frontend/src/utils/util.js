@@ -10,7 +10,14 @@ export const formatDate = (date) => {
 
 // 프론트엔드와 백엔드 통신 관련
 export const fetchWithAuth = (url, options = {}) => {
+  // (수정) 쿠키로 변경하기
   const token = sessionStorage.getItem("authToken");
+
+  if (!token) {
+    alert("토큰이 만료되었습니다. 다시 로그인 해주세요.");
+    window.location.href = "/login";
+    return;
+  }
   return fetch(url, {
     ...options,
     headers: {
@@ -18,6 +25,15 @@ export const fetchWithAuth = (url, options = {}) => {
       Authorization: `Bearer ${token}`,
     },
   });
+};
+
+export const checkToken = (response) => {
+  if (response.status === 403) {
+    alert("토큰이 만료되었습니다. 다시 로그인 해주세요.");
+    window.location.href = "/login";
+    return;
+  }
+  return;
 };
 
 // 이미지 불러오기
