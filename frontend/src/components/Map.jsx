@@ -2,6 +2,9 @@ import PropTypes from "prop-types";
 import { useEffect } from "react";
 
 async function fetchLatLng(location) {
+  if (cache[location]) {
+    return cache[location];
+  }
   try {
     const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/map/getLatLng/${location}`);
     if (!response.ok) {
@@ -13,6 +16,8 @@ async function fetchLatLng(location) {
     console.error("Error fetching data: ", err.message);
   }
 }
+
+const cache = {}; // 요청된 데이터를 저장할 캐시 객체
 
 const Map = ({ location }) => {
   useEffect(() => {
