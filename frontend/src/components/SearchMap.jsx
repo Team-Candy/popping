@@ -45,6 +45,11 @@ const Map = ({ region, location }) => {
     }
   };
 
+  // 딜레이 함수
+  function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   // lat,lng 찾기 함수
   async function fetchLatLng(location) {
     const cachedCoords = JSON.parse(localStorage.getItem("coords")) || {};
@@ -53,6 +58,13 @@ const Map = ({ region, location }) => {
       return cachedCoords[location]; // 로컬 스토리지에서 좌표 반환
     } else {
       try {
+        // 요청 딜레이 설정
+        const REQUEST_DELAY = 1000; // 1초
+        console.log(`Delaying request for ${REQUEST_DELAY}ms...`);
+        await delay(REQUEST_DELAY);
+
+        console.log("여기입니당");
+
         const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/map/getLatLng/${encodeURIComponent(location)}`);
         if (!response.ok) {
           const data = await response.json();
@@ -110,18 +122,13 @@ const Map = ({ region, location }) => {
 
       // 지도 생성
       const map = new window.kakao.maps.Map(container, options);
-      mapRef.current = map; // Store the map instance in ref
-      console.log("mapRef.current: ", mapRef.current); // 제대로 저장되는지 확인
+      mapRef.current = map;
 
       // 줌 컨트롤 추가
       const zoomControl = new window.kakao.maps.ZoomControl();
       map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
 
-      // location 배열에 있는 각 위치에 대해 마커 및 인포윈도우 추가
-      // const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
       location.forEach(async (item) => {
-        // await delay(index * 100); // 호출 간 100ms 지연
         const { id, name, location, startDate, endDate, images } = item;
 
         fetchLatLng(location).then((coords) => {
