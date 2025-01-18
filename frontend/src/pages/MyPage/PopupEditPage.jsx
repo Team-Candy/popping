@@ -447,17 +447,56 @@ const PopupEditPage = () => {
           </div>
 
           {/* 글 내용 */}
-          <h1 className="text-3xl font-bold mb-4">{detail.s_name}</h1>
+          <h1 className="text-3xl font-bold mt-5 mb-5">
+            {`< `}
+            {detail.s_name}
+            {` >`}
+          </h1>
           <div className="mb-4">
-            <p className="text-lg font-semibold">카테고리: {detail.category}</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-500">카테고리</p>
+                <p className="text-lg font-medium text-gray-800">{categories.find((cat) => cat.value === detail.category)?.label || "알 수 없음"}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">주최</p>
+                <p className="text-lg font-medium text-gray-800">{detail.owner}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">장소</p>
+                <p className="text-lg font-medium text-gray-800">{detail.location}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">시작일자</p>
+                <p className="text-lg font-medium text-gray-800">{formatDate(detail.s_date)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">종료일자</p>
+                <p className="text-lg font-medium text-gray-800 mb-5">{formatDate(detail.e_date)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">운영 시간</p>
+                <p className="text-lg font-medium text-gray-800">{detail.business_hours}</p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-500">상세 설명</p>
+              <p className="text-gray-700 text-base leading-relaxed">{detail.description}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 mt-5">문의하기</p>
+              <p className="text-lg font-medium text-blue-600 underline">{detail.contact}</p>
+            </div>
+          </div>
+
+          {/* <p className="text-lg font-semibold">카테고리: {categories.find((cat) => cat.value === detail.category).label}</p>
             <p className="text-lg font-semibold">주최: {detail.owner}</p>
             <p className="text-lg font-semibold">장소: {detail.location}</p>
             <p className="text-lg font-semibold">시작일자: {formatDate(detail.s_date)}</p>
             <p className="text-lg font-semibold">종료일자: {formatDate(detail.e_date)}</p>
             <p className="text-lg font-semibold">운영 시간: {detail.business_hours}</p>
             <p className="text-lg font-semibold">상세 설명: {detail.description}</p>
-            <p className="text-lg font-semibold">문의하기: {detail.contact}</p>
-          </div>
+            <p className="text-lg font-semibold">문의하기: {detail.contact}</p> */}
         </div>
       )}
     </div>

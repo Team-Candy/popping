@@ -7,13 +7,6 @@ const MyPopupPage = () => {
       <hr className="border-gray-300 mb-6" />
       <PopupList />
     </div>
-    // <div>
-    //   <p className="ml-10 text-2xl font-bold text-gray-800 mb-4">나의 팝업</p>
-
-    //   <hr />
-
-    //   <PopupList />
-    // </div>
   );
 };
 

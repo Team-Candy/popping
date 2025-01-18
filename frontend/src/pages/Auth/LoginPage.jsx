@@ -49,7 +49,6 @@ const LoginPage = () => {
 
       if (!response.ok) {
         const data = await response.json();
-        alert(data.error); // (수정)
         throw new Error(data.error);
       }
 
@@ -66,7 +65,7 @@ const LoginPage = () => {
       navigate("/");
     } catch (err) {
       console.error("로그인 요청 중 오류 발생:", err.message);
-      alert("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
+      alert(err.message); // (수정)
     }
   };
 

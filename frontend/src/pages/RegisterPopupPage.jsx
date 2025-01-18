@@ -157,133 +157,238 @@ const RegisterPopupPage = () => {
       }
     }
   };
-
-  const dateStyle = { padding: "8px", fontSize: "14px", borderRadius: "4px", border: "1px solid #ccc" };
-  const descriptionStyle = {
-    width: "100%",
-    //   maxWidth: "400px", // 최대 너비를 설정하여 너무 넓어지지 않도록 함
-    height: "350px",
-    padding: "10px",
-    fontSize: "16px",
-    border: "1px solid #ccc",
-    borderRadius: "5px",
-    boxSizing: "border-box", // 패딩을 포함하여 요소 크기가 계산되도록 함
-    outline: "none",
-    resize: "none", // 사이즈조절 불가
-    overflowY: "auto", // 텍스트가 넘칠 경우 스크롤이 생기도록 설정
-    whiteSpace: "pre-wrap", // 텍스트가 자동으로 줄 바꿈 되도록 설정
-  };
-  const submitStyle = {
-    backgroundColor: isFormValid ? "#4CAF50" : "#ccc", // 유효할 경우 초록색, 비활성화되면 회색
-    color: isFormValid ? "white" : "gray", // 텍스트 색상
-    cursor: isFormValid ? "pointer" : "not-allowed", // 클릭 가능 시 포인터, 비활성화 시 불가
-    padding: "10px 20px",
-    border: "none",
-    borderRadius: "5px",
-    fontSize: "16px",
-  };
-
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <h2>팝업 등록하기</h2>
+    <div className="flex justify-center items-center min-h-screen">
+      <form onSubmit={handleSubmit} className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">팝업 등록하기</h2>
 
-        <div>
-          <p>카테고리를 선택해주세요.</p>
-          {categories.map((category) => (
-            <button
-              key={category.value}
-              onClick={() => handleCategoryClick(category.value)}
-              style={{
-                backgroundColor: selectedCategory === category.value ? "lightPink" : "transparent", // 선택된 카테고리 배경색 변경
-                color: "black",
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                padding: "10px 20px",
-                margin: "5px",
-                cursor: "pointer",
-              }}
-            >
-              {category.label}
-            </button>
-          ))}
+        {/* 카테고리 선택 */}
+        <div className="mb-6">
+          <p className="text-lg font-semibold mb-3 text-gray-700">카테고리를 선택해주세요.</p>
+          <div className="flex flex-wrap gap-3">
+            {categories.map((category) => (
+              <button key={category.value} onClick={() => handleCategoryClick(category.value)} type="button" className={`px-4 py-2 rounded-lg border ${selectedCategory === category.value ? "bg-pink-200 border-pink-400" : "bg-gray-100 border-gray-300"} hover:bg-pink-100 hover:border-pink-300`}>
+                {category.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div>
-          <p>팝업스토어 이름</p>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+        {/* 팝업스토어 이름 */}
+        <div className="mb-6">
+          <label className="block text-lg font-semibold text-gray-700 mb-2">팝업스토어 이름</label>
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-pink-200" />
         </div>
 
-        <div>
-          <p>장소</p>
-          <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} />
+        {/* 장소 */}
+        <div className="mb-6">
+          <label className="block text-lg font-semibold text-gray-700 mb-2">장소</label>
+          <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-pink-200" />
         </div>
 
-        <div>
-          <p>주최자</p>
-          <input type="text" value={owner} onChange={(e) => setOwner(e.target.value)} />
+        {/* 주최자 */}
+        <div className="mb-6">
+          <label className="block text-lg font-semibold text-gray-700 mb-2">주최자</label>
+          <input type="text" value={owner} onChange={(e) => setOwner(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-pink-200" />
         </div>
 
-        <div>
-          <p>문의 연락처</p>
-          <input type="text" value={contact} placeholder="email, etc ..." onChange={(e) => setContact(e.target.value)} />
+        {/* 문의 연락처 */}
+        <div className="mb-6">
+          <label className="block text-lg font-semibold text-gray-700 mb-2">문의 연락처</label>
+          <input type="text" value={contact} placeholder="email, etc ..." onChange={(e) => setContact(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-pink-200" />
         </div>
 
-        <div>
-          <p>운영 기간</p>
-          <label>시작일자 </label>
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={dateStyle} />
-          <br />
-          <label>종료일자 </label>
-          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={dateStyle} />
+        {/* 운영 기간 */}
+        <div className="mb-6">
+          <p className="text-lg font-semibold mb-3 text-gray-700">운영 기간</p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-600">시작일자</label>
+              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-pink-200" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-600">종료일자</label>
+              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-pink-200" />
+            </div>
+          </div>
         </div>
 
-        <div>
-          <p>운영 시간</p>
-          <label>시작시간</label>
-          <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
-          <br />
-          <label>종료시간</label>
-          <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+        {/* 운영 시간 */}
+        <div className="mb-6">
+          <p className="text-lg font-semibold mb-3 text-gray-700">운영 시간</p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-600">시작시간</label>
+              <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-pink-200" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-600">종료시간</label>
+              <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-pink-200" />
+            </div>
+          </div>
         </div>
 
-        <div>
-          <p>팝업을 소개해주세요.</p>
-          <textarea value={description} onChange={handleDescription} placeholder="20자 이상 작성해주세요." style={descriptionStyle} />
-          {descriptionError && <p style={{ color: "red" }}>{descriptionError}</p>}
+        {/* 팝업 소개 */}
+        <div className="mb-6">
+          <label className="block text-lg font-semibold text-gray-700 mb-2">팝업을 소개해주세요.</label>
+          <textarea value={description} onChange={handleDescription} placeholder="20자 이상 작성해주세요." className="w-full p-3 border border-gray-300 rounded-lg h-28 focus:outline-none focus:ring focus:ring-pink-200" />
+          {descriptionError && <p className="text-red-500 mt-1">{descriptionError}</p>}
         </div>
 
-        <div>
-          <p>이미지를 업로드해주세요.</p>
-
-          {/* 이미지 업로드 입력란 */}
+        {/* 이미지 업로드 */}
+        <div className="mb-6">
+          <p className="text-lg font-semibold mb-3 text-gray-700">이미지를 업로드해주세요.</p>
           {images.map((image, index) => (
-            <div key={index} style={{ marginBottom: "10px" }}>
-              <p>이미지 {index + 1}</p>
+            <div key={index} className="mb-4">
+              <p className="text-sm font-medium text-gray-600 mb-1">이미지 {index + 1}</p>
               {image && (
-                <div>
-                  <img src={URL.createObjectURL(image)} alt={`이미지 ${index + 1}`} style={{ maxWidth: "200px", maxHeight: "200px", marginBottom: "5px" }} />
-                  <button type="button" onClick={() => handleImageDelete(index)}>
+                <div className="relative">
+                  <img src={URL.createObjectURL(image)} alt={`이미지 ${index + 1}`} className="w-full max-w-xs h-auto rounded-lg shadow-md mb-2" />
+                  <button type="button" onClick={() => handleImageDelete(index)} className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 shadow-lg">
                     삭제
                   </button>
                 </div>
               )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageChange(e, index)} // 업로드된 이미지가 있으면 그 이미지를 업데이트
-              />
+              <input type="file" accept="image/*" onChange={(e) => handleImageChange(e, index)} className="block w-full mt-2 text-sm text-gray-600" />
             </div>
           ))}
-          {!imagesValid && <p style={{ color: "red" }}>이미지를 업로드하세요.</p>}
+          {!imagesValid && <p className="text-red-500">이미지를 업로드하세요.</p>}
         </div>
 
-        <button type="submit" style={submitStyle} disabled={!isFormValid}>
+        {/* 등록 버튼 */}
+        <button type="submit" disabled={!isFormValid} className="w-full py-3 bg-[#c8a0c8] text-white font-semibold rounded-lg shadow-lg hover:bg-[#a15da1] focus:ring focus:ring-pink-300">
           등록
         </button>
       </form>
     </div>
   );
+
+  // const dateStyle = { padding: "8px", fontSize: "14px", borderRadius: "4px", border: "1px solid #ccc" };
+  // const descriptionStyle = {
+  //   width: "100%",
+  //   //   maxWidth: "400px", // 최대 너비를 설정하여 너무 넓어지지 않도록 함
+  //   height: "350px",
+  //   padding: "10px",
+  //   fontSize: "16px",
+  //   border: "1px solid #ccc",
+  //   borderRadius: "5px",
+  //   boxSizing: "border-box", // 패딩을 포함하여 요소 크기가 계산되도록 함
+  //   outline: "none",
+  //   resize: "none", // 사이즈조절 불가
+  //   overflowY: "auto", // 텍스트가 넘칠 경우 스크롤이 생기도록 설정
+  //   whiteSpace: "pre-wrap", // 텍스트가 자동으로 줄 바꿈 되도록 설정
+  // };
+  // const submitStyle = {
+  //   backgroundColor: isFormValid ? "#4CAF50" : "#ccc", // 유효할 경우 초록색, 비활성화되면 회색
+  //   color: isFormValid ? "white" : "gray", // 텍스트 색상
+  //   cursor: isFormValid ? "pointer" : "not-allowed", // 클릭 가능 시 포인터, 비활성화 시 불가
+  //   padding: "10px 20px",
+  //   border: "none",
+  //   borderRadius: "5px",
+  //   fontSize: "16px",
+  // };
+
+  // return (
+  //   <div>
+  //     <form onSubmit={handleSubmit}>
+  //       <h2>팝업 등록하기</h2>
+
+  //       <div>
+  //         <p>카테고리를 선택해주세요.</p>
+  //         {categories.map((category) => (
+  //           <button
+  //             key={category.value}
+  //             onClick={() => handleCategoryClick(category.value)}
+  //             style={{
+  //               backgroundColor: selectedCategory === category.value ? "lightPink" : "transparent", // 선택된 카테고리 배경색 변경
+  //               color: "black",
+  //               border: "1px solid #ccc",
+  //               borderRadius: "8px",
+  //               padding: "10px 20px",
+  //               margin: "5px",
+  //               cursor: "pointer",
+  //             }}
+  //           >
+  //             {category.label}
+  //           </button>
+  //         ))}
+  //       </div>
+
+  //       <div>
+  //         <p>팝업스토어 이름</p>
+  //         <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+  //       </div>
+
+  //       <div>
+  //         <p>장소</p>
+  //         <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} />
+  //       </div>
+
+  //       <div>
+  //         <p>주최자</p>
+  //         <input type="text" value={owner} onChange={(e) => setOwner(e.target.value)} />
+  //       </div>
+
+  //       <div>
+  //         <p>문의 연락처</p>
+  //         <input type="text" value={contact} placeholder="email, etc ..." onChange={(e) => setContact(e.target.value)} />
+  //       </div>
+
+  //       <div>
+  //         <p>운영 기간</p>
+  //         <label>시작일자 </label>
+  //         <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={dateStyle} />
+  //         <br />
+  //         <label>종료일자 </label>
+  //         <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={dateStyle} />
+  //       </div>
+
+  //       <div>
+  //         <p>운영 시간</p>
+  //         <label>시작시간</label>
+  //         <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+  //         <br />
+  //         <label>종료시간</label>
+  //         <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+  //       </div>
+
+  //       <div>
+  //         <p>팝업을 소개해주세요.</p>
+  //         <textarea value={description} onChange={handleDescription} placeholder="20자 이상 작성해주세요." style={descriptionStyle} />
+  //         {descriptionError && <p style={{ color: "red" }}>{descriptionError}</p>}
+  //       </div>
+
+  //       <div>
+  //         <p>이미지를 업로드해주세요.</p>
+
+  //         {/* 이미지 업로드 입력란 */}
+  //         {images.map((image, index) => (
+  //           <div key={index} style={{ marginBottom: "10px" }}>
+  //             <p>이미지 {index + 1}</p>
+  //             {image && (
+  //               <div>
+  //                 <img src={URL.createObjectURL(image)} alt={`이미지 ${index + 1}`} style={{ maxWidth: "200px", maxHeight: "200px", marginBottom: "5px" }} />
+  //                 <button type="button" onClick={() => handleImageDelete(index)}>
+  //                   삭제
+  //                 </button>
+  //               </div>
+  //             )}
+  //             <input
+  //               type="file"
+  //               accept="image/*"
+  //               onChange={(e) => handleImageChange(e, index)} // 업로드된 이미지가 있으면 그 이미지를 업데이트
+  //             />
+  //           </div>
+  //         ))}
+  //         {!imagesValid && <p style={{ color: "red" }}>이미지를 업로드하세요.</p>}
+  //       </div>
+
+  //       <button type="submit" style={submitStyle} disabled={!isFormValid}>
+  //         등록
+  //       </button>
+  //     </form>
+  //   </div>
+  // );
 };
 
 export default RegisterPopupPage;
