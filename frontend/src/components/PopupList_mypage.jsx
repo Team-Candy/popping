@@ -42,24 +42,15 @@ const PopupList = () => {
 
   return (
     <div>
-      {error && <p>{error}</p>}
+      {error && <p className="text-center mt-20">{error}</p>}
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px", padding: "16px" }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
         {popups.length > 0 &&
           popups.map((popup) => (
-            <div key={popup.s_id} onClick={() => navigate(`/popup/edit/${popup.s_id}`)} style={{ cursor: "pointer", textAlign: "center", border: "1px solid #ccc", borderRadius: "8px", padding: "8px" }}>
-              <img
-                src={`${import.meta.env.VITE_BE_PORT}${popup.images[0]}`}
-                alt={popup.s_name}
-                style={{
-                  width: "100%",
-                  height: "150px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                }}
-              />
-              <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.s_name}</p>
-              <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.owner}</p>
+            <div key={popup.s_id} onClick={() => navigate(`/popup/edit/${popup.s_id}`)} className="cursor-pointer text-center border border-gray-300 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-200">
+              <img src={`${import.meta.env.VITE_BE_PORT}${popup.images[0]}`} alt={popup.s_name} className="w-full h-40 object-cover rounded-lg mb-4" />
+              <p className="text-sm font-semibold text-gray-800">{popup.s_name}</p>
+              <p className="text-sm text-gray-600">{popup.owner}</p>
             </div>
           ))}
       </div>
