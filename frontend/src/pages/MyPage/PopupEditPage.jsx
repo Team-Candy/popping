@@ -313,7 +313,7 @@ const PopupEditPage = () => {
   // 이미지 삭제
   const handleDeleteImage = (index) => {
     // 기존 이미지 중 삭제된 url 관리
-    if (formData.images[index].startsWith("/upload")) {
+    if (String(formData.images[index]).startsWith("/upload")) {
       setDeleteImages([...deleteImages, formData.images[index]]);
     }
 
@@ -327,160 +327,288 @@ const PopupEditPage = () => {
   };
 
   return (
-    <div className="form-group">
-      <button onClick={() => setEditing((prev) => !prev)}>{editing ? "취소" : "수정하기"}</button>
-      {!editing && <button onClick={handleDelete}>삭제하기</button>}
-      {editing ? (
-        <div>
-          <div>
-            <label>제목: </label>
-            <input type="text" name="s_name" value={formData.s_name} onChange={handleChange} />
-          </div>
+    <div className="flex justify-center items-center min-h-screen bg-gray-50 py-6 px-4">
+      <div className="w-full max-w-4xl bg-white shadow-xl rounded-lg p-8 space-y-6">
+        <div className="flex justify-between items-center mb-6">
+          <button onClick={() => setEditing((prev) => !prev)} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            {editing ? "취소" : "수정하기"}
+          </button>
+          {!editing && (
+            <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+              삭제하기
+            </button>
+          )}
+        </div>
 
-          <div>
-            <label>카테고리 </label>
-            {categories.map((category) => (
-              <button
-                key={category.value}
-                onClick={() => handleCategoryClick(category.value)}
-                style={{
-                  backgroundColor: formData.category === category.value ? "lightPink" : "transparent", // 선택된 카테고리 배경색 변경
-                  color: "black",
-                  border: "1px solid #ccc",
-                  borderRadius: "8px",
-                  padding: "10px 20px",
-                  margin: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                {category.label}
-              </button>
-            ))}
-          </div>
+        {editing ? (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="block text-gray-700 font-semibold">제목:</label>
+              <input type="text" name="s_name" value={formData.s_name} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
 
-          <div>
-            <label>주최:</label>
-            <input type="text" name="owner" value={formData.owner} onChange={handleChange} />
-          </div>
-
-          <div>
-            <label>장소:</label>
-            <input type="text" name="location" value={formData.location} onChange={handleChange} />
-          </div>
-
-          <div>
-            <p>운영 일자</p>
-            <label>시작일자:</label>
-            <input type="date" name="s_date" value={formData.s_date} onChange={handleChange} />
-            <br />
-            <label>종료일자:</label>
-
-            <input type="date" name="e_date" value={formData.e_date} onChange={handleChange} />
-          </div>
-
-          <div>
-            <p>운영 시간</p>
-            <label>시작시간</label>
-            <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
-            <br />
-            <label>종료시간</label>
-            <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
-          </div>
-
-          <div>
-            <label>상세 설명:</label>
-            <textarea name="description" value={formData.description} onChange={handleChange} />
-          </div>
-
-          <div>
-            <label>문의하기:</label>
-            <input type="email" name="contact" value={formData.contact} onChange={handleChange} />
-          </div>
-
-          <div>
-            <label>이미지</label>
-            {/* 이미지 목록 표시 */}
-            <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-              {images.map((url, index) => (
-                <div key={index} style={{ position: "relative" }}>
-                  <img src={url} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
-                  <button
-                    onClick={() => handleDeleteImage(index)}
-                    style={{
-                      position: "absolute",
-                      top: "5px",
-                      right: "5px",
-                      backgroundColor: "red",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "50%",
-                      cursor: "pointer",
-                    }}
-                  >
-                    X
+            <div className="space-y-2">
+              <label className="block text-gray-700 font-semibold">카테고리</label>
+              <div className="flex flex-wrap gap-3">
+                {categories.map((category) => (
+                  <button key={category.value} onClick={() => handleCategoryClick(category.value)} className={`px-4 py-2 rounded-lg border ${formData.category === category.value ? "bg-pink-200" : "bg-transparent"} border-gray-300 hover:bg-pink-100 transition`}>
+                    {category.label}
                   </button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            {/* 이미지 업로드 */}
-            <input type="file" accept="image/*" onChange={handleImageChange} />
-          </div>
+            <div className="space-y-2">
+              <label className="block text-gray-700 font-semibold">주최:</label>
+              <input type="text" name="owner" value={formData.owner} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
 
-          <button onClick={handleSave}>저장</button>
-        </div>
-      ) : (
-        <div>
-          <div>
-            {/* 이미지 */}
-            <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+            <div className="space-y-2">
+              <label className="block text-gray-700 font-semibold">장소:</label>
+              <input type="text" name="location" value={formData.location} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-gray-700 font-semibold">운영 일자</p>
+              <label className="block text-gray-700">시작일자:</label>
+              <input type="date" name="s_date" value={formData.s_date} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <label className="block text-gray-700">종료일자:</label>
+              <input type="date" name="e_date" value={formData.e_date} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-gray-700 font-semibold">운영 시간</p>
+              <label className="block text-gray-700">시작시간:</label>
+              <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <label className="block text-gray-700">종료시간:</label>
+              <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-gray-700 font-semibold">상세 설명:</label>
+              <textarea name="description" value={formData.description} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-gray-700 font-semibold">문의하기:</label>
+              <input type="email" name="contact" value={formData.contact} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-gray-700 font-semibold">이미지</label>
+              <div className="flex overflow-x-auto gap-3 mb-6">
+                {images.map((url, index) => (
+                  <div key={index} className="relative">
+                    <img src={url} alt={`팝업 이미지 ${index + 1}`} className="w-48 h-48 object-cover rounded-lg" />
+                    <button onClick={() => handleDeleteImage(index)} className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-2 hover:bg-red-700 transition">
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <input type="file" accept="image/*" onChange={handleImageChange} className="p-3 border border-gray-300 rounded-lg" />
+            </div>
+
+            <button onClick={handleSave} className="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+              저장
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div className="flex overflow-x-auto gap-3 mb-6">
               {detail.images.map((url, index) => (
-                <img key={index} src={`${import.meta.env.VITE_BE_PORT}${url}`} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
+                <img key={index} src={`${import.meta.env.VITE_BE_PORT}${url}`} alt={`팝업 이미지 ${index + 1}`} className="w-48 h-48 object-cover rounded-lg" />
               ))}
             </div>
+
+            <div className="space-y-2">
+              <h1 className="text-2xl font-semibold text-gray-800">{detail.s_name}</h1>
+              <p className="text-gray-700">
+                <strong>카테고리:</strong> {detail.category}
+              </p>
+              <p className="text-gray-700">
+                <strong>주최:</strong> {detail.owner}
+              </p>
+              <p className="text-gray-700">
+                <strong>장소:</strong> {detail.location}
+              </p>
+              <p className="text-gray-700">
+                <strong>시작일자:</strong> {formatDate(detail.s_date)}
+              </p>
+              <p className="text-gray-700">
+                <strong>종료일자:</strong> {formatDate(detail.e_date)}
+              </p>
+              <p className="text-gray-700">
+                <strong>운영 시간:</strong> {detail.business_hours}
+              </p>
+              <p className="text-gray-700">
+                <strong>상세 설명:</strong> {detail.description}
+              </p>
+              <p className="text-gray-700">
+                <strong>문의하기:</strong> {detail.contact}
+              </p>
+            </div>
           </div>
-
-          <div>
-            {/* 글 */}
-            <h1>제목: {detail.s_name}</h1>
-
-            <p>
-              <strong>카테고리:</strong> {detail.category}
-            </p>
-
-            <p>
-              <strong>주최:</strong> {detail.owner}
-            </p>
-
-            <p>
-              <strong>장소:</strong> {detail.location}
-            </p>
-
-            <p>
-              <strong>시작일자:</strong> {formatDate(detail.s_date)}
-            </p>
-            <p>
-              <strong>종료일자:</strong> {formatDate(detail.e_date)}
-            </p>
-
-            <p>
-              <strong>운영 시간:</strong> {detail.business_hours}
-            </p>
-
-            <p>
-              <strong>상세 설명:</strong> {detail.description}
-            </p>
-
-            <p>
-              <strong>문의하기:</strong> {detail.contact}
-            </p>
-
-            <p></p>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
+
+  // return (
+  //   <div className="form-group">
+  //     <button onClick={() => setEditing((prev) => !prev)}>{editing ? "취소" : "수정하기"}</button>
+  //     {!editing && <button onClick={handleDelete}>삭제하기</button>}
+  //     {editing ? (
+  //       <div>
+  //         <div>
+  //           <label>제목: </label>
+  //           <input type="text" name="s_name" value={formData.s_name} onChange={handleChange} />
+  //         </div>
+
+  //         <div>
+  //           <label>카테고리 </label>
+  //           {categories.map((category) => (
+  //             <button
+  //               key={category.value}
+  //               onClick={() => handleCategoryClick(category.value)}
+  //               style={{
+  //                 backgroundColor: formData.category === category.value ? "lightPink" : "transparent", // 선택된 카테고리 배경색 변경
+  //                 color: "black",
+  //                 border: "1px solid #ccc",
+  //                 borderRadius: "8px",
+  //                 padding: "10px 20px",
+  //                 margin: "5px",
+  //                 cursor: "pointer",
+  //               }}
+  //             >
+  //               {category.label}
+  //             </button>
+  //           ))}
+  //         </div>
+
+  //         <div>
+  //           <label>주최:</label>
+  //           <input type="text" name="owner" value={formData.owner} onChange={handleChange} />
+  //         </div>
+
+  //         <div>
+  //           <label>장소:</label>
+  //           <input type="text" name="location" value={formData.location} onChange={handleChange} />
+  //         </div>
+
+  //         <div>
+  //           <p>운영 일자</p>
+  //           <label>시작일자:</label>
+  //           <input type="date" name="s_date" value={formData.s_date} onChange={handleChange} />
+  //           <br />
+  //           <label>종료일자:</label>
+
+  //           <input type="date" name="e_date" value={formData.e_date} onChange={handleChange} />
+  //         </div>
+
+  //         <div>
+  //           <p>운영 시간</p>
+  //           <label>시작시간</label>
+  //           <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+  //           <br />
+  //           <label>종료시간</label>
+  //           <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+  //         </div>
+
+  //         <div>
+  //           <label>상세 설명:</label>
+  //           <textarea name="description" value={formData.description} onChange={handleChange} />
+  //         </div>
+
+  //         <div>
+  //           <label>문의하기:</label>
+  //           <input type="email" name="contact" value={formData.contact} onChange={handleChange} />
+  //         </div>
+
+  //         <div>
+  //           <label>이미지</label>
+  //           {/* 이미지 목록 표시 */}
+  //           <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+  //             {images.map((url, index) => (
+  //               <div key={index} style={{ position: "relative" }}>
+  //                 <img src={url} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
+  //                 <button
+  //                   onClick={() => handleDeleteImage(index)}
+  //                   style={{
+  //                     position: "absolute",
+  //                     top: "5px",
+  //                     right: "5px",
+  //                     backgroundColor: "red",
+  //                     color: "white",
+  //                     border: "none",
+  //                     borderRadius: "50%",
+  //                     cursor: "pointer",
+  //                   }}
+  //                 >
+  //                   X
+  //                 </button>
+  //               </div>
+  //             ))}
+  //           </div>
+
+  //           {/* 이미지 업로드 */}
+  //           <input type="file" accept="image/*" onChange={handleImageChange} />
+  //         </div>
+
+  //         <button onClick={handleSave}>저장</button>
+  //       </div>
+  //     ) : (
+  //       <div>
+  //         <div>
+  //           {/* 이미지 */}
+  //           <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+  //             {detail.images.map((url, index) => (
+  //               <img key={index} src={`${import.meta.env.VITE_BE_PORT}${url}`} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
+  //             ))}
+  //           </div>
+  //         </div>
+
+  //         <div>
+  //           {/* 글 */}
+  //           <h1>제목: {detail.s_name}</h1>
+
+  //           <p>
+  //             <strong>카테고리:</strong> {detail.category}
+  //           </p>
+
+  //           <p>
+  //             <strong>주최:</strong> {detail.owner}
+  //           </p>
+
+  //           <p>
+  //             <strong>장소:</strong> {detail.location}
+  //           </p>
+
+  //           <p>
+  //             <strong>시작일자:</strong> {formatDate(detail.s_date)}
+  //           </p>
+  //           <p>
+  //             <strong>종료일자:</strong> {formatDate(detail.e_date)}
+  //           </p>
+
+  //           <p>
+  //             <strong>운영 시간:</strong> {detail.business_hours}
+  //           </p>
+
+  //           <p>
+  //             <strong>상세 설명:</strong> {detail.description}
+  //           </p>
+
+  //           <p>
+  //             <strong>문의하기:</strong> {detail.contact}
+  //           </p>
+
+  //           <p></p>
+  //         </div>
+  //       </div>
+  //     )}
+  //   </div>
+  // );
 };
 
 export default PopupEditPage;
