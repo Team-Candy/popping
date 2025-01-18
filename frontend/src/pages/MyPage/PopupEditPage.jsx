@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 // import "../../styles/PopupEditPage.css";
-import { fetchWithAuth } from "../../utils/util";
+import { fetchWithAuth, useCheckToken } from "../../utils/util";
 
 const PopupEditPage = () => {
   const navigate = useNavigate();
   const { popupId } = useParams();
+  const checkToken = useCheckToken();
 
   const [hasPermission, setHasPermission] = useState(null);
   const [error, setError] = useState(null); // 에러 메시지 저장
@@ -81,6 +82,8 @@ const PopupEditPage = () => {
         // 권한 있음
         setHasPermission(data.hasPermission);
       } else {
+        checkToken(response);
+
         // 권한 없음
         setHasPermission(false);
         console.log("서버 에러: ", data.message);
@@ -220,6 +223,8 @@ const PopupEditPage = () => {
       // 400~500 -  {"error": "Store not found"}
 
       if (!response.ok) {
+        checkToken(response);
+
         const errorData = await response.json();
         alert("서버로 데이터 전송 중 오류가 발생했습니다.");
         console.error("서버 오류 발생: ", errorData.error);
@@ -275,6 +280,8 @@ const PopupEditPage = () => {
       });
 
       if (!response.ok) {
+        checkToken(response);
+
         alert("삭제 중 오류가 발생했습니다.\n다시 시도해 주세요");
         return;
       }

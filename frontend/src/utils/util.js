@@ -1,3 +1,5 @@
+import useAuth from "../context/useAuth";
+
 export const formatDate = (date) => {
   const parsedDate = new Date(date);
 
@@ -14,7 +16,7 @@ export const fetchWithAuth = (url, options = {}) => {
   const token = sessionStorage.getItem("authToken");
 
   if (!token) {
-    alert("토큰이 만료되었습니다. 다시 로그인 해주세요.");
+    alert("로그인 후 이용 바랍니다.");
     window.location.href = "/login";
     return;
   }
@@ -27,13 +29,34 @@ export const fetchWithAuth = (url, options = {}) => {
   });
 };
 
-export const checkToken = (response) => {
-  if (response.status === 403) {
-    alert("토큰이 만료되었습니다. 다시 로그인 해주세요.");
-    window.location.href = "/login";
+// export const checkToken = (response) => {
+//   const { logout } = useAuth();
+// useAuth와 같은 React Hook은 React 컴포넌트나 사용자 정의 Hook 내부에서만 호출 가능
+//   if (response.status === 403) {
+//     // if (response.statusText === "Unauthorized") {
+//     alert("로그인 후 이용해주세요.");
+//     logout();
+//     window.location.href = "/login";
+//     return;
+//   }
+//   return;
+// };
+
+export const useCheckToken = () => {
+  const { logout } = useAuth();
+
+  const checkToken = (response) => {
+    if (response.status === 403) {
+      // if (response.statusText === "Unauthorized") {
+      alert("로그인 후 이용해주세요.");
+      logout();
+      window.location.href = "/login";
+      return;
+    }
     return;
-  }
-  return;
+  };
+
+  return checkToken;
 };
 
 // 이미지 불러오기

@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../context/useAuth";
-import { fetchWithAuth, formatDate, formatURL } from "../../utils/util";
+import { fetchWithAuth, formatDate, formatURL, useCheckToken } from "../../utils/util";
 
 const FavoritePopupPage = () => {
   const { auth } = useAuth();
   const navigate = useNavigate();
+  const checkToken = useCheckToken();
 
   const [results, setResults] = useState([]);
   const [likedPopups, setLikedPopups] = useState([]); // 좋아요 상태 저장
-  const [view, setView] = useState("list");
+  // const [view, setView] = useState("list");
 
   const fetchLikedPopups = async () => {
     const fetchLikesData = async () => {
@@ -21,6 +22,8 @@ const FavoritePopupPage = () => {
         const data = await response.json();
 
         if (!response.ok) {
+          checkToken(response);
+
           if (data.error === "Likes not found") {
             return;
           }
@@ -72,6 +75,8 @@ const FavoritePopupPage = () => {
       });
 
       if (!response.ok) {
+        checkToken(response);
+
         const data = await response.json();
         throw new Error(`Failed to ${isLiked ? "unlike" : "like"} popup: `, data.error);
       }

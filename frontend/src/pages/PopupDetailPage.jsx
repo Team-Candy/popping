@@ -3,12 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import BlogReview from "../components/BlogReview";
 import Description from "../components/Description";
 import useAuth from "../context/useAuth";
-import { fetchWithAuth, formatURL } from "../utils/util";
+import { fetchWithAuth, useCheckToken, formatURL } from "../utils/util";
 
 const PopupDetailPage = () => {
   const { popupId } = useParams(); // URL에서 popupId 가져옴, string type임
   const { auth, logout } = useAuth();
   const navigate = useNavigate();
+  const checkToken = useCheckToken();
 
   const [detail, setDetail] = useState(null); // 팝업 상세 정보 저장
   const [error, setError] = useState(null); // 에러 메시지 저장
@@ -24,17 +25,15 @@ const PopupDetailPage = () => {
 
     try {
       const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`);
-      if (response.statusText === "Unauthorized") {
-        alert("로그인 후 이용해주세요.");
-        logout();
-        navigate("/login");
-      } else if (!response.ok) {
+      if (!response.ok) {
         const data = await response.json();
         console.error("서버 에러 발생: ", data.error);
         return;
       }
 
       if (!response.ok) {
+        checkToken(response);
+
         const data = await response.json();
         console.error("서버 에러 발생: ", data.error);
         return;
@@ -137,6 +136,8 @@ const PopupDetailPage = () => {
       });
 
       if (!response.ok) {
+        checkToken(response);
+
         throw new Error(`Failed to ${isLiked ? "unlike" : "like"} popup`);
       }
     } catch (error) {

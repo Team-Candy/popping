@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useAuth from "../context/useAuth";
-import { fetchWithAuth, formatDate } from "../utils/util";
+import { fetchWithAuth, formatDate, useCheckToken } from "../utils/util";
 
 async function fetchData(query, page = 1, limit = 10) {
   // API 요청
@@ -33,6 +33,8 @@ async function fetchData(query, page = 1, limit = 10) {
 
 const SearchResult = () => {
   const { auth } = useAuth();
+  const checkToken = useCheckToken();
+
   const [likedPopups, setLikedPopups] = useState([]); // 좋아요 상태 저장
 
   const [results, setResults] = useState([]);
@@ -71,6 +73,8 @@ const SearchResult = () => {
         const data = await response.json();
 
         if (!response.ok) {
+          checkToken(response);
+
           if (data.error === "Likes not found") {
             return;
           }
@@ -126,6 +130,8 @@ const SearchResult = () => {
       });
 
       if (!response.ok) {
+        checkToken(response);
+
         throw new Error(`Failed to ${isLiked ? "unlike" : "like"} popup`);
       }
     } catch (error) {

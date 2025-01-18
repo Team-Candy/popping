@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import useAuth from "../../context/useAuth"; // 로그인 상태;
 import { useNavigate } from "react-router-dom";
-import { fetchWithAuth } from "../../utils/util";
+import { fetchWithAuth, useCheckToken } from "../../utils/util";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const checkToken = useCheckToken();
 
   // 이름
   const [name, setName] = useState("");
@@ -45,6 +46,8 @@ const ProfilePage = () => {
         });
 
         if (!response.ok) {
+          checkToken(response);
+
           throw new Error("Failed to fetch");
         }
 
@@ -82,6 +85,8 @@ const ProfilePage = () => {
       });
 
       if (!response.ok) {
+        checkToken(response);
+
         throw new Error("Failed to fetch delete user");
       }
 
@@ -108,6 +113,8 @@ const ProfilePage = () => {
         });
 
         if (!response.ok) {
+          checkToken(response);
+
           throw new Error("Failed to fetch name change");
         }
 
@@ -130,6 +137,8 @@ const ProfilePage = () => {
         });
 
         if (!response.ok) {
+          checkToken(response);
+
           throw new Error("Failed to fetch name change");
         }
 

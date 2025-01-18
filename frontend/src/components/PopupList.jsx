@@ -2,11 +2,12 @@ import PropTypes from "prop-types";
 import useAuth from "../context/useAuth";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchWithAuth, formatURL } from "../utils/util";
+import { fetchWithAuth, useCheckToken, formatURL } from "../utils/util";
 
 const PopupList = ({ category }) => {
   const { auth } = useAuth(); // 로그인 정보
   const navigate = useNavigate();
+  const checkToken = useCheckToken();
 
   const [popups, setPopups] = useState([]);
   const [error, setError] = useState(null);
@@ -75,6 +76,8 @@ const PopupList = ({ category }) => {
         const data = await response.json();
 
         if (!response.ok) {
+          checkToken(response);
+
           if (data.error === "Likes not found") {
             return;
           }
@@ -120,6 +123,8 @@ const PopupList = ({ category }) => {
       });
 
       if (!response.ok) {
+        checkToken(response);
+
         throw new Error(`Failed to ${isLiked ? "unlike" : "like"} popup`);
       }
     } catch (error) {

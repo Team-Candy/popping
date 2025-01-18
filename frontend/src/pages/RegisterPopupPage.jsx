@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchWithAuth } from "../utils/util";
+import { fetchWithAuth, useCheckToken } from "../utils/util";
 
 const RegisterPopupPage = () => {
   const navigate = useNavigate();
+  const checkToken = useCheckToken();
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [name, setName] = useState("");
@@ -136,6 +137,8 @@ const RegisterPopupPage = () => {
         });
 
         if (!response.ok) {
+          checkToken(response);
+
           // 서버 오류 처리
           console.error("서버 오류: ", response.status);
           alert("서버 오류가 발생했습니다. 다시 시도해 주세요.");

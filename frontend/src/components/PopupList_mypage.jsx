@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchWithAuth } from "../utils/util";
+import { fetchWithAuth, useCheckToken } from "../utils/util";
 
 const PopupList = () => {
   // {state} ->  onGoing, scheduled, completed
+  const checkToken = useCheckToken();
 
   const [popups, setPopups] = useState([]);
   const [error, setError] = useState(null);
@@ -20,6 +21,8 @@ const PopupList = () => {
       const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${userId}/stores`);
 
       if (!response.ok) {
+        checkToken(response);
+
         const data = await response.json();
         setPopups([]);
         setError("작성된 게시글이 없습니다.");
