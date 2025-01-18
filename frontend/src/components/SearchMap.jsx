@@ -3,67 +3,115 @@ import { useEffect, useRef } from "react";
 import { formatDate, formatURL } from "../utils/util";
 
 const Map = ({ region, location }) => {
-  const mapRef = useRef(null); // To store the map instance
+  const mapRef = useRef(null);
+  const markersRef = useRef([]);
+  const infowindowsRef = useRef([]);
 
   useEffect(() => {
-    // 이미 스크립트가 로드되었는지 확인
-    if (document.getElementById("kakao-map-script")) {
-      initializeMap(region, location); // 맵 초기화 함수 호출
+    const scriptId = "kakao-map-script";
+    const existingScript = document.getElementById(scriptId);
+
+    if (existingScript) {
+      initializeMap(region, location);
       return;
     }
 
-    // 스크립트 태그 동적으로 추가
     const script = document.createElement("script");
     script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_JS_KEY}&autoload=false`;
     script.async = true;
-    script.onload = () => initializeMap(region, location); // 스크립트 로드 후 지도 초기화
+    script.id = scriptId;
+    script.onload = () => initializeMap(region, location);
     document.body.appendChild(script);
 
     return () => {
-      // Cleanup: 기존 지도와 마커 제거
       const mapContainer = document.getElementById("map");
       if (mapContainer) {
-        mapContainer.innerHTML = ""; // 맵 컨테이너 정리
+        mapContainer.innerHTML = "";
       }
+
+      markersRef.current.forEach((marker) => marker.setMap(null));
+      infowindowsRef.current.forEach((infowindow) => infowindow.close());
     };
   }, [region, location]);
 
-  useEffect(() => {
-    if (mapRef.current) {
-      updateMapCenter(region);
-    }
-  }, [region]);
-
-  const updateMapCenter = async (region) => {
-    // 주소가 아닌 장소명이라면 ERROR
+  const initializeMap = async (region = "seoul", location) => {
     const { lat, lng } = await getCoordinates(region);
 
-    if (mapRef.current) {
-      const newCenter = new window.kakao.maps.LatLng(lat, lng);
-      mapRef.current.setCenter(newCenter);
-      console.log("Map center updated", newCenter); // 중심이 잘 업데이트 되는지 확인
+    if (window.kakao) {
+      window.kakao.maps.load(() => {
+        const container = document.getElementById("map");
+        const options = {
+          center: new window.kakao.maps.LatLng(lat, lng),
+          level: 6,
+        };
+
+        if (!mapRef.current) {
+          mapRef.current = new window.kakao.maps.Map(container, options);
+        } else {
+          mapRef.current.setCenter(new window.kakao.maps.LatLng(lat, lng));
+        }
+
+        const map = mapRef.current;
+        if (!map.zoomControl) {
+          const zoomControl = new window.kakao.maps.ZoomControl();
+          map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
+          map.zoomControl = zoomControl;
+        }
+
+        location.forEach(async (item) => {
+          const { id, name, location, startDate, endDate, images } = item;
+
+          fetchLatLng(location).then((coords) => {
+            const { x: lng, y: lat } = coords;
+
+            const marker = new window.kakao.maps.Marker({
+              position: new window.kakao.maps.LatLng(lat, lng),
+            });
+
+            const iwContent = `
+              <div style="display: flex; padding:5px;">
+                <div style="flex: 1; margin-right: 5px;">
+                  ${name}<br>
+                  ${formatDate(startDate)}~${formatDate(endDate)}<br>
+                  <a href="/popup/${id}" style="color:blue" target="_blank" >상세보기</a><br>
+                  <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="color:blue" target="_blank" >큰지도보기</a>
+                   |
+                  <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="color:blue" target="_blank" >길찾기</a><br>
+                </div>
+                <div>
+                  <img src="${formatURL(images[0])}" alt="popupStore image" style="width:100px;height:100px; border-radius:10px;"/>
+                </div>
+              </div>
+            `;
+
+            const infowindow = new window.kakao.maps.InfoWindow({
+              position: new window.kakao.maps.LatLng(lat, lng),
+              content: iwContent,
+              disableAutoPan: true,
+            });
+
+            marker.setMap(map);
+            infowindow.open(map, marker);
+
+            markersRef.current.push(marker);
+            infowindowsRef.current.push(infowindow);
+          });
+        });
+      });
+    } else {
+      console.error("Kakao Maps SDK is not loaded.");
     }
   };
 
-  // 딜레이 함수
-  function delay(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  // lat,lng 찾기 함수
-  async function fetchLatLng(location) {
+  const fetchLatLng = async (location) => {
     const cachedCoords = JSON.parse(localStorage.getItem("coords")) || {};
 
     if (cachedCoords && cachedCoords[location]) {
-      return cachedCoords[location]; // 로컬 스토리지에서 좌표 반환
+      return cachedCoords[location];
     } else {
       try {
-        // 요청 딜레이 설정
-        const REQUEST_DELAY = 1000; // 1초
-        console.log(`Delaying request for ${REQUEST_DELAY}ms...`);
+        const REQUEST_DELAY = 1000;
         await delay(REQUEST_DELAY);
-
-        console.log("여기입니당");
 
         const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/map/getLatLng/${encodeURIComponent(location)}`);
         if (!response.ok) {
@@ -74,15 +122,16 @@ const Map = ({ region, location }) => {
         const data = await response.json();
 
         cachedCoords[location] = data;
-        localStorage.setItem("coords", JSON.stringify(cachedCoords)); // 업데이트된 좌표 객체를 로컬 스토리지에 저장
-        return data; // {lng: , lat: }
+        localStorage.setItem("coords", JSON.stringify(cachedCoords));
+        return data;
       } catch (err) {
         console.error("네트워크 오류", err.message);
       }
     }
-  }
+  };
 
-  // 포커스용 lat,lng 찾기 함수
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
   const getCoordinates = async (region) => {
     const regionCoordinates = {
       seoul: { lat: 37.5665, lng: 126.9788 },
@@ -95,78 +144,10 @@ const Map = ({ region, location }) => {
       return regionCoordinates[region];
     } else {
       const data = await fetchLatLng(region);
-      console.log("Fetching coordinates for region:", region, data);
-
-      // 좌표 값 숫자형으로 변환
       const lat = parseFloat(data.y);
       const lng = parseFloat(data.x);
-      console.log("Fetched coordinates:", { lat, lng }); // 변환된 좌표 값
       return { lat, lng };
     }
-  };
-
-  // 맵 초기화 함수
-  const initializeMap = async (region = "seoul", location) => {
-    const { lat, lng } = await getCoordinates(region); // region에 해당하는 좌표
-
-    // 스크립트 로드 완료 후 카카오 맵을 초기화
-    window.kakao.maps.load(() => {
-      // 지도를 표시할 div
-      const container = document.getElementById("map");
-
-      // 지도 중심 좌표
-      const options = {
-        center: new window.kakao.maps.LatLng(lat, lng),
-        level: 6,
-      };
-
-      // 지도 생성
-      const map = new window.kakao.maps.Map(container, options);
-      mapRef.current = map;
-
-      // 줌 컨트롤 추가
-      const zoomControl = new window.kakao.maps.ZoomControl();
-      map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
-
-      location.forEach(async (item) => {
-        const { id, name, location, startDate, endDate, images } = item;
-
-        fetchLatLng(location).then((coords) => {
-          const { x: lng, y: lat } = coords;
-
-          // 마커 생성
-          const marker = new window.kakao.maps.Marker({
-            position: new window.kakao.maps.LatLng(lat, lng),
-          });
-
-          // 인포윈도우 내용 설정
-          const iwContent = `
-          <div style="display: flex; padding:5px;">
-            <div style="flex: 1; margin-right: 5px;">
-              ${name}<br>
-              ${formatDate(startDate)}~${formatDate(endDate)}<br>
-              <a href="/popup/${id}" style="color:blue" target="_blank" >상세보기</a><br>
-              <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="color:blue" target="_blank" >큰지도보기</a>
-               |
-              <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="color:blue" target="_blank" >길찾기</a><br>
-            </div>
-            <div>
-              <img src="${formatURL(images[0])}" alt="popupStore image" style="width:100px;height:100px; border-radius:10px;"/>
-            </div>
-          </div>
-        `;
-
-          const infowindow = new window.kakao.maps.InfoWindow({
-            position: new window.kakao.maps.LatLng(lat, lng),
-            content: iwContent,
-            disableAutoPan: true, // 인포윈도우 열릴 때 지도 중심 이동 방지
-          });
-
-          marker.setMap(map); // 마커 맵에 표시
-          infowindow.open(map, marker); // 인포윈도우 표시
-        });
-      });
-    });
   };
 
   return (
