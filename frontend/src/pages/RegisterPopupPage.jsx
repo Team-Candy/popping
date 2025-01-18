@@ -157,6 +157,7 @@ const RegisterPopupPage = () => {
       }
     }
   };
+
   return (
     <div className="flex justify-center items-center min-h-screen">
       <form onSubmit={handleSubmit} className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-lg">
