@@ -71,25 +71,46 @@ const LoginPage = () => {
   };
 
   return (
-    <div>
-      <p className="text-xl font-bold text-gray-800 mb-4">이메일 로그인</p>
+    <div className="flex flex-col items-center min-h-screen">
+      <h2 className="text-center mb-6 text-2xl font-semibold">이메일로 로그인</h2>
 
-      <form onSubmit={handleSubmit}>
-        <div style={{ display: "flex" }}>
-          <input type="text" name="email" value={email} onChange={handleChange} placeholder="email" autoComplete="current-password" />
-          <br />
-          <input type="password" name="password" value={password} onChange={handleChange} placeholder="password" autoComplete="current-password" />
-          <button type="submit">로그인</button>
+      <form onSubmit={handleSubmit} className="w-full max-w-md bg-gray-100 p-8 rounded-xl shadow-lg">
+        <div className="flex flex-col space-y-4">
+          <input type="text" name="email" value={email} onChange={handleChange} placeholder="이메일" autoComplete="current-password" className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-200" />
+          <input type="password" name="password" value={password} onChange={handleChange} placeholder="비밀번호" autoComplete="current-password" className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-200" />
         </div>
+        <button type="submit" className="w-full py-2 mt-6 bg-[#c8a0c8] text-white font-semibold rounded-md hover:bg-[#a15da1]">
+          로그인
+        </button>
       </form>
-      <br />
-      <br />
-      <button style={{ color: "red" }}>카카오 로그인</button>
-      <br />
-      <br />
-      <button onClick={() => signUp()}>회원가입</button>
+
+      <div className="mt-4 text-center">
+        <button onClick={() => signUp()} className="text-gray-500 hover:text-gray-800 font-medium">
+          회원가입
+        </button>
+      </div>
     </div>
   );
+
+  // return (
+  //   <div>
+  //     <h3>이메일 로그인</h3>
+  //     <form onSubmit={handleSubmit}>
+  //       <div style={{ display: "flex" }}>
+  //         <input type="text" name="email" value={email} onChange={handleChange} placeholder="email" autoComplete="current-password" />
+  //         <br />
+  //         <input type="password" name="password" value={password} onChange={handleChange} placeholder="password" autoComplete="current-password" />
+  //         <button type="submit">로그인</button>
+  //       </div>
+  //     </form>
+  //     <br />
+  //     <br />
+  //     <button style={{ color: "red" }}>카카오 로그인</button>
+  //     <br />
+  //     <br />
+  //     <button onClick={() => signUp()}>회원가입</button>
+  //   </div>
+  // );
 };
 
 export default LoginPage;

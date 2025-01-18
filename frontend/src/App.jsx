@@ -1,6 +1,8 @@
 // import "./index.css";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext"; // 로그인 전역 상태관리
+import ScrollToTop from "./components/ScrollToTop";
 
 import Layout from "./pages/Layout";
 import PopupDetailPage from "./pages/PopupDetailPage";
@@ -14,7 +16,6 @@ import SignUpPage from "./pages/auth/SignUpPage";
 import JoinEmailPage from "./pages/auth/JoinMailPage";
 import LoginPage from "./pages/auth/LoginPage";
 
-import { AuthProvider } from "./context/AuthContext"; // 로그인 전역 상태관리
 import NotFoundPage from "./pages/notfound/NotFoundPage";
 
 import FavoritePopupPage from "./pages/mypage/FavoritePopupPage";
@@ -27,6 +28,7 @@ import PopupEditPage from "./pages/mypage/PopupEditPage";
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AuthProvider>
         <Routes>
           {/* Route 정의 */}
