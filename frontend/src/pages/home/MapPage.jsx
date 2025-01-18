@@ -31,11 +31,14 @@ const MapPage = () => {
   }, []);
 
   return (
-    <div>
-      <p className="text-xl font-bold text-gray-800 mb-4">지도</p>
-
-      <Region onSelectRegion={setSelectedRegion}></Region>
-      <Map region={selectedRegion} location={location}></Map>
+    <div className="flex flex-col items-center justify-center">
+      <div className="max-w-[1000px] w-4/5">
+        <h2 className="mb-6 text-center text-3xl font-semibold text-gray-800">지도</h2>
+        <div className="w-full flex justify-center">
+          <Region onSelectRegion={setSelectedRegion}></Region>
+        </div>
+        <Map region={selectedRegion} location={location}></Map>
+      </div>
     </div>
   );
 };
