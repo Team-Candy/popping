@@ -29,7 +29,19 @@ const SearchBar = () => {
       <div className="w-[300px] flex-col justify-center items-center inline-flex">
         <div className="self-stretch h-9 px-5 bg-[#f0f0f0] rounded-full justify-between items-center inline-flex overflow-hidden">
           <div className="w-[272px] self-stretch justify-start items-center flex">
-            <input className="text-sm bg-[#f0f0f0] font-['Pretendard'] leading-normal w-full outline-none" type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="팝업스토어 이름, 지역"></input>
+            <input
+              className="text-sm bg-[#f0f0f0] font-['Pretendard'] leading-normal w-full outline-none"
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSearch();
+                }
+              }}
+              placeholder="팝업스토어 이름, 지역"
+            ></input>
           </div>
           <div className="text-sm hover:scale-105 transition-all duration-300 w-10 justify-center flex">
             <button className="" onClick={handleSearch}>

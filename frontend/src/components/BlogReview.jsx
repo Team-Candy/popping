@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 
 const BlogReview = ({ name }) => {
   const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // API 호출 - blog data 받기
   const fetchBlogs = async (name) => {
@@ -22,6 +23,8 @@ const BlogReview = ({ name }) => {
     } catch (err) {
       console.error("Error fetching blogs:", err.message);
       setBlogs([]);
+    } finally {
+      setLoading(false); // 데이터 로딩이 끝나면 loading을 false로 설정
     }
   };
 
@@ -33,32 +36,30 @@ const BlogReview = ({ name }) => {
 
   return (
     <div>
-      <ul style={{ listStyleType: "none", padding: 0 }}>
-        {blogs.length > 0 ? (
-          blogs.map((blog, index) => (
-            <li key={index} style={{ marginBottom: "20px" }}>
-              <div
-                onClick={() => window.open(blog.link, "_blank")}
-                style={{
-                  border: "1px solid #ddd",
-                  borderRadius: "8px",
-                  padding: "15px",
-                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                  backgroundColor: "#f9f9f9",
-                  cursor: "pointer",
-                }}
-              >
-                <h3 dangerouslySetInnerHTML={{ __html: blog.title }}></h3>
-                <p dangerouslySetInnerHTML={{ __html: blog.description }}></p>
-                <small>작성 날짜: {blog.postdate}</small>
-              </div>
-            </li>
-          ))
-        ) : (
-          <p></p>
-          // <p>검색 결과가 없습니다.</p>
-        )}
-      </ul>
+      {loading ? (
+        // 로딩 상태일 때 스켈레톤 UI 표시
+        <div className="space-y-4">
+          <div className="h-6 bg-gray-300 rounded w-3/4 animate-pulse"></div>
+          <div className="h-6 bg-gray-300 rounded w-2/3 animate-pulse"></div>
+          <div className="h-6 bg-gray-300 rounded w-1/2 animate-pulse"></div>
+        </div>
+      ) : (
+        <ul className="list-none p-0">
+          {blogs.length > 0 ? (
+            blogs.map((blog, index) => (
+              <li key={index} className="mb-5">
+                <div onClick={() => window.open(blog.link, "_blank")} className="border border-gray-300 rounded-lg p-4 shadow-md bg-gray-50 cursor-pointer hover:bg-gray-100 transition duration-200">
+                  <h3 className="text-lg font-semibold" dangerouslySetInnerHTML={{ __html: blog.title }}></h3>
+                  <p className="text-gray-600" dangerouslySetInnerHTML={{ __html: blog.description }}></p>
+                  <small className="text-sm text-gray-500">작성 날짜: {blog.postdate}</small>
+                </div>
+              </li>
+            ))
+          ) : (
+            <p>검색 결과가 없습니다.</p>
+          )}
+        </ul>
+      )}
     </div>
   );
 };

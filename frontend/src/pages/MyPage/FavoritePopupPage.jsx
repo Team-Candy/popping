@@ -96,7 +96,6 @@ const FavoritePopupPage = () => {
     <div className="max-w-[1000px] container mx-auto px-4 py-6">
       <p className="ml-10 text-3xl font-semibold text-gray-800 mb-6">관심 팝업</p>
       <hr className="border-gray-300 mb-6" />
-      {/* {error && <p className="text-center mt-20 text-red-500">{error}</p>} */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
         {results.length > 0 ? (
           results.map((popup) => (

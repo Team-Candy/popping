@@ -7,7 +7,7 @@ import { fetchWithAuth, useCheckToken, formatURL } from "../utils/util";
 
 const PopupDetailPage = () => {
   const { popupId } = useParams(); // URL에서 popupId 가져옴, string type임
-  const { auth } = useAuth();
+  const { auth, logout } = useAuth();
   const navigate = useNavigate();
   const checkToken = useCheckToken();
 
@@ -153,6 +153,16 @@ const PopupDetailPage = () => {
     }
   };
 
+  const heartStyle = {
+    bottom: "8px", // 이미지 하단 여백
+    right: "8px", // 이미지 오른쪽 여백
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "24px", // 하트 크기
+    zIndex: 10, // 이미지 위에 표시
+  };
+
   function formatCategory(category) {
     const korean = [
       { label: "전체", value: "whole" },
@@ -173,46 +183,53 @@ const PopupDetailPage = () => {
   }
 
   return (
-    <div className="max-w-[1000px] container mx-auto p-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        {detail.images.map((url, index) => (
-          <img key={index} src={formatURL(url)} alt={`팝업 이미지 ${index + 1}`} className="w-full rounded-lg shadow-md" />
-        ))}
+    <div>
+      <div>
+        <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+          {detail.images.map((url, index) => (
+            <img key={index} src={formatURL(url)} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
+          ))}
+        </div>
       </div>
 
-      <div className="flex items-center mb-4">
-        <h1 className="text-3xl font-semibold">{detail.s_name}</h1>
-        <button
-          className="text-2xl"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleLikeToggle(popupId);
-          }}
-          aria-label={like ? "좋아요 취소" : "좋아요"}
-        >
-          {like ? "❤️" : "🤍"}
-        </button>
+      <div>
+        {/* 제목 */}
+        <div style={{ display: "flex" }}>
+          <h1>{detail.s_name}</h1>
+
+          <button
+            style={heartStyle}
+            onClick={(e) => {
+              e.stopPropagation(); // 부모 클릭 이벤트 방지
+              handleLikeToggle(popupId); // 하트 상태 토글
+            }}
+            aria-label={like ? "좋아요 취소" : "좋아요"} // ARIA 레이블 추가
+          >
+            {like ? "❤️" : "🤍"}
+          </button>
+        </div>
+
+        <p>
+          {/* (수정) 영문 -> 한글 */}
+          <strong>카테고리:</strong> {formatCategory(detail.category)}
+        </p>
+
+        <p>
+          <strong>주최:</strong> {detail.owner}
+        </p>
+
+        <p>
+          <strong>장소:</strong> {detail.location}
+        </p>
       </div>
 
-      <p className="text-lg">
-        <strong>카테고리:</strong> {formatCategory(detail.category)}
-      </p>
-      <p className="text-lg">
-        <strong>주최:</strong> {detail.owner}
-      </p>
-      <p className="text-lg">
-        <strong>장소:</strong> {detail.location}
-      </p>
-
-      <div className="mt-6 mb-4">
-        <button onClick={() => setActiveTab("description")} className={`px-4 py-2 mr-4 rounded ${activeTab === "description" ? "bg-blue-500 text-white" : "bg-gray-300"}`}>
-          상세 설명
-        </button>
-        <button onClick={() => setActiveTab("reviews")} className={`px-4 py-2 rounded ${activeTab === "reviews" ? "bg-blue-500 text-white" : "bg-gray-300"}`}>
-          블로그 후기
-        </button>
+      {/* 버튼, 탭 */}
+      <div>
+        <button onClick={() => setActiveTab("description")}>상세 설명</button>
+        <button onClick={() => setActiveTab("reviews")}>블로그 후기</button>
       </div>
 
+      {/* 탭 컨텐츠 */}
       {renderTabContent()}
     </div>
   );

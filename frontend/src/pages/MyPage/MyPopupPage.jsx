@@ -2,7 +2,7 @@ import PopupList from "../../components/PopupList_mypage";
 
 const MyPopupPage = () => {
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="max-w-[1000px] container mx-auto px-4 py-6">
       <p className="ml-10 text-3xl font-semibold text-gray-800 mb-6">나의 팝업</p>
       <hr className="border-gray-300 mb-6" />
       <PopupList />

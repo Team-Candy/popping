@@ -68,20 +68,57 @@ const Map = ({ region, location }) => {
               position: new window.kakao.maps.LatLng(lat, lng),
             });
 
+            // const customMarkerImage = new window.kakao.maps.MarkerImage(
+            //   "https://your-image-url.com/marker.png", // 마커 이미지 URL (원하는 이미지로 변경)
+            //   new window.kakao.maps.Size(60, 60), // 이미지 크기
+            //   {
+            //     offset: new window.kakao.maps.Point(30, 60), // 이미지의 기준점 (하단 중앙)
+            //   }
+            // );
+
+            // const marker = new window.kakao.maps.Marker({
+            //   position: new window.kakao.maps.LatLng(lat, lng), // 마커 위치
+            //   image: customMarkerImage,
+            // });
+
+            // const iwContent = `
+            //   <div style="display: flex; padding:5px;">
+            //     <div style="flex: 1; margin-right: 5px;">
+            //       ${name}<br>
+            //       ${formatDate(startDate)}~${formatDate(endDate)}<br>
+            //       <a href="/popup/${id}" style="color:blue" target="_blank" >상세보기</a><br>
+            //       <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="color:blue" target="_blank" >큰지도보기</a>
+            //        |
+            //       <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="color:blue" target="_blank" >길찾기</a><br>
+            //     </div>
+            //     <div>
+            //       <img src="${formatURL(images[0])}" alt="popupStore image" style="width:100px;height:100px; border-radius:10px;"/>
+            //     </div>
+            //   </div>
+            // `;
+
+            //             // 인포윈도우 내용
             const iwContent = `
-              <div style="display: flex; padding:5px;">
-                <div style="flex: 1; margin-right: 5px;">
-                  ${name}<br>
-                  ${formatDate(startDate)}~${formatDate(endDate)}<br>
-                  <a href="/popup/${id}" style="color:blue" target="_blank" >상세보기</a><br>
-                  <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="color:blue" target="_blank" >큰지도보기</a>
-                   |
-                  <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="color:blue" target="_blank" >길찾기</a><br>
-                </div>
-                <div>
-                  <img src="${formatURL(images[0])}" alt="popupStore image" style="width:100px;height:100px; border-radius:10px;"/>
+            <div style="display: flex; padding: 10px; background-color: #f8f0ff; border-radius: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); font-family: Arial, sans-serif; align-items: center; color: #5a2d88;">
+              <div style="flex: 1; margin-right: 12px;">
+                <h4 style="margin: 0; font-size: 14px; font-weight: bold; color: #5a2d88;">${name}</h4>
+                <p style="margin: 5px 0; font-size: 12px; color: #8e44ad;">${formatDate(startDate)} ~ ${formatDate(endDate)}</p>
+                <div style="display: flex; gap: 6px; margin-top: 6px;">
+                  <a href="/popup/${id}" style="color: #d22b8e; font-size: 12px; text-decoration: none; padding: 4px 8px; border-radius: 15px; background-color: #f1e1f7;">
+                    상세보기
+                  </a>
+                  <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="color: #d22b8e; font-size: 12px; text-decoration: none; padding: 4px 8px; border-radius: 15px; background-color: #f1e1f7;">
+                    큰 지도 보기
+                  </a>
+                  <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="color: #d22b8e; font-size: 12px; text-decoration: none; padding: 4px 8px; border-radius: 15px; background-color: #f1e1f7;">
+                    길 찾기
+                  </a>
                 </div>
               </div>
+              <div>
+                <img src="${formatURL(images[0])}" alt="popupStore image" style="width: 60px; height: 60px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"/>
+              </div>
+            </div>
             `;
 
             const infowindow = new window.kakao.maps.InfoWindow({
