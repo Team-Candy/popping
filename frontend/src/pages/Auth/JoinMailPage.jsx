@@ -280,7 +280,7 @@ const JoinEmailPage = () => {
               이메일 주소
             </label>
             <input type="email" placeholder="이메일 주소를 입력해주세요." value={email} onChange={handleEmailChange} className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${emailError ? "border-red-500 focus:ring-red-300" : "border-gray-300 focus:ring-pink-200"}`} />
-            <button type="button" onClick={handleEmailVerification} disabled={sendNumber} className={`mt-2 px-4 py-2 rounded-md text-white font-medium ${sendNumber ? "bg-gray-300 cursor-not-allowed" : "bg-pink-400 hover:bg-pink-500"}`}>
+            <button type="button" onClick={handleEmailVerification} disabled={sendNumber} className={`mt-2 px-4 py-2 rounded-md text-white font-medium ${sendNumber ? "bg-gray-300 cursor-not-allowed" : "bg-[#c8a0c8] hover:bg-[#a15da1]"}`}>
               인증번호 발송
             </button>
             {emailError && <p className="mt-1 text-sm text-red-500">{emailError}</p>} {/* 이미 존재하는 이메일입니다.*/}
@@ -288,7 +288,7 @@ const JoinEmailPage = () => {
             {sendNumber && (
               <div className="mt-4 space-y-2">
                 <input type="number" placeholder="인증번호 입력" value={authNumber} onChange={handleAuthNumberChange} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-200" />
-                <button type="button" onClick={handleAuthSubmit} className="px-4 py-2 rounded-md bg-pink-400 text-white font-medium hover:bg-pink-500">
+                <button type="button" onClick={handleAuthSubmit} className="px-4 py-2 rounded-md bg-[#c8a0c8] text-white font-medium hover:bg-[#a15da1]">
                   인증
                 </button>
                 {authError && <p className="mt-1 text-sm text-red-500">{authError}</p>} {/* 인증 오류 메시지 */}
@@ -328,7 +328,7 @@ const JoinEmailPage = () => {
           </div>
 
           {/* 가입하기 버튼 */}
-          <button type="submit" disabled={!isAuthValid || !isConfirmPasswordValid || !isOver14 || !termsChecked} className={`w-full py-2 mt-6 rounded-md font-semibold ${!isAuthValid || !isConfirmPasswordValid || !isOver14 || !termsChecked ? "bg-gray-300 text-gray-600 cursor-not-allowed" : "bg-pink-400 text-white hover:bg-pink-500"}`}>
+          <button type="submit" disabled={!isAuthValid || !isConfirmPasswordValid || !isOver14 || !termsChecked} className={`w-full py-2 mt-6 rounded-md font-semibold ${!isAuthValid || !isConfirmPasswordValid || !isOver14 || !termsChecked ? "bg-gray-300 text-gray-600 cursor-not-allowed" : "bg-[#c8a0c8] text-white hover:bg-[#a15da1"}`}>
             가입하기
           </button>
         </div>

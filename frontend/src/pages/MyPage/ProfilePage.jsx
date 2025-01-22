@@ -248,9 +248,9 @@ const ProfilePage = () => {
   };
 
   return (
-    <div>
-      <h2>프로필</h2>
-      <hr />
+    <div className="p-6 max-w-lg mx-auto">
+      <h2 className="text-2xl font-bold text-center mb-6">프로필</h2>
+      <hr className="border-gray-300 mb-6" />
       <div>
         <p style={titleStyle}>이름</p>
         <div style={{ display: "flex", width: 250, justifyContent: "space-between" }}>
@@ -348,6 +348,108 @@ const ProfilePage = () => {
       </div>
     </div>
   );
+
+  // return (
+  //   <div>
+  //     <h2>프로필</h2>
+  //     <hr />
+  //     <div>
+  //       <p style={titleStyle}>이름</p>
+  //       <div style={{ display: "flex", width: 250, justifyContent: "space-between" }}>
+  //         {nameEditing ? (
+  //           <div>
+  //             <input type="text" value={nameChange} placeholder="이름을 입력하세요." onChange={(e) => setNameChange(e.target.value)} />
+  //           </div>
+  //         ) : (
+  //           <p>{name}</p>
+  //         )}
+
+  //         {nameEditing ? (
+  //           <div>
+  //             <button onClick={handleChange}>완료</button>
+  //             <button onClick={() => setNameEditing((prev) => !prev)}>취소</button>
+  //           </div>
+  //         ) : (
+  //           <button
+  //             onClick={() => {
+  //               setNameChange(name);
+  //               setNameEditing((prev) => !prev);
+  //             }}
+  //           >
+  //             변경
+  //           </button>
+  //         )}
+  //       </div>
+  //     </div>
+  //     <hr />
+  //     <div>
+  //       <p style={titleStyle}>이메일</p>
+  //       <div style={{ display: "flex", width: 250, justifyContent: "space-between" }}>
+  //         {emailEditing ? (
+  //           <div>
+  //             <input type="email" placeholder="이메일 주소를 입력해주세요." value={emailChange} onChange={handleEmailChange} style={{ borderColor: emailError ? "red" : "" }} />
+  //             <button type="button" onClick={handleEmailVerification} disabled={sendNumber}>
+  //               인증번호 발송
+  //             </button>
+  //             {emailError && <p style={{ color: "red" }}>{emailError}</p>} {/* 이미 존재하는 이메일입니다.*/}
+  //             {sendNumber && <p style={{ color: "green" }}>인증번호가 발송되었습니다.</p>}
+  //             {sendNumber && (
+  //               <div>
+  //                 <input type="number" placeholder="인증번호 입력" value={authNumber} onChange={handleAuthNumberChange} />
+  //                 <button type="button" onClick={handleAuthSubmit}>
+  //                   인증
+  //                 </button>
+  //                 {authError && <p style={{ color: "red" }}>{authError}</p>} {/* 인증 오류 메시지 */}
+  //                 {isAuthValid && <p style={{ color: "green" }}>인증번호가 일치합니다.</p>} {/* 인증 성공 메시지 */}
+  //               </div>
+  //             )}
+  //           </div>
+  //         ) : (
+  //           <p>{email}</p>
+  //         )}
+
+  //         {emailEditing ? (
+  //           <div>
+  //             <button onClick={handleChange}>완료</button>
+  //             <button onClick={() => setEmailEditing((prev) => !prev)}>취소</button>
+  //           </div>
+  //         ) : (
+  //           <button
+  //             onClick={() => {
+  //               setEmailChange(email);
+  //               setEmailEditing((prev) => !prev);
+  //             }}
+  //           >
+  //             변경
+  //           </button>
+  //         )}
+  //       </div>
+  //     </div>
+  //     <hr />
+
+  //     {/* (수정) 비밀번호 수정 */}
+  //     {/* <div>
+  //       <div style={{ display: "flex", width: 250, justifyContent: "space-between" }}>
+  //         <p style={titleStyle}>비밀번호</p>
+  //         {passwordEditing ? (
+  //           <div>
+  //             <button onClick={handlePasswordChange}>완료</button>
+  //             <button onClick={() => setPasswordEditing((prev) => !prev)}>취소</button>
+  //           </div>
+  //         ) : (
+  //           <button onClick={() => setPasswordEditing((prev) => !prev)}>변경</button>
+  //         )}
+  //       </div>
+  //     </div>
+  //     <hr /> */}
+
+  //     <div>
+  //       <div style={{ display: "flex", width: 250, justifyContent: "space-between" }}>
+  //         <button onClick={handleDeleteUser}>회원 탈퇴</button>
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 };
 
 export default ProfilePage;
