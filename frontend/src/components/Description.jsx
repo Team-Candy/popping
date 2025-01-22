@@ -5,21 +5,19 @@ import { formatDate } from "../utils/util";
 const Description = ({ detail }) => {
   return (
     <div>
-      <p>
-        <strong>운영 기간:</strong> {formatDate(detail.s_date)} ~ {formatDate(detail.e_date)}
+      <strong>운영 기간</strong>
+      <p className="mb-3">
+        {formatDate(detail.s_date)} ~ {formatDate(detail.e_date)}
       </p>
 
-      <p>
-        <strong>운영 시간:</strong> {detail.business_hours}
-      </p>
+      <strong>운영 시간</strong>
+      <p className="mb-3">{detail.business_hours}</p>
 
-      <p>
-        <strong>상세 설명:</strong> {detail.description}
-      </p>
+      <strong>상세 설명</strong>
+      <p className="mb-3">{detail.description}</p>
 
-      <p>
-        <strong>문의하기:</strong> {detail.contact}
-      </p>
+      <strong>문의하기</strong>
+      <p className="mb-3">{detail.contact}</p>
 
       <Map location={detail.location}></Map>
     </div>
