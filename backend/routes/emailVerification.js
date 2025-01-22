@@ -145,6 +145,7 @@ router.post("/verify-code", async (req, res) => {
     res.status(500).json({ error: "인증 처리 중 오류가 발생했습니다." });
   }
 });
+
 // 회원가입 후 사용자 db에 저장
 router.post("/users", async (req, res) => {
   const { email, password, name } = req.body;
@@ -161,7 +162,7 @@ router.post("/users", async (req, res) => {
   try {
     await db.promise().beginTransaction(); // 트랜잭션 시작
 
-    // 이메일 인증 확인
+    // // 이메일 인증 확인
     const verifyQuery = `SELECT verified FROM emailverification WHERE email = ?`;
     const [verifyResults] = await db.promise().query(verifyQuery, [email]);
 

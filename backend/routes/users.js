@@ -78,6 +78,10 @@ router.put("/:u_id/profile", authenticateJWT, async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
+    // 인증 데이터 삭제
+    const deleteCodeQuery = `DELETE FROM emailverification WHERE email = ?`;
+    await db.promise().query(deleteCodeQuery, [email]);
+
     res.status(200).json({ message: "User profile updated successfully" });
   } catch (err) {
     console.error("Error during user profile update:", err.message);
