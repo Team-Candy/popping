@@ -299,10 +299,6 @@ const PopupEditPage = () => {
   const handleImageChange = (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      //   const newImages = Array.from(files).map(
-      //     (file) => URL.createObjectURL(file) // 선택된 이미지의 URL을 생성하여 미리보기
-      //   );
-
       const newFiles = Array.from(files); // 선택된 파일들을 배열로 변환
       const newImageUrls = newFiles.map((file) => URL.createObjectURL(file)); // 파일의 미리보기 URL 생성
 
