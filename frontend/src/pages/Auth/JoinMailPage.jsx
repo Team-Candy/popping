@@ -242,9 +242,9 @@ const JoinEmailPage = () => {
       });
 
       if (!response.ok) {
-        // const data = await response.json();
+        const data = await response.json();
         // console.error("Error: ", data.error);
-        alert("회원가입에 실패했습니다.");
+        // alert("회원가입에 실패했습니다.");
         alert(data.error);
         navigate("/join/email");
         return;
@@ -262,61 +262,136 @@ const JoinEmailPage = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <h2>이메일로 회원가입하기</h2>
-        {/* -------------------------------------------------------- */}
-        <h3>이름</h3>
-        <input type="text" placeholder="사용하실 이름을 입력해주세요." value={name} onChange={handleNameChange} style={{ borderColor: nameError ? "red" : "" }} />
-        {nameError && <p style={{ color: "red" }}>{nameError}</p>}
-        {/* -------------------------------------------------------- */}
-        <h3>이메일 주소</h3>
-        <input type="email" placeholder="이메일 주소를 입력해주세요." value={email} onChange={handleEmailChange} style={{ borderColor: emailError ? "red" : "" }} />
-        <button type="button" onClick={handleEmailVerification} disabled={sendNumber}>
-          인증번호 발송
-        </button>
-        {emailError && <p style={{ color: "red" }}>{emailError}</p>} {/* 이미 존재하는 이메일입니다.*/}
-        {sendNumber && <p style={{ color: "green" }}>인증번호가 발송되었습니다.</p>}
-        {sendNumber && (
+    <div className="flex flex-col items-center min-h-screen">
+      <h2 className="text-center mb-6 text-2xl font-semibold">이메일로 회원가입하기</h2>
+      <form onSubmit={handleSubmit} className="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg">
+        <div className="flex flex-col space-y-6">
+          {/* 이름 */}
           <div>
-            <input type="number" placeholder="인증번호 입력" value={authNumber} onChange={handleAuthNumberChange} />
-            <button type="button" onClick={handleAuthSubmit}>
-              인증
-            </button>
-            {authError && <p style={{ color: "red" }}>{authError}</p>} {/* 인증 오류 메시지 */}
-            {isAuthValid && <p style={{ color: "green" }}>인증번호가 일치합니다.</p>} {/* 인증 성공 메시지 */}
+            <label htmlFor="name" className="block mb-1 text-gray-600 font-medium">
+              이름
+            </label>
+            <input type="text" placeholder="사용하실 이름을 입력해주세요." value={name} onChange={handleNameChange} className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${nameError ? "border-red-500 focus:ring-red-300" : "border-gray-300 focus:ring-pink-200"}`} />
+            {nameError && <p className="mt-1 text-sm text-red-500">{nameError}</p>}
           </div>
-        )}
-        {/* -------------------------------------------------------- */}
-        <h3>비밀번호</h3>
-        <input type="password" value={password} onChange={handlePasswordChange} style={{ borderColor: passwordError ? "red" : "" }} placeholder="비밀번호를 입력해주세요."></input>
-        {passwordError && <p style={{ color: "red" }}>{passwordError}</p>}
-        <br />
-        <input type="password" value={confirmPassword} onChange={handleConfirmPasswordChange} style={{ borderColor: confirmPasswordError ? "red" : "" }} placeholder="비밀번호를 확인합니다."></input>
-        {confirmPasswordError && <p style={{ color: "red" }}>{confirmPasswordError}</p>}
-        {/* -------------------------------------------------------- */}
-        <h3>이용 약관</h3>
-        <div>
-          <label>
-            <input type="checkbox" checked={allChecked} onChange={handleAllCheck} />
-            전체동의
-          </label>
+          {/* 이메일 */}
+          <div>
+            <label htmlFor="email" className="block mb-1 text-gray-600 font-medium">
+              이메일 주소
+            </label>
+            <input type="email" placeholder="이메일 주소를 입력해주세요." value={email} onChange={handleEmailChange} className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${emailError ? "border-red-500 focus:ring-red-300" : "border-gray-300 focus:ring-pink-200"}`} />
+            <button type="button" onClick={handleEmailVerification} disabled={sendNumber} className={`mt-2 px-4 py-2 rounded-md text-white font-medium ${sendNumber ? "bg-gray-300 cursor-not-allowed" : "bg-pink-400 hover:bg-pink-500"}`}>
+              인증번호 발송
+            </button>
+            {emailError && <p className="mt-1 text-sm text-red-500">{emailError}</p>} {/* 이미 존재하는 이메일입니다.*/}
+            {sendNumber && <p className="mt-2 text-sm text-green-500">인증번호가 발송되었습니다.</p>}
+            {sendNumber && (
+              <div className="mt-4 space-y-2">
+                <input type="number" placeholder="인증번호 입력" value={authNumber} onChange={handleAuthNumberChange} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-200" />
+                <button type="button" onClick={handleAuthSubmit} className="px-4 py-2 rounded-md bg-pink-400 text-white font-medium hover:bg-pink-500">
+                  인증
+                </button>
+                {authError && <p className="mt-1 text-sm text-red-500">{authError}</p>} {/* 인증 오류 메시지 */}
+                {isAuthValid && <p className="mt-1 text-sm text-green-500">인증번호가 일치합니다.</p>} {/* 인증 성공 메시지 */}
+              </div>
+            )}
+          </div>
+
+          {/* 비밀번호 */}
+          <div>
+            <label htmlFor="password" className="block mb-1 text-gray-600 font-medium">
+              비밀번호
+            </label>
+            <input type="password" value={password} onChange={handlePasswordChange} className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${passwordError ? "border-red-500 focus:ring-red-300" : "border-gray-300 focus:ring-pink-200"}`} placeholder="비밀번호를 입력해주세요."></input>
+            {passwordError && <p className="mt-1 text-sm text-red-500">{passwordError}</p>}
+            <br />
+            <input type="password" value={confirmPassword} onChange={handleConfirmPasswordChange} className={`mt-2 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${confirmPasswordError ? "border-red-500 focus:ring-red-300" : "border-gray-300 focus:ring-pink-200"}`} placeholder="비밀번호를 확인합니다."></input>
+            {confirmPasswordError && <p className="mt-1 text-sm text-red-500">{confirmPasswordError}</p>}
+          </div>
+
+          {/* 이용 약관 */}
+          <div className="space-y-2">
+            <label className="flex items-center">
+              <input type="checkbox" checked={allChecked} onChange={handleAllCheck} className="w-4 h-4 text-pink-400 border-gray-300 rounded focus:ring-pink-200" />
+              <span className="ml-2 text-gray-600">전체 동의</span>
+            </label>
+
+            <label className="flex items-center">
+              <input type="checkbox" checked={isOver14} onChange={(e) => setIsOver14(e.target.checked)} className="w-4 h-4 text-pink-400 border-gray-300 rounded focus:ring-pink-200" />
+              <span className="ml-2 text-gray-600">[필수] 만 14세 이상입니다.</span>
+            </label>
+
+            <label className="flex items-center">
+              <input type="checkbox" checked={termsChecked} onChange={(e) => setTermsChecked(e.target.checked)} className="w-4 h-4 text-pink-400 border-gray-300 rounded focus:ring-pink-200" />
+              <span className="ml-2 text-gray-600">[필수] 이용약관 동의</span>
+            </label>
+          </div>
+
+          {/* 가입하기 버튼 */}
+          <button type="submit" disabled={!isAuthValid || !isConfirmPasswordValid || !isOver14 || !termsChecked} className={`w-full py-2 mt-6 rounded-md font-semibold ${!isAuthValid || !isConfirmPasswordValid || !isOver14 || !termsChecked ? "bg-gray-300 text-gray-600 cursor-not-allowed" : "bg-pink-400 text-white hover:bg-pink-500"}`}>
+            가입하기
+          </button>
         </div>
-        <div>
-          <input type="checkbox" checked={isOver14} onChange={(e) => setIsOver14(e.target.checked)} />
-          [필수] 만 14세 이상입니다.
-        </div>
-        <div>
-          <input type="checkbox" checked={termsChecked} onChange={(e) => setTermsChecked(e.target.checked)} />
-          [필수] 이용약관 동의보기
-        </div>
-        {/* -------------------------------------------------------- */}
-        <button type="submit" disabled={!isAuthValid || !isConfirmPasswordValid || !isOver14 || !termsChecked} style={!isAuthValid || !isConfirmPasswordValid || !isOver14 || !termsChecked ? buttonStyle.disabled : buttonStyle.enabled}>
-          가입하기
-        </button>
       </form>
     </div>
   );
+
+  // return (
+  //   <div>
+  //     <form onSubmit={handleSubmit}>
+  //       <h2>이메일로 회원가입하기</h2>
+  //       {/* -------------------------------------------------------- */}
+  //       <h3>이름</h3>
+  //       <input type="text" placeholder="사용하실 이름을 입력해주세요." value={name} onChange={handleNameChange} style={{ borderColor: nameError ? "red" : "" }} />
+  //       {nameError && <p style={{ color: "red" }}>{nameError}</p>}
+  //       {/* -------------------------------------------------------- */}
+  //       <h3>이메일 주소</h3>
+  //       <input type="email" placeholder="이메일 주소를 입력해주세요." value={email} onChange={handleEmailChange} style={{ borderColor: emailError ? "red" : "" }} />
+  //       <button type="button" onClick={handleEmailVerification} disabled={sendNumber}>
+  //         인증번호 발송
+  //       </button>
+  //       {emailError && <p style={{ color: "red" }}>{emailError}</p>} {/* 이미 존재하는 이메일입니다.*/}
+  //       {sendNumber && <p style={{ color: "green" }}>인증번호가 발송되었습니다.</p>}
+  //       {sendNumber && (
+  //         <div>
+  //           <input type="number" placeholder="인증번호 입력" value={authNumber} onChange={handleAuthNumberChange} />
+  //           <button type="button" onClick={handleAuthSubmit}>
+  //             인증
+  //           </button>
+  //           {authError && <p style={{ color: "red" }}>{authError}</p>} {/* 인증 오류 메시지 */}
+  //           {isAuthValid && <p style={{ color: "green" }}>인증번호가 일치합니다.</p>} {/* 인증 성공 메시지 */}
+  //         </div>
+  //       )}
+  //       {/* -------------------------------------------------------- */}
+  //       <h3>비밀번호</h3>
+  //       <input type="password" value={password} onChange={handlePasswordChange} style={{ borderColor: passwordError ? "red" : "" }} placeholder="비밀번호를 입력해주세요."></input>
+  //       {passwordError && <p style={{ color: "red" }}>{passwordError}</p>}
+  //       <br />
+  //       <input type="password" value={confirmPassword} onChange={handleConfirmPasswordChange} style={{ borderColor: confirmPasswordError ? "red" : "" }} placeholder="비밀번호를 확인합니다."></input>
+  //       {confirmPasswordError && <p style={{ color: "red" }}>{confirmPasswordError}</p>}
+  //       {/* -------------------------------------------------------- */}
+  //       <h3>이용 약관</h3>
+  //       <div>
+  //         <label>
+  //           <input type="checkbox" checked={allChecked} onChange={handleAllCheck} />
+  //           전체동의
+  //         </label>
+  //       </div>
+  //       <div>
+  //         <input type="checkbox" checked={isOver14} onChange={(e) => setIsOver14(e.target.checked)} />
+  //         [필수] 만 14세 이상입니다.
+  //       </div>
+  //       <div>
+  //         <input type="checkbox" checked={termsChecked} onChange={(e) => setTermsChecked(e.target.checked)} />
+  //         [필수] 이용약관 동의보기
+  //       </div>
+  //       {/* -------------------------------------------------------- */}
+  //       <button type="submit" disabled={!isAuthValid || !isConfirmPasswordValid || !isOver14 || !termsChecked} style={!isAuthValid || !isConfirmPasswordValid || !isOver14 || !termsChecked ? buttonStyle.disabled : buttonStyle.enabled}>
+  //         가입하기
+  //       </button>
+  //     </form>
+  //   </div>
+  // );
 };
 
 export default JoinEmailPage;
