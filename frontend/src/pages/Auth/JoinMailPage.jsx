@@ -103,7 +103,7 @@ const JoinEmailPage = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/signup/email-code", {
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/signup/email-code`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -146,7 +146,7 @@ const JoinEmailPage = () => {
       console.log("email: ", email);
       console.log("code: ", authNumber);
 
-      const response = await fetch("http://localhost:3000/api/signup/verify-code", {
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/signup/verify-code`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -229,7 +229,7 @@ const JoinEmailPage = () => {
 
     // API - 회원가입 후 사용자 DB 등록
     try {
-      const response = await fetch("http://localhost:3000/api/signup/users", {
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/signup/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

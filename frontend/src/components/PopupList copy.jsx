@@ -385,7 +385,7 @@ const PopupList = ({ category }) => {
 
     try {
       // API - 메인 페이지 - 카테고리별 팝업 스토어 그리드 정보
-      const response = await fetch(`http://localhost:3000/api/categories/${category}`);
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/categories/${category}`);
       if (!response.ok) {
         throw new Error("Failed to fetch categories");
       }

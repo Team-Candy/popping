@@ -3,10 +3,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import BlogReview from "../components/BlogReview";
 import Description from "../components/Description";
 import useAuth from "../context/useAuth";
+import { fetchWithAuth } from "../utils/util";
 
 const PopupDetailPage = () => {
   const { popupId } = useParams(); // URL에서 popupId 가져옴, string type임
-  const { auth } = useAuth();
+  const { auth, logout } = useAuth();
   const navigate = useNavigate();
 
   const [detail, setDetail] = useState(null); // 팝업 상세 정보 저장
@@ -22,9 +23,13 @@ const PopupDetailPage = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`);
+      const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`);
 
-      if (!response.ok) {
+      if (response.statusText === "Unauthorized") {
+        alert("로그인 후 이용해주세요.");
+        logout();
+        navigate("/login");
+      } else if (!response.ok) {
         const data = await response.json();
         console.error("서버 에러 발생: ", data.error);
         return;
@@ -41,7 +46,7 @@ const PopupDetailPage = () => {
   const fetchPopupDetail = async () => {
     // API - 팝업스토어 상세 정보 조회
     try {
-      const response = await fetch(`http://localhost:3000/api/stores/${popupId}`);
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/stores/${popupId}`);
 
       if (!response.ok) {
         const data = await response.json();
@@ -49,21 +54,6 @@ const PopupDetailPage = () => {
       }
 
       const data = await response.json();
-      console.log("디테일페이지 data: ", data);
-
-      //"store: { s_id: store.s_id,
-      // owner: store.owner,
-      // s_name: store.s_name,
-      // contact: store.contact,
-      // location: store.location,
-      // s_date: store.s_date,
-      // e_date: store.e_date,
-      // business_hours: store.business_hours,
-      // description: store.description },
-      // images: [   ,   ,    ,  ] }"
-
-      // 임시 데이터
-      // const data = filterById(popupId);
 
       setDetail(data.store); // 데이터 저장
       setError(null); // 에러 초기화
@@ -129,7 +119,7 @@ const PopupDetailPage = () => {
     );
 
     try {
-      const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
         method: isLiked ? "DELETE" : "POST",
         headers: {
           "Content-Type": "application/json",
@@ -162,6 +152,25 @@ const PopupDetailPage = () => {
     zIndex: 10, // 이미지 위에 표시
   };
 
+  function formatCategory(category) {
+    const korean = [
+      { label: "전체", value: "whole" },
+      { label: "식품", value: "food" },
+      { label: "교육", value: "education" },
+      { label: "문화", value: "culture" },
+      { label: "디지털", value: "digital" },
+      { label: "의류", value: "clothing" },
+      { label: "인테리어", value: "interior" },
+      { label: "스포츠", value: "sports" },
+      { label: "패션잡화", value: "miscellaneous" },
+      { label: "캐릭터", value: "characters" },
+      { label: "기타", value: "others" },
+    ];
+
+    const foundCategory = korean.find((item) => item.value === category);
+    return foundCategory ? foundCategory.label : "Unknown";
+  }
+
   return (
     <div>
       <div>
@@ -190,7 +199,7 @@ const PopupDetailPage = () => {
 
         <p>
           {/* (수정) 영문 -> 한글 */}
-          <strong style={{ color: "red" }}>카테고리:</strong> {detail.category}
+          <strong>카테고리:</strong> {formatCategory(detail.category)}
         </p>
 
         <p>
@@ -205,7 +214,7 @@ const PopupDetailPage = () => {
       {/* 버튼, 탭 */}
       <div>
         <button onClick={() => setActiveTab("description")}>상세 설명</button>
-        <button onClick={() => setActiveTab("reviews")}>실시간 후기</button>
+        <button onClick={() => setActiveTab("reviews")}>블로그 후기</button>
       </div>
 
       {/* 탭 컨텐츠 */}

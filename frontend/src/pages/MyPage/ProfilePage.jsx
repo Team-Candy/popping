@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import useAuth from "../../context/useAuth"; // 로그인 상태;
 import { useNavigate } from "react-router-dom";
+import { fetchWithAuth } from "../../utils/util";
 
 const ProfilePage = () => {
-  const navigate = useNavigate;
+  const navigate = useNavigate();
   const { logout } = useAuth();
 
   // 이름
@@ -36,17 +37,21 @@ const ProfilePage = () => {
     const fetchUserProfile = async () => {
       try {
         //  API - 유저의 프로필 정보 조회
-        const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/profile`);
+        const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+          },
+        });
+        // const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch");
         }
 
         const data = await response.json();
-
-        // (수정) MOCK
-        // const data = { user: { email: "user.email", name: "user.name" } };
-        // u_id: "user.u_id", nickname:" user.nickname", profileImage: user.profileImage, introduction: user.introduction, created_at: user.created_at } };
+        console.log("data", data);
 
         if (data && data.user) {
           setName(data.user.name);
@@ -71,9 +76,9 @@ const ProfilePage = () => {
 
     // API - 유저 정보 삭제
     try {
-      const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}`, {
         method: "DELETE",
-        header: {
+        headers: {
           "Content-Type": "application/json",
         },
       });
@@ -97,7 +102,7 @@ const ProfilePage = () => {
     try {
       if (nameEditing) {
         // 이름 수정
-        const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/profile`, {
+        const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -118,7 +123,7 @@ const ProfilePage = () => {
           return;
         }
 
-        const response = await fetch(`/api/users/${sessionStorage.getItem("userId")}/profile`, {
+        const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -174,28 +179,25 @@ const ProfilePage = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/signup/email-code", {
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/signup/email-code`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: emailChange }),
       });
-
-      console.log("FE email response: ", response);
 
       if (!response.ok) {
         const data = await response.json();
-        setEmailError("오류가 발생했습니다.");
-        throw new Error(data.message);
+        setEmailError(data.error || "오류가 발생했습니다.");
+        return;
       }
 
-      // 인증번호 발송 성공
-      setSendNumber(true);
+      setSendNumber(true); // 인증번호 발송 성공
       // alert("인증번호가 발송되었습니다.");
     } catch (err) {
       setEmailError("네트워크 오류가 발생했습니다.");
-      console.error("Error 발생: ", err);
+      console.error(err);
     }
   };
 
@@ -217,13 +219,13 @@ const ProfilePage = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/signup/verify-code", {
+      const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/signup/verify-code`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email,
+          email: emailChange,
           code: authNumber,
         }),
       });
@@ -247,7 +249,7 @@ const ProfilePage = () => {
 
   return (
     <div>
-      <h2 style={{ color: "red" }}>프로필</h2>
+      <h2>프로필</h2>
       <hr />
       <div>
         <p style={titleStyle}>이름</p>

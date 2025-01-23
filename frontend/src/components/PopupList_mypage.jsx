@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchWithAuth } from "../utils/util";
 
 const PopupList = () => {
   // {state} ->  onGoing, scheduled, completed
@@ -16,7 +17,7 @@ const PopupList = () => {
 
     try {
       // (수정) API - 유저가 작성한 게시글 조회
-      const response = await fetch(`http://localhost:3000/api/users/${userId}/stores`);
+      const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${userId}/stores`);
 
       if (!response.ok) {
         const data = await response.json();
@@ -26,7 +27,6 @@ const PopupList = () => {
       }
 
       const data = await response.json();
-      console.log("data: ", data.stores);
 
       if (data.error) {
         setPopups([]);
@@ -54,7 +54,7 @@ const PopupList = () => {
           popups.map((popup) => (
             <div key={popup.s_id} onClick={() => navigate(`/popup/edit/${popup.s_id}`)} style={{ cursor: "pointer", textAlign: "center", border: "1px solid #ccc", borderRadius: "8px", padding: "8px" }}>
               <img
-                src={`http://localhost:3000${popup.images[0]}`}
+                src={`${import.meta.env.VITE_BE_PORT}${popup.images[0]}`}
                 alt={popup.s_name}
                 style={{
                   width: "100%",
@@ -68,7 +68,8 @@ const PopupList = () => {
             </div>
           ))
         ) : (
-          <p>No Popup available for this category.</p>
+          // <p>No Popup available for this category.</p>
+          <div>로딩중...</div>
         )}
       </div>
     </div>

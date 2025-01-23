@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchWithAuth } from "../utils/util";
 
 const RegisterPopupPage = () => {
   const navigate = useNavigate();
@@ -128,7 +129,7 @@ const RegisterPopupPage = () => {
         console.log("formData: ", formData);
 
         // API - 사용자가 팝업 게시물 등록
-        const response = await fetch(`http://localhost:3000/api/users/${sessionStorage.getItem("userId")}/stores`, {
+        const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores`, {
           method: "POST",
           //   headers 자동설정됨
           body: formData, // FormData 객체 전송
@@ -145,7 +146,7 @@ const RegisterPopupPage = () => {
         console.log("응답 데이터: ", data);
 
         alert("등록 성공했습니다.");
-        navigate("/");
+        navigate("/myPopup");
       } catch (err) {
         //네트워크 오류 처리
         console.error("네트워크 오류: ", err);

@@ -1,13 +1,12 @@
 import PropTypes from "prop-types";
-// ESLint, react/prop-types 규칙이 활성화,
-
 import Map from "./Map";
+import { formatDate } from "../utils/util";
 
 const Description = ({ detail }) => {
   return (
     <div>
       <p>
-        <strong>운영 기간:</strong> {detail.s_date} ~ {detail.e_date}
+        <strong>운영 기간:</strong> {formatDate(detail.s_date)} ~ {formatDate(detail.e_date)}
       </p>
 
       <p>
