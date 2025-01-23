@@ -11,16 +11,32 @@ const Map = ({ region, location }) => {
     const scriptId = "kakao-map-script";
     const existingScript = document.getElementById(scriptId);
 
+    // if (existingScript) {
+    //   initializeMap(region, location);
+    //   return;
+    // }
+
     if (existingScript) {
-      initializeMap(region, location);
+      if (window.kakao && window.kakao.maps) {
+        // Kakao Maps SDK가 이미 로드된 경우
+        initializeMap(region, location);
+      } else {
+        // Kakao 객체가 아직 로드되지 않은 경우
+        existingScript.onload = () => initializeMap(region, location);
+      }
       return;
     }
 
+    // 새로운 <script> 태그를 동적으로 생성하고, Kakao Maps SDK의 URL을 설정한 뒤 문서에 추가
     const script = document.createElement("script");
     script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_JS_KEY}&autoload=false`;
     script.async = true;
     script.id = scriptId;
-    script.onload = () => initializeMap(region, location);
+    // script.onload = () => initializeMap(region, location);
+    script.onload = () => {
+      console.log("Kakao Maps SDK 로드 완료");
+      initializeMap(region, location);
+    };
     document.body.appendChild(script);
 
     return () => {
@@ -71,7 +87,7 @@ const Map = ({ region, location }) => {
           });
 
           const iwContent = `
-              <div style="display: flex; padding: 15px; background-color: #fff; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+              <div class="info-window-link" style="display: flex; padding: 15px; background-color: #fff; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
                 <div style="flex: 1; margin-right: 12px;">
                   <p style="margin: 0; font-size: 13px; font-weight: bold; white-space: nowrap; ">${name}</p>
                   <p style="margin: 5px 0; font-size: 11px; color: #888; white-space: nowrap;">${formatDate(startDate)} ~ ${formatDate(endDate)}</p>
@@ -96,7 +112,24 @@ const Map = ({ region, location }) => {
           const infowindow = new window.kakao.maps.InfoWindow({
             position: new window.kakao.maps.LatLng(lat, lng),
             content: iwContent,
+            zIndex: 1, // 기본 zIndex 값
             disableAutoPan: true,
+          });
+
+          window.kakao.maps.event.addListener(marker, "click", () => {
+            markersRef.current.forEach((m) => {
+              m.setZIndex(1); // 마커 기본 zIndex로 설정
+            });
+
+            infowindowsRef.current.forEach((infowindow) => {
+              infowindow.setZIndex(1); // 모든 인포윈도우의 zIndex를 기본값으로 설정
+            });
+
+            // 클릭한 마커의 zIndex를 최상위로 설정
+            marker.setZIndex(9999);
+
+            // 클릭한 인포윈도우의 zIndex를 최상위로 설정
+            infowindow.setZIndex(9999);
           });
 
           marker.setMap(map);
