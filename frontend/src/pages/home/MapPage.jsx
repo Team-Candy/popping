@@ -31,7 +31,7 @@ const MapPage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="mt-10 flex flex-col items-center justify-center">
       <div className="max-w-[1000px] w-4/5">
         <h2 className="mb-6 text-center text-3xl font-semibold text-gray-800">지도</h2>
         <div className="w-full flex justify-center">

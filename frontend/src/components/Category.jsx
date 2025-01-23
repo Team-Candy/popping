@@ -3,7 +3,7 @@ import PopupList from "./PopupList";
 // PopupList 컴포넌트를 가져옴.
 
 const Category = () => {
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("whole");
 
   const categories = [
     { label: "전체", value: "whole" },

@@ -93,10 +93,10 @@ const HomeBanner = () => {
           </a>
           <div className="flex gap-4">
             <button className="px-6 py-2 bg-[#c8a0c8] text-white text-sm font-medium rounded-full shadow-md hover:bg-[#a15da1] hover:shadow-lg transition-all duration-300" onClick={goToPrevBanner}>
-              Prev
+              이전
             </button>
             <button className="px-6 py-2 bg-[#c8a0c8] text-white text-sm font-medium rounded-full shadow-md hover:bg-[#a15da1] hover:shadow-lg transition-all duration-300" onClick={goToNextBanner}>
-              Next
+              다음
             </button>
           </div>
         </div>

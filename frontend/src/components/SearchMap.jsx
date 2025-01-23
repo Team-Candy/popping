@@ -122,6 +122,8 @@ const Map = ({ region, location }) => {
       try {
         const REQUEST_DELAY = 3000;
         const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/map/getLatLng/${encodeURIComponent(location)}`);
+        console.log("response: ", response);
+
         if (!response.ok) {
           const data = await response.json();
           console.error("서버 오류 발생: ", data.error);

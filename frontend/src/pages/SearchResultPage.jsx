@@ -133,18 +133,20 @@ const SearchResult = () => {
                 <div key={popup.id} onClick={() => navigate(`/popup/${popup.id}`)} className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transform transition-transform hover:scale-105">
                   <div className="relative">
                     <img src={formatURL(popup.images[0])} alt={popup.name} className="w-full h-48 object-cover rounded-t-lg" />
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleLikeToggle(popup.id);
-                      }}
-                      className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100"
-                    >
-                      {likedPopups.includes(popup.id) ? "❤️" : "🤍"}
-                    </button>
                   </div>
                   <div className="p-4 text-center">
-                    <p className="text-lg font-semibold text-gray-800">{popup.name}</p>
+                    <p className="text-lg font-semibold text-gray-800">
+                      {popup.name}{" "}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleLikeToggle(popup.id);
+                        }}
+                        className="absolute top-2 right-2 rounded-full p-2"
+                      >
+                        {likedPopups.includes(popup.id) ? "❤️" : "🤍"}
+                      </button>
+                    </p>
                     <p className="text-sm text-gray-500 mt-2">위치: {popup.location}</p>
                     <p className="text-sm text-gray-500">
                       기간: {formatDate(popup.startDate)} ~ {formatDate(popup.endDate)}

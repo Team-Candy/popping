@@ -2,7 +2,7 @@ import Calendar from "../../components/Calendar";
 
 const CalenderPage = () => {
   return (
-    <div className="flex flex-col items-center">
+    <div className="mt-10 flex flex-col items-center">
       <div className="max-w-[1000px] w-4/5 justify-center">
         <div className="text-center mb-6">
           <h2 className="text-3xl font-semibold text-gray-800">이달의 팝업스토어</h2>

@@ -37,11 +37,11 @@ const MyPageButton = ({ auth }) => {
           <button onClick={handleClick} name="profile" className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left rounded-t-lg">
             프로필
           </button>
-          <button onClick={handleClick} name="myPopup" className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left rounded-t-lg">
-            나의 팝업
-          </button>
           <button onClick={handleClick} name="favoritePopup" className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left rounded-t-lg">
-            관심 팝업
+            관심 팝업 ❤️
+          </button>
+          <button onClick={handleClick} name="myPopup" className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left rounded-t-lg">
+            나의 팝업 ✏️
           </button>
           <button onClick={handleLogout} className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left rounded-t-lg">
             로그아웃

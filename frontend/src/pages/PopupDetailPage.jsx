@@ -3,7 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import BlogReview from "../components/BlogReview";
 import Description from "../components/Description";
 import useAuth from "../context/useAuth";
-import { fetchWithAuth, useCheckToken, formatURL } from "../utils/util";
+import { fetchWithAuth, useCheckToken, formatURL, formatDate } from "../utils/util";
+
+// import OwnerIcon from "../assets/icons/owner.svg";
+// import CalendarIcon from "../assets/icons/calendar.svg";
+// import ClockIcon from "../assets/icons/clock.svg";
+// import Location from "../assets/icons/locaion.svg";
 
 const PopupDetailPage = () => {
   const { popupId } = useParams(); // URL에서 popupId 가져옴, string type임
@@ -176,8 +181,15 @@ const PopupDetailPage = () => {
     <div className="max-w-[1000px] container mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {detail.images.map((url, index) => (
-          <img key={index} src={formatURL(url)} alt={`팝업 이미지 ${index + 1}`} className="w-full rounded-lg shadow-md" />
+          // <img key={index} src={formatURL(url)} alt={`팝업 이미지 ${index + 1}`} className="max-w-[300px] rounded-lg shadow-md" />
+          // <a key={index} href={formatURL(url)} target="_blank" rel="noopener noreferrer">
+          <img key={index} src={formatURL(url)} alt={`팝업 이미지 ${index + 1}`} className="w-[300px] h-[300px] object-cover rounded-lg shadow-md" />
+          // </a>
         ))}
+      </div>
+
+      <div key={detail.category} className="mb-4 p-2 rounded-lg border border-[#b3b3b3] justify-center items-center gap-3 inline-flex text-center text-xs font-normal font-['Pretendard'] leading-normal whitespace-nowrap border-[#A15EA1] bg-opacity-30 bg-[#C8A0C8] text-[#A15EA1]">
+        {formatCategory(detail.category)}
       </div>
 
       <div className="flex items-center mb-4">
@@ -194,12 +206,18 @@ const PopupDetailPage = () => {
         </button>
       </div>
 
-      <p className="text-lg">
-        <strong>카테고리:</strong> {formatCategory(detail.category)}
+      <p className="text-gray-500">
+        {/* <img src={OwnerIcon} alt="Owner Icon" className="w-6 h-6 mr-2" /> */}
+        {detail.owner}
       </p>
-      <p className="text-lg">
-        <strong>주최:</strong> {detail.owner}
+      <strong>운영 기간</strong>
+      <p className="mb-3">
+        {formatDate(detail.s_date)} ~ {formatDate(detail.e_date)}
       </p>
+
+      <strong>운영 시간</strong>
+      <p className="mb-3">{detail.business_hours}</p>
+
       <p className="text-lg">
         <strong>장소:</strong> {detail.location}
       </p>
