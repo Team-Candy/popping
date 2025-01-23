@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../context/useAuth";
-<<<<<<< HEAD
-import { fetchWithAuth, formatDate } from "../../utils/util";
-=======
 import { fetchWithAuth, formatDate, formatURL } from "../../utils/util";
->>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
 
 const FavoritePopupPage = () => {
   const { auth } = useAuth();
@@ -32,7 +28,6 @@ const FavoritePopupPage = () => {
         }
 
         setResults(data.likes);
-        // console.log(data.likes);
 
         const likes = data.likes.map((store) => store.s_id);
         setLikedPopups(likes);
@@ -104,51 +99,30 @@ const FavoritePopupPage = () => {
     zIndex: 10, // 이미지 위에 표시
   };
 
-<<<<<<< HEAD
-  function urlConvert(url) {
-    if (url.startsWith("/upload")) {
-      return `${import.meta.env.VITE_BE_PORT}` + url;
-    } else {
-      return url;
-    }
-  }
-
-=======
->>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
   return (
     <div>
       <h2>관심 팝업</h2>
       <hr />
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px", padding: "16px" }}>
-        {results.length > 0 ? (
-          results.map((popup) => (
-            <div key={popup.s_id} onClick={() => navigate(`/popup/${popup.s_id}`)} style={{ cursor: "pointer", textAlign: "center", border: "1px solid #ccc", borderRadius: "8px", padding: "8px" }}>
-              <div
-                style={{
-                  position: "relative", // 이미지 컨테이너를 기준으로 버튼 배치
-                }}
-              >
-                <img
-                  src={formatURL(popup.images[0])}
-                  alt={popup.s_name}
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <button onClick={() => setView("list")}>리스트 뷰</button>
+        <button style={{ color: "red" }} onClick={() => setView("calendar")}>
+          달력 뷰
+        </button>
+      </div>
+
+      {view === "list" ? (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px", padding: "16px" }}>
+          {results.length > 0 ? (
+            results.map((popup) => (
+              <div key={popup.s_id} onClick={() => navigate(`/popup/${popup.s_id}`)} style={{ cursor: "pointer", textAlign: "center", border: "1px solid #ccc", borderRadius: "8px", padding: "8px" }}>
+                <div
                   style={{
-                    width: "100%",
-                    height: "150px",
-                    objectFit: "cover",
-                    borderRadius: "8px",
-                  }}
-                />
-                <button
-                  style={heartStyle}
-                  onClick={(e) => {
-                    e.stopPropagation(); // 부모 클릭 이벤트 방지
-                    handleLikeToggle(popup.s_id); // 하트 상태 토글
+                    position: "relative", // 이미지 컨테이너를 기준으로 버튼 배치
                   }}
                 >
-<<<<<<< HEAD
                   <img
-                    src={urlConvert(popup.images[0])}
+                    src={formatURL(popup.images[0])}
                     alt={popup.s_name}
                     style={{
                       width: "100%",
@@ -173,23 +147,15 @@ const FavoritePopupPage = () => {
                 <p>
                   {formatDate(popup.s_date)} ~ {formatDate(popup.e_date)}
                 </p>
-=======
-                  {likedPopups.includes(popup.s_id) ? "❤️" : "🤍"}
-                </button>
->>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
               </div>
-              <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.name}</p>
-              <h3>{popup.s_name}</h3>
-              <p>위치: {popup.location}</p>
-              <p>
-                {formatDate(popup.s_date)} ~ {formatDate(popup.e_date)}
-              </p>
-            </div>
-          ))
-        ) : (
-          <p>관심 설정된 팝업이 존재하지 않습니다.</p>
-        )}
-      </div>
+            ))
+          ) : (
+            <p>No liked popups found.</p>
+          )}
+        </div>
+      ) : (
+        <div>Calendar view coming soon...</div>
+      )}
     </div>
   );
 };

@@ -14,8 +14,13 @@ function generateCode() {
 }
 
 router.post("/email-code", async (req, res) => {
+<<<<<<< HEAD
     const { email } = req.body;
     console.log("email: ", email);
+=======
+  const { email } = req.body;
+  console.log("email: ", email);
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {

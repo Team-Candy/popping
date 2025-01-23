@@ -31,7 +31,11 @@ const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setAuth({ isLoggedIn: false, username: "" });
+<<<<<<< HEAD
     sessionStorage.clear();
+=======
+    sessionStorage.clear(); // sessionStorage 비우기
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
     // sessionStorage.removeItem("authToken"); // 토큰 제거
     // sessionStorage.removeItem("username"); // 사용자 이름 제거
 

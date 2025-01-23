@@ -23,16 +23,20 @@ const PopupList = () => {
         const data = await response.json();
         setPopups([]);
         setError("작성된 게시글이 없습니다.");
-        throw new Error(data.error);
+        console.error("서버 fetch 중 에러 발생 : ", data.error);
+        return;
       }
 
       const data = await response.json();
+<<<<<<< HEAD
 
       if (data.error) {
         setPopups([]);
         setError("유저의 게시물이 없습니다.");
         return;
       }
+=======
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
 
       setPopups(data.stores);
     } catch (err) {
@@ -47,10 +51,10 @@ const PopupList = () => {
 
   return (
     <div>
-      {error && <p>Error: {error}</p>}
+      {error && <p>{error}</p>}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px", padding: "16px" }}>
-        {popups.length > 0 ? (
+        {popups.length > 0 &&
           popups.map((popup) => (
             <div key={popup.s_id} onClick={() => navigate(`/popup/edit/${popup.s_id}`)} style={{ cursor: "pointer", textAlign: "center", border: "1px solid #ccc", borderRadius: "8px", padding: "8px" }}>
               <img
@@ -66,11 +70,15 @@ const PopupList = () => {
               <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.s_name}</p>
               <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.owner}</p>
             </div>
+<<<<<<< HEAD
           ))
         ) : (
           // <p>No Popup available for this category.</p>
           <div>로딩중...</div>
         )}
+=======
+          ))}
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
       </div>
     </div>
   );

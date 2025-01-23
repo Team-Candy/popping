@@ -1,9 +1,8 @@
-// Calendar.jsx
 import FullCalendar from "@fullcalendar/react"; // FullCalendar React 컴포넌트
 import dayGridPlugin from "@fullcalendar/daygrid"; // dayGrid 플러그인
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/calendar.css";
+// import "../styles/calendar.css";
 
 async function fetchPopup() {
   // API - 팝업 스토어 정보 가져와 캘린더에 넣기

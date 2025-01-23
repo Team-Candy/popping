@@ -3,7 +3,7 @@ import Map from "../../components/SearchMap";
 import Region from "../../components/Region";
 
 const MapPage = () => {
-  const [selectedRegion, setSelectedRegion] = useState("total"); // Default region
+  const [selectedRegion, setSelectedRegion] = useState("seoul");
   const [location, setLocation] = useState([]);
 
   useEffect(() => {
@@ -11,10 +11,22 @@ const MapPage = () => {
     const fetchLocationData = async () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/categories/whole`);
+<<<<<<< HEAD
         if (!response.ok) {
           throw new Error("");
         }
         const data = await response.json();
+=======
+
+        if (!response.ok) {
+          const data = await response.json();
+          console.error("서버 fetch 중 오류 발생: ", data.error);
+        }
+
+        const data = await response.json();
+        // 팝업고유 id, 팝업 이름, 주소, startDate, endDate, 이미지 url
+        // console.log("categories: ", data.categories);
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
 
         setLocation(data.categories);
       } catch (err) {
@@ -27,9 +39,8 @@ const MapPage = () => {
 
   return (
     <div>
-      <h2 style={{ color: "red" }}>지도</h2>
+      <h2>지도</h2>
       <Region onSelectRegion={setSelectedRegion}></Region>
-      {/* 지역 선택 버튼에서 선택된 값을 setSelectedRegion으로 업데이트 */}
       <Map region={selectedRegion} location={location}></Map>
     </div>
   );

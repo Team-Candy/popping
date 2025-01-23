@@ -173,8 +173,15 @@ router.get("/:u_id/profile", authenticateJWT, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 // 유저가 팝업스토어 등록하는 기능
 router.post("/:u_id/stores", upload.array("image[]", 10), authenticateJWT, async (req, res) => {
+=======
+// 유저가 팝업스토어어 등록하는 기능
+router.post("/:u_id/stores", upload.array("image[]", 10), authenticateJWT, async (req, res) => {
+  // console.log("Files: ", req.files); // 업로드된 파일 확인
+  // console.log("Body: ", req.body); // 폼 데이터 확인
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
 
   const { u_id } = req.params;
   const { s_name, owner, contact, location, s_date, e_date, business_hours, description, category } = req.body;

@@ -3,7 +3,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import BlogReview from "../components/BlogReview";
 import Description from "../components/Description";
 import useAuth from "../context/useAuth";
+<<<<<<< HEAD
 import { fetchWithAuth } from "../utils/util";
+=======
+import { fetchWithAuth, formatURL } from "../utils/util";
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
 
 const PopupDetailPage = () => {
   const { popupId } = useParams(); // URL에서 popupId 가져옴, string type임
@@ -24,6 +28,18 @@ const PopupDetailPage = () => {
 
     try {
       const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`);
+<<<<<<< HEAD
+=======
+      if (response.statusText === "Unauthorized") {
+        alert("로그인 후 이용해주세요.");
+        logout();
+        navigate("/login");
+      } else if (!response.ok) {
+        const data = await response.json();
+        console.error("서버 에러 발생: ", data.error);
+        return;
+      }
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
 
       if (response.statusText === "Unauthorized") {
         alert("로그인 후 이용해주세요.");
@@ -64,6 +80,10 @@ const PopupDetailPage = () => {
       setLoading(false); // 로딩 종료
     }
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0); // 페이지 이동 시 맨 위로 스크롤 이동
+  }, []);
 
   useEffect(() => {
     fetchLikeData();
@@ -176,7 +196,7 @@ const PopupDetailPage = () => {
       <div>
         <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
           {detail.images.map((url, index) => (
-            <img key={index} src={url} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
+            <img key={index} src={formatURL(url)} alt={`팝업 이미지 ${index + 1}`} style={{ width: "300px", borderRadius: "8px" }} />
           ))}
         </div>
       </div>
@@ -192,6 +212,7 @@ const PopupDetailPage = () => {
               e.stopPropagation(); // 부모 클릭 이벤트 방지
               handleLikeToggle(popupId); // 하트 상태 토글
             }}
+            aria-label={like ? "좋아요 취소" : "좋아요"} // ARIA 레이블 추가
           >
             {like ? "❤️" : "🤍"}
           </button>

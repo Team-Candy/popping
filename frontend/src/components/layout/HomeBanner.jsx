@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import "../../styles/HomeBanner.css";
+import { formatURL } from "../../utils/util";
+// import "../../styles/HomeBanner.css";
 
 const HomeBanner = () => {
   const [banners, setBanners] = useState([]); // 배너 데이터 저장
@@ -8,7 +9,6 @@ const HomeBanner = () => {
   const [currentIndex, setCurrentIndex] = useState(0); // 현재 배너 인덱스
 
   // (수정) 배너 로딩 느림, 부자연스러움
-
   useEffect(() => {
     const fetchBanners = async () => {
       try {
@@ -18,10 +18,13 @@ const HomeBanner = () => {
           throw new Error("Failed tp fetch banners");
         }
         const data = await response.json();
+<<<<<<< HEAD
         // StoreId
         // StoreName
         // StartDate:"2024-11-28T15:00:00.000Z"
         // EndDate:"2024-11-28T15:00:00.000Z"
+=======
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
 
         setBanners(data.banners); // 배너 데이터 저장
       } catch (err) {
@@ -82,25 +85,51 @@ const HomeBanner = () => {
           }}
         ></div>
       ) : (
+<<<<<<< HEAD
         <div>
           <a key={banners[currentIndex].StoreId} href={`/popup/${banners[currentIndex].StoreId}`} target="_blank" rel="noopener noreferrer">
             <img style={imgStyle} src={banners[currentIndex].Images[0]} alt={`Banner ${banners[currentIndex].StoreId}`} />
             <p>{banners[currentIndex].StoreName}</p>
+=======
+        <div className="flex flex-col justify-center items-center mt-8">
+          <a className="text-center" key={banners[currentIndex].StoreId} href={`/popup/${banners[currentIndex].StoreId}`} target="_blank" rel="noopener noreferrer">
+            <img className="mb-4 " style={imgStyle} src={formatURL(banners[currentIndex].Images[0])} alt={`Banner ${banners[currentIndex].StoreId}`} />
+            <p className="font-semibold">{banners[currentIndex].StoreName}</p>
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
             <p>
               {formatDate(banners[currentIndex].StartDate)} - {formatDate(banners[currentIndex].EndDate)}
             </p>
           </a>
-          <div>
-            <button onClick={goToPrevBanner}>Prev</button>
-            <button onClick={goToNextBanner}>Next</button>
+          <div className="flex gap-4 mt-4">
+            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" onClick={goToPrevBanner}>
+              Prev
+            </button>
+            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" onClick={goToNextBanner}>
+              Next
+            </button>
           </div>
         </div>
+
+        // <div>
+        //   <a key={banners[currentIndex].StoreId} href={`/popup/${banners[currentIndex].StoreId}`} target="_blank" rel="noopener noreferrer">
+        //     <img style={imgStyle} src={banners[currentIndex].Images[0]} alt={`Banner ${banners[currentIndex].StoreId}`} />
+        //     <p>{banners[currentIndex].StoreName}</p>
+        //     <p>
+        //       {formatDate(banners[currentIndex].StartDate)} - {formatDate(banners[currentIndex].EndDate)}
+        //     </p>
+        //   </a>
+        //   <div>
+        //     <button onClick={goToPrevBanner}>Prev</button>
+        //     <button onClick={goToNextBanner}>Next</button>
+        //   </div>
+        // </div>
       )}
     </div>
   );
 };
 
 export default HomeBanner;
+<<<<<<< HEAD
 
 // 이전 버전
 // import { useState, useEffect } from "react";
@@ -204,3 +233,5 @@ export default HomeBanner;
 // };
 
 // export default HomeBanner;
+=======
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3

@@ -19,3 +19,15 @@ export const fetchWithAuth = (url, options = {}) => {
     },
   });
 };
+<<<<<<< HEAD
+=======
+
+// 이미지 불러오기
+export const formatURL = (url) => {
+  if (url.startsWith("/upload")) {
+    return `${import.meta.env.VITE_BE_PORT}` + url;
+  } else {
+    return url;
+  }
+};
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3

@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 import { useState, useEffect } from "react";
 import useAuth from "../context/useAuth";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { fetchWithAuth } from "../utils/util";
+=======
+import PropTypes from "prop-types";
+import useAuth from "../context/useAuth";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { fetchWithAuth, formatURL } from "../utils/util";
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
 
 const PopupList = ({ category }) => {
   const { auth } = useAuth(); // 로그인 정보
@@ -11,6 +19,7 @@ const PopupList = ({ category }) => {
   const [popups, setPopups] = useState([]);
   const [error, setError] = useState(null);
   const [likedPopups, setLikedPopups] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // API - 팝업 데이터 가져오기
   useEffect(() => {
@@ -41,12 +50,13 @@ const PopupList = ({ category }) => {
       }
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false); // 로딩 완료
     }
   };
 
   useEffect(() => {
     if (category) {
-      // API
       setError(null);
       fetch(`${import.meta.env.VITE_BE_PORT}/api/categories/${category}`)
         .then((res) => res.json())
@@ -71,8 +81,12 @@ const PopupList = ({ category }) => {
         // (수정) (최적화) 매번 요청하지 않고 이걸 context 로 모든 페이지에서 볼 수 있도록?
         const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/likes`);
         const data = await response.json();
+
         if (!response.ok) {
-          throw new Error("서버 오류 발생: ", data.error);
+          if (data.error === "Likes not found") {
+            return;
+          }
+          throw new Error("Failed to fetch liked popups", data.error);
         }
 
         const likes = data.likes.map((store) => store.s_id);
@@ -87,7 +101,7 @@ const PopupList = ({ category }) => {
     fetchLikesData();
   }, [auth.isLoggedIn]);
 
-  // 좋아요 추가
+  // 좋아요 추가 함수
   const handleLikeToggle = async (popupId) => {
     if (!auth.isLoggedIn) {
       navigate("/login");
@@ -129,6 +143,7 @@ const PopupList = ({ category }) => {
     }
   };
 
+<<<<<<< HEAD
   const heartStyle = {
     position: "absolute",
     bottom: "8px", // 이미지 하단 여백
@@ -148,10 +163,24 @@ const PopupList = ({ category }) => {
     }
   }
 
+=======
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
   return (
-    <div>
+    <div className="max-w-[1000px] mx-auto grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-7 gap-7">
       {error && <p>Error: {error}</p>}
+      {popups.length > 0 ? (
+        popups.map((popup) => (
+          <div className="mb-2 hover:cursor-pointer max-w-[150px] max-h-[200px] justify-self-center" key={popup.id} onClick={() => navigate(`/popup/${popup.id}`)}>
+            <div>
+              <div className="max-w-[150px] max-h-[150px] aspect-square overflow-hidden rounded-md">
+                <img src={formatURL(popup.images[0])} alt={popup.name} className="w-full h-full object-cover" />
+              </div>
+              <div className="flex w-full justify-between items-center inline-flex">
+                <div>
+                  <p className="text-xs text-[#808080]">{popup.owner}</p>
+                </div>
 
+<<<<<<< HEAD
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px", padding: "16px" }}>
         {popups.length > 0 ? (
           popups.map((popup) => (
@@ -171,8 +200,10 @@ const PopupList = ({ category }) => {
                     borderRadius: "8px",
                   }}
                 />
+=======
+                {/* 하트 버튼 */}
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
                 <button
-                  style={heartStyle}
                   onClick={(e) => {
                     e.stopPropagation(); // 부모 클릭 이벤트 방지
                     handleLikeToggle(popup.id); // 하트 상태 토글
@@ -181,20 +212,53 @@ const PopupList = ({ category }) => {
                   {likedPopups.includes(popup.id) ? "❤️" : "🤍"}
                 </button>
               </div>
-              <p style={{ fontSize: "14px", marginTop: "8px" }}>{popup.name}</p>
+              <p className="text-[13px] font-bold">{popup.name}</p>
             </div>
-          ))
-        ) : (
-          <p>No Popup available for this category.</p>
-        )}
-      </div>
+          </div>
+        ))
+      ) : (
+        <div>{loading ? <></> : <p>해당 카테고리에 대한 팝업이 없습니다.</p>}</div>
+      )}
     </div>
   );
+  // return (
+  //   <div className="mx-auto grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-7 gap-7">
+  //     {error && <p>Error: {error}</p>}
+  //     {popups.length > 0 ? (
+  //       popups.map((popup) => (
+  //         <div className="mb-2 hover:cursor-pointer max-w-[150px] max-h-[200px]" key={popup.id} onClick={() => navigate(`/popup/${popup.id}`)}>
+  //           <div>
+  //             <div className="max-w-[150px] max-h-[150px] aspect-square overflow-hidden rounded-md">
+  //               <img src={formatURL(popup.images[0])} alt={popup.name} className="w-full h-full object-cover" />
+  //             </div>
+  //             <div className="flex w-full justify-between items-center inline-flex">
+  //               <div>
+  //                 <p className="text-xs text-[#808080]">{popup.owner}</p>
+  //               </div>
+
+  //               {/* 하트 버튼 */}
+  //               <button
+  //                 onClick={(e) => {
+  //                   e.stopPropagation(); // 부모 클릭 이벤트 방지
+  //                   handleLikeToggle(popup.id); // 하트 상태 토글
+  //                 }}
+  //               >
+  //                 {likedPopups.includes(popup.id) ? "❤️" : "🤍"}
+  //               </button>
+  //             </div>
+  //             <p className="text-[13px] font-bold">{popup.name}</p>
+  //           </div>
+  //         </div>
+  //       ))
+  //     ) : (
+  //       <div>{loading ? <></> : <p>해당 카테고리에 대한 팝업이 없습니다.</p>}</div>
+  //     )}
+  //   </div>
+  // );
 };
 
-// category prop의 타입을 string으로 지정
 PopupList.propTypes = {
-  category: PropTypes.string.isRequired, // category는 필수로 string이어야 함
+  category: PropTypes.string.isRequired,
 };
 
 export default PopupList;

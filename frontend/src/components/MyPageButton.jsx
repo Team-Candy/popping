@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/MyPageButton.css";
+// import "../styles/MyPageButton.css";
 
 const MyPageButton = ({ auth }) => {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -27,7 +27,7 @@ const MyPageButton = ({ auth }) => {
         <div className="menu">
           <ul>
             <li>
-              <button style={{ color: "red" }} onClick={handleClick} name="profile">
+              <button onClick={handleClick} name="profile">
                 프로필
               </button>
             </li>

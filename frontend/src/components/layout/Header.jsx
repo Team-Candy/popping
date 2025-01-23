@@ -14,7 +14,6 @@ function Header() {
         <Link to="/">
           <img style={{ width: "200px" }} src="../../public/popping_logo(original).svg" alt="POPPING 로고"></img>
         </Link>
-        {/* <div className="logo">POPPING</div> */}
         <div className="header-actions">
           <CreatePopup />
           <AuthButton />

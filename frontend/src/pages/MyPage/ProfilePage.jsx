@@ -44,7 +44,10 @@ const ProfilePage = () => {
             Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
           },
         });
+<<<<<<< HEAD
         // const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`);
+=======
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
 
         if (!response.ok) {
           throw new Error("Failed to fetch");
@@ -74,8 +77,11 @@ const ProfilePage = () => {
       return;
     }
 
-    // API - 유저 정보 삭제
     try {
+<<<<<<< HEAD
+=======
+      // API - 유저 정보 삭제
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
       const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}`, {
         method: "DELETE",
         headers: {
@@ -117,12 +123,15 @@ const ProfilePage = () => {
         setName(nameChange);
         setNameEditing(false);
       } else if (emailEditing) {
-        // 이메일 수정
         if (!isEmailValid) {
           alert("이메일 검증 후 다시 시도해주세요.");
           return;
         }
 
+<<<<<<< HEAD
+=======
+        // 이메일 수정
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
         const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`, {
           method: "PUT",
           headers: {
@@ -171,7 +180,6 @@ const ProfilePage = () => {
     setIsAuthValid(false); // 인증상태 초기화
   };
 
-  // API - 이메일 인증코드 발송
   const handleEmailVerification = async () => {
     if (!isEmailValid) {
       setEmailError("유효한 이메일을 입력해주세요.");
@@ -308,14 +316,24 @@ const ProfilePage = () => {
 
           {emailEditing ? (
             <div>
-              <button onClick={handleChange}>완료</button>
-              <button onClick={() => setEmailEditing((prev) => !prev)}>취소</button>
+              <button onClick={handleChange} disabled={!isEmailValid}>
+                완료
+              </button>
+              <button
+                onClick={() => {
+                  setEmailEditing((prev) => !prev);
+                  setIsEmailValid(true);
+                }}
+              >
+                취소
+              </button>
             </div>
           ) : (
             <button
               onClick={() => {
                 setEmailChange(email);
-                setEmailEditing((prev) => !prev);
+                setIsEmailValid(false);
+                setEmailEditing(true);
               }}
             >
               변경
