@@ -5,10 +5,10 @@ import Description from "../components/Description";
 import useAuth from "../context/useAuth";
 import { fetchWithAuth, useCheckToken, formatURL, formatDate } from "../utils/util";
 
-// import OwnerIcon from "../assets/icons/owner.svg";
-// import CalendarIcon from "../assets/icons/calendar.svg";
-// import ClockIcon from "../assets/icons/clock.svg";
-// import Location from "../assets/icons/locaion.svg";
+import ownerIcon from "../assets/icons/owner.svg";
+import calendarIcon from "../assets/icons/calendar.svg";
+import clockIcon from "../assets/icons/clock.svg";
+import locationIcon from "../assets/icons/location.svg";
 
 const PopupDetailPage = () => {
   const { popupId } = useParams(); // URL에서 popupId 가져옴, string type임
@@ -206,27 +206,36 @@ const PopupDetailPage = () => {
         </button>
       </div>
 
-      <p className="text-gray-500">
-        {/* <img src={OwnerIcon} alt="Owner Icon" className="w-6 h-6 mr-2" /> */}
-        {detail.owner}
-      </p>
-      <strong>운영 기간</strong>
-      <p className="mb-3">
-        {formatDate(detail.s_date)} ~ {formatDate(detail.e_date)}
-      </p>
+      <div className="flex mb-3">
+        <img src={ownerIcon} alt="Owner Icon" className="w-5 h-5" />
+        <p className="ml-2 text-gray-500">{detail.owner}</p>
+      </div>
 
-      <strong>운영 시간</strong>
-      <p className="mb-3">{detail.business_hours}</p>
+      <div className="flex mb-3">
+        <img src={calendarIcon} alt="Calendar Icon" className="w-5 h-5" />
 
-      <p className="text-lg">
-        <strong>장소:</strong> {detail.location}
-      </p>
+        <p className="ml-2 text-gray-500">
+          {formatDate(detail.s_date)} ~ {formatDate(detail.e_date)}
+        </p>
+      </div>
 
-      <div className="mt-6 mb-4">
-        <button onClick={() => setActiveTab("description")} className={`px-4 py-2 mr-4 rounded ${activeTab === "description" ? "bg-blue-500 text-white" : "bg-gray-300"}`}>
+      <div className="flex opacity-50 mb-3">
+        <img src={clockIcon} alt="Clock Icon" className="w-5 h-5" />
+        <p className="ml-2">{detail.business_hours}</p>
+      </div>
+
+      <div className="flex mb-3">
+        <img src={locationIcon} alt="Location Icon" className="w-5 h-5" />
+
+        <p className="ml-2 text-gray-500">{detail.location}</p>
+      </div>
+
+      <div className="flex mt-6 mb-4">
+        <button className={`mr-2 px-4 py-2 bg-[#c8a0c8] rounded-full justify-center items-center gap-2 flex hover:bg-[#a15da1] transition-all duration-300 ${activeTab === "description" ? "bg-[#a15da1]" : ""} text-center text-white text-sm font-semibold font-['Pretendard'] leading-normal `} onClick={() => setActiveTab("description")}>
           상세 설명
         </button>
-        <button onClick={() => setActiveTab("reviews")} className={`px-4 py-2 rounded ${activeTab === "reviews" ? "bg-blue-500 text-white" : "bg-gray-300"}`}>
+
+        <button className={`px-4 py-2 bg-[#c8a0c8] rounded-full justify-center items-center gap-2 flex hover:bg-[#a15da1] transition-all duration-300 ${activeTab === "reviews" ? "bg-[#a15da1]" : ""} text-center text-white text-sm font-semibold font-['Pretendard'] leading-normal `} onClick={() => setActiveTab("reviews")}>
           블로그 후기
         </button>
       </div>
