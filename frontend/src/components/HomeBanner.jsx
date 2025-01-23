@@ -68,9 +68,10 @@ const HomeBanner = () => {
           }}
         ></div>
       ) : (
-        <div className="flex flex-col items-center space-y-3 max-w-full">
-          <a className="block text-center rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300" key={banners[currentIndex].StoreId} href={`/popup/${banners[currentIndex].StoreId}`} target="_blank" rel="noopener noreferrer">
-            <div className="relative w-[1000px] h-[250px] overflow-hidden">
+        <div className="flex flex-col items-center space-y-3 max-w-full m-10">
+          <a className="w-full max-w-[1000px] block text-center rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300" key={banners[currentIndex].StoreId} href={`/popup/${banners[currentIndex].StoreId}`} rel="noopener noreferrer">
+            <div className="relative w-full h-[250px] overflow-hidden">
+              {/* <div className="relative w-[1000px] h-[250px] overflow-hidden"> */}
               {/* 배경 이미지 */}
               <img
                 className="absolute inset-0 w-full h-full object-cover filter blur-md scale-110 transition-all duration-1000 ease-in-out"
@@ -80,7 +81,8 @@ const HomeBanner = () => {
               />
 
               {/* 중앙 이미지 */}
-              <img className="relative h-[250px] z-10 object-contain mx-auto" src={formatURL(banners[currentIndex].Images[0])} alt={`Banner ${banners[currentIndex].StoreId}`} />
+              {/* <img className="relative h-[250px] z-10 object-contain mx-auto" src={formatURL(banners[currentIndex].Images[0])} alt={`Banner ${banners[currentIndex].StoreId}`} /> */}
+              <img className="relative h-full z-10 object-contain mx-auto" src={formatURL(banners[currentIndex].Images[0])} alt={`Banner ${banners[currentIndex].StoreId}`} />
             </div>
             <div className="bg-white p-4">
               <h3 className="font-bold text-lg text-gray-800 mb-2">{banners[currentIndex].StoreName}</h3>
