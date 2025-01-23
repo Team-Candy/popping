@@ -84,14 +84,14 @@ const Map = ({ location }) => {
     }
 
     const iwContent = `
-  <div style="width:220px; padding: 15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 15px; color: #444;">
-    <div style="font-size: 12px; font-weight: bold; color: #2c3e50; margin-bottom: 12px;">${location}</div>
+  <div style="text-align: center; padding: 15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 15px; color: #444;">
+    <div style="font-size: 12px; white-space: nowrap; font-weight: bold; color: #2c3e50; margin-bottom: 12px;">${location}</div>
     <div style="display: flex; gap: 15px; justify-content: center; margin-top: 15px;">
       <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" 
-         style="background-color: #c8a0c8; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: 600; transition: background-color 0.3s ease;"
+         style="white-space: nowrap; background-color: #c8a0c8; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: 600; transition: background-color 0.3s ease;"
          target="_blank">큰 지도</a>
       <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" 
-         style="background-color: #c8a0c8; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: 600; transition: background-color 0.3s ease;"
+         style="white-space: nowrap; background-color: #c8a0c8; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: 600; transition: background-color 0.3s ease;"
          target="_blank">길찾기</a>
     </div>
   </div>

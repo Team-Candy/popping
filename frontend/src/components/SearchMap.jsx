@@ -76,13 +76,13 @@ const Map = ({ region, location }) => {
                   <p style="margin: 0; font-size: 13px; font-weight: bold; white-space: nowrap; ">${name}</p>
                   <p style="margin: 5px 0; font-size: 11px; color: #888; white-space: nowrap;">${formatDate(startDate)} ~ ${formatDate(endDate)}</p>
                   <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <a href="/popup/${id}" style="white-space: nowrap; background-color: #c8a0c8;  color:white; font-size: 10px; text-decoration: none; padding: 8px 12px; transition: background-color 0.3s;">
+                    <a href="/popup/${id}" style="white-space: nowrap; background-color: #c8a0c8;  color:white; font-size: 10px; border-radius: 5px; text-decoration: none; padding: 8px 12px; transition: background-color 0.3s;">
                       상세보기
                     </a>
-                    <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="white-space: nowrap; background-color: #c8a0c8;  color: white; font-size: 10px; text-decoration: none; padding: 8px 12px; transition: background-color 0.3s;">
+                    <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="white-space: nowrap; background-color: #c8a0c8; border-radius: 5px; color: white; font-size: 10px; text-decoration: none; padding: 8px 12px; transition: background-color 0.3s;">
                       큰 지도
                     </a>
-                    <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="white-space: nowrap; background-color: #c8a0c8;  color: white; font-size: 10px; text-decoration: none; padding: 8px 12px; transition: background-color 0.3s;">
+                    <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="white-space: nowrap; background-color: #c8a0c8; border-radius: 5px; color: white; font-size: 10px; text-decoration: none; padding: 8px 12px; transition: background-color 0.3s;">
                       길찾기
                     </a>
                   </div>
