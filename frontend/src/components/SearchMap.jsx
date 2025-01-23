@@ -38,7 +38,7 @@ const Map = ({ region, location }) => {
     const { lat, lng } = await getCoordinates(region);
 
     if (window.kakao) {
-      window.kakao.maps.load(() => {
+      window.kakao.maps.load(async () => {
         const container = document.getElementById("map");
         const options = {
           center: new window.kakao.maps.LatLng(lat, lng),
@@ -58,87 +58,60 @@ const Map = ({ region, location }) => {
           map.zoomControl = zoomControl;
         }
 
-        location.forEach(async (item) => {
+        // location.forEach(async (item) => {
+        for (const item of location) {
           const { id, name, location, startDate, endDate, images } = item;
 
-          fetchLatLng(location).then((coords) => {
-            const { x: lng, y: lat } = coords;
+          // fetchLatLng(location).then((coords) => {
+          const coords = await fetchLatLng(location);
+          const { x: lng, y: lat } = coords;
 
-            const marker = new window.kakao.maps.Marker({
-              position: new window.kakao.maps.LatLng(lat, lng),
-            });
+          const marker = new window.kakao.maps.Marker({
+            position: new window.kakao.maps.LatLng(lat, lng),
+          });
 
-            // const customMarkerImage = new window.kakao.maps.MarkerImage(
-            //   "https://your-image-url.com/marker.png", // 마커 이미지 URL (원하는 이미지로 변경)
-            //   new window.kakao.maps.Size(60, 60), // 이미지 크기
-            //   {
-            //     offset: new window.kakao.maps.Point(30, 60), // 이미지의 기준점 (하단 중앙)
-            //   }
-            // );
-
-            // const marker = new window.kakao.maps.Marker({
-            //   position: new window.kakao.maps.LatLng(lat, lng), // 마커 위치
-            //   image: customMarkerImage,
-            // });
-
-            // const iwContent = `
-            //   <div style="display: flex; padding:5px;">
-            //     <div style="flex: 1; margin-right: 5px;">
-            //       ${name}<br>
-            //       ${formatDate(startDate)}~${formatDate(endDate)}<br>
-            //       <a href="/popup/${id}" style="color:blue" target="_blank" >상세보기</a><br>
-            //       <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="color:blue" target="_blank" >큰지도보기</a>
-            //        |
-            //       <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="color:blue" target="_blank" >길찾기</a><br>
-            //     </div>
-            //     <div>
-            //       <img src="${formatURL(images[0])}" alt="popupStore image" style="width:100px;height:100px; border-radius:10px;"/>
-            //     </div>
-            //   </div>
-            // `;
-
-            //             // 인포윈도우 내용
-            const iwContent = `
-            <div style="display: flex; padding: 10px; background-color: #f8f0ff; border-radius: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); font-family: Arial, sans-serif; align-items: center; color: #5a2d88;">
-              <div style="flex: 1; margin-right: 12px;">
-                <h4 style="margin: 0; font-size: 14px; font-weight: bold; color: #5a2d88;">${name}</h4>
-                <p style="margin: 5px 0; font-size: 12px; color: #8e44ad;">${formatDate(startDate)} ~ ${formatDate(endDate)}</p>
-                <div style="display: flex; gap: 6px; margin-top: 6px;">
-                  <a href="/popup/${id}" style="color: #d22b8e; font-size: 12px; text-decoration: none; padding: 4px 8px; border-radius: 15px; background-color: #f1e1f7;">
-                    상세보기
-                  </a>
-                  <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="color: #d22b8e; font-size: 12px; text-decoration: none; padding: 4px 8px; border-radius: 15px; background-color: #f1e1f7;">
-                    큰 지도 보기
-                  </a>
-                  <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="color: #d22b8e; font-size: 12px; text-decoration: none; padding: 4px 8px; border-radius: 15px; background-color: #f1e1f7;">
-                    길 찾기
-                  </a>
+          const iwContent = `
+              <div style="display: flex; padding: 15px; background-color: #fff; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+                <div style="flex: 1; margin-right: 12px;">
+                  <p style="margin: 0; font-size: 13px; font-weight: bold; white-space: nowrap; ">${name}</p>
+                  <p style="margin: 5px 0; font-size: 11px; color: #888; white-space: nowrap;">${formatDate(startDate)} ~ ${formatDate(endDate)}</p>
+                  <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <a href="/popup/${id}" style="white-space: nowrap; background-color: #c8a0c8;  color:white; font-size: 10px; text-decoration: none; padding: 8px 12px; transition: background-color 0.3s;">
+                      상세보기
+                    </a>
+                    <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="white-space: nowrap; background-color: #c8a0c8;  color: white; font-size: 10px; text-decoration: none; padding: 8px 12px; transition: background-color 0.3s;">
+                      큰 지도
+                    </a>
+                    <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="white-space: nowrap; background-color: #c8a0c8;  color: white; font-size: 10px; text-decoration: none; padding: 8px 12px; transition: background-color 0.3s;">
+                      길찾기
+                    </a>
+                  </div>
+                </div>
+                <div>
+                  <img src="${formatURL(images[0])}" alt="popupStore image" style="width: 60px; height: 60px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);"/>
                 </div>
               </div>
-              <div>
-                <img src="${formatURL(images[0])}" alt="popupStore image" style="width: 60px; height: 60px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"/>
-              </div>
-            </div>
             `;
 
-            const infowindow = new window.kakao.maps.InfoWindow({
-              position: new window.kakao.maps.LatLng(lat, lng),
-              content: iwContent,
-              disableAutoPan: true,
-            });
-
-            marker.setMap(map);
-            infowindow.open(map, marker);
-
-            markersRef.current.push(marker);
-            infowindowsRef.current.push(infowindow);
+          const infowindow = new window.kakao.maps.InfoWindow({
+            position: new window.kakao.maps.LatLng(lat, lng),
+            content: iwContent,
+            disableAutoPan: true,
           });
-        });
+
+          marker.setMap(map);
+          infowindow.open(map, marker);
+
+          markersRef.current.push(marker);
+          infowindowsRef.current.push(infowindow);
+        }
       });
     } else {
       console.error("Kakao Maps SDK is not loaded.");
     }
   };
+
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const fetchLatLng = async (location) => {
     const cachedCoords = JSON.parse(localStorage.getItem("coords")) || {};
@@ -147,9 +120,7 @@ const Map = ({ region, location }) => {
       return cachedCoords[location];
     } else {
       try {
-        const REQUEST_DELAY = 1000;
-        await delay(REQUEST_DELAY);
-
+        const REQUEST_DELAY = 3000;
         const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/map/getLatLng/${encodeURIComponent(location)}`);
         if (!response.ok) {
           const data = await response.json();
@@ -160,14 +131,14 @@ const Map = ({ region, location }) => {
 
         cachedCoords[location] = data;
         localStorage.setItem("coords", JSON.stringify(cachedCoords));
+
+        await delay(REQUEST_DELAY);
         return data;
       } catch (err) {
         console.error("네트워크 오류", err.message);
       }
     }
   };
-
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const getCoordinates = async (region) => {
     const regionCoordinates = {

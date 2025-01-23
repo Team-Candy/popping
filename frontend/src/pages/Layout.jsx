@@ -1,8 +1,6 @@
 import { Outlet } from "react-router-dom";
-import Header from "../components/common/Header";
-import Footer from "../components/common/Footer";
-// import NavBar from "../components/common/NavBar";
-// import SearchBar from "../components/SearchBar"; // 검색
+import Header from "../components/layout/Header";
+import Footer from "../components/layout/Footer";
 
 const Layout = () => {
   return (

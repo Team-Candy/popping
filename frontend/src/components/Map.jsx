@@ -83,23 +83,6 @@ const Map = ({ location }) => {
       });
     }
 
-    // 인포윈도우 업데이트 또는 생성
-    // const iwContent = `<div style="padding:5px;">${location}<br><a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="color:blue" target="_blank">큰지도보기</a> <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="color:blue" target="_blank">길찾기</a></div>`;
-
-    // const iwContent = `
-    //   <div style="width: 250px; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); font-family: Arial, sans-serif;">
-    //     <h4 style="margin: 0; font-size: 16px; color: #333; font-weight: bold;">${location}</h4>
-    //     <div style="display: flex; gap: 10px;">
-    //       <a href="https://map.kakao.com/link/map/${location},${lat},${lng}" style="color: #0078FF; font-size: 14px; text-decoration: none; padding: 8px 12px; border: 1px solid #0078FF; border-radius: 4px; transition: background-color 0.3s;">
-    //         큰 지도
-    //       </a>
-    //       <a href="https://map.kakao.com/link/to/${location},${lat},${lng}" style="color: #0078FF; font-size: 14px; text-decoration: none; padding: 8px 12px; border: 1px solid #0078FF; border-radius: 4px; transition: background-color 0.3s;">
-    //         길 찾기
-    //       </a>
-    //     </div>
-    //   </div>
-    // `;
-
     const iwContent = `
   <div style="width:220px; padding: 15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 15px; color: #444;">
     <div style="font-size: 12px; font-weight: bold; color: #2c3e50; margin-bottom: 12px;">${location}</div>

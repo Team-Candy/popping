@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { formatDate, formatURL } from "../../utils/util";
+import { useState, useEffect } from "react";
+import { formatDate, formatURL } from "../utils/util";
 // import "../../styles/HomeBanner.css";
 
 const HomeBanner = () => {
