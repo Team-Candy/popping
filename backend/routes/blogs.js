@@ -28,10 +28,6 @@ router.get("/", async (req, res) => {
       },
     });
 
-    // const data = await response.json();
-
-    // console.log(data);
-
     const blogs = await response.data.items.map((item) => ({
       title: item.title.replace(/<[^>]*>/g, ""), // HTML 태그 제거
       link: item.link,

@@ -233,7 +233,7 @@ router.post("/:u_id/stores", upload.array("image[]", 10), authenticateJWT, async
   }
 });
 
-// 유저가 작성한 팝업스토어어 조회
+// 유저가 작성한 팝업스토어 조회
 router.get("/:u_id/stores", authenticateJWT, async (req, res) => {
   const { u_id } = req.params;
 
@@ -259,7 +259,6 @@ router.get("/:u_id/stores", authenticateJWT, async (req, res) => {
 
   try {
     const [results] = await db.promise().query(query, [u_id]);
-    console.log("results: ", results);
 
     // 결과가 없을 때
     if (results.length === 0) {
@@ -326,7 +325,7 @@ router.post("/:u_id/stores/:s_id/check-popup-permission", authenticateJWT, async
   }
 });
 
-// 유저가 작성한 팝업스토어어 수정
+// 유저가 작성한 팝업스토어 수정
 router.put("/:u_id/stores/:s_id", upload.array("image[]", 10), authenticateJWT, async (req, res) => {
   const { u_id, s_id } = req.params;
   const { s_name, owner, contact, location, s_date, e_date, business_hours, description, category, deleteImages } = req.body;

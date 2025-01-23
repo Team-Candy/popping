@@ -28,7 +28,6 @@ router.get("/getLatLng/:location", async (req, res) => {
     // 응답이 실패한 경우에 대한 처리를 추가
     if (!response.ok) {
       const errorMessage = `Failed to fetch Kakao Map data: ${response.statusText}`;
-      console.error(errorMessage);
       return res.status(response.status).json({ error: errorMessage });
     }
 

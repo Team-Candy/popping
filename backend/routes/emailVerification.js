@@ -15,7 +15,6 @@ function generateCode() {
 
 router.post("/email-code", async (req, res) => {
     const { email } = req.body;
-    console.log("email: ", email);
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
@@ -23,7 +22,6 @@ router.post("/email-code", async (req, res) => {
     }
 
     const code = generateCode();
-    console.log(code);
 
     // 트랜잭션 시작
     try {
@@ -80,8 +78,6 @@ router.post("/email-code", async (req, res) => {
 
 router.post("/verify-code", async (req, res) => {
   const { email, code } = req.body;
-  console.log("email: ", email);
-  console.log("code: ", code);
 
   if (!email || !code) {
     return res.status(400).json({ error: "이메일과 코드를 입력해주세요." });
@@ -115,8 +111,6 @@ router.post("/verify-code", async (req, res) => {
     const createdAtMillis = new Date(created_at).getTime() / 1000; // 문자열 -> 밀리초 변환
     const tenMinute = 6004802;
     const isExpired = parseInt(currentTime - createdAtMillis) > tenMinute; // 10분 유효
-    console.log("isExpired: ", isExpired, "currentTime: ", currentTime, "createdAtMillis: ", createdAtMillis);
-    console.log("currentTime - createdAtMillis: ", currentTime - createdAtMillis);
 
     if (isExpired) {
       await db.promise().rollback(); // 오류 발생 시 롤백
