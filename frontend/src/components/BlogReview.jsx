@@ -35,20 +35,22 @@ const BlogReview = ({ name }) => {
   }, [name]);
 
   return (
-    <div>
+    // <div>
+    <div className="p-5 bg-gray-100  rounded-2xl shadow-md space-y-6">
+      {/* <div className="p-5 bg-pink-100 rounded-2xl shadow-md space-y-6"> */}
       {loading ? (
         // 로딩 상태일 때 스켈레톤 UI 표시
         <div className="space-y-4">
-          <div className="h-6 bg-gray-300 rounded w-3/4 animate-pulse"></div>
-          <div className="h-6 bg-gray-300 rounded w-2/3 animate-pulse"></div>
-          <div className="h-6 bg-gray-300 rounded w-1/2 animate-pulse"></div>
+          <div className="h-[150px] rounded-2xl bg-gray-300 rounded w-full animate-pulse"></div>
+          <div className="h-[150px] rounded-2xl bg-gray-300 rounded w-full animate-pulse"></div>
+          <div className="h-[150px] rounded-2xl bg-gray-300 rounded w-full animate-pulse"></div>
         </div>
       ) : (
         <ul className="list-none p-0">
           {blogs.length > 0 ? (
             blogs.map((blog, index) => (
               <li key={index} className="mb-5">
-                <div onClick={() => window.open(blog.link, "_blank")} className="border border-gray-300 rounded-lg p-4 shadow-md bg-gray-50 cursor-pointer hover:bg-gray-100 transition duration-200">
+                <div onClick={() => window.open(blog.link, "_blank")} className="rounded-2xl rounded-lg p-4 shadow-md bg-white cursor-pointer hover:bg-gray-200 transition duration-200">
                   <h3 className="text-lg font-semibold" dangerouslySetInnerHTML={{ __html: blog.title }}></h3>
                   <p className="text-gray-600" dangerouslySetInnerHTML={{ __html: blog.description }}></p>
                   <small className="text-sm text-gray-500">작성 날짜: {blog.postdate}</small>

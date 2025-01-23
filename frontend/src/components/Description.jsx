@@ -4,22 +4,23 @@ import Map from "./Map";
 
 const Description = ({ detail }) => {
   return (
-    <div>
-      {/* <strong>운영 기간</strong>
-      <p className="mb-3">
-        {formatDate(detail.s_date)} ~ {formatDate(detail.e_date)}
-      </p>
+    <div className="p-5 bg-gray-100  rounded-2xl shadow-md space-y-6">
+      {/* 상세 설명 */}
+      <div>
+        <strong className="text-lg font-semibold text-gray-700 block mb-2">상세 설명</strong>
+        <p className="text-gray-600 leading-relaxed">{detail.description}</p>
+      </div>
 
-      <strong>운영 시간</strong>
-      <p className="mb-3">{detail.business_hours}</p> */}
+      {/* 문의하기 */}
+      <div>
+        <strong className="text-lg font-semibold text-gray-700 block mb-2">문의</strong>
+        <p className="text-gray-600 leading-relaxed">{detail.contact}</p>
+      </div>
 
-      <strong>상세 설명</strong>
-      <p className="mb-3">{detail.description}</p>
-
-      <strong>문의하기</strong>
-      <p className="mb-3">{detail.contact}</p>
-
-      <Map location={detail.location}></Map>
+      {/* 지도 */}
+      <div className="pt-4 rounded-2xl">
+        <Map location={detail.location}></Map>
+      </div>
     </div>
   );
 };

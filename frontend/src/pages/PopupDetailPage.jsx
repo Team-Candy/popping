@@ -179,63 +179,65 @@ const PopupDetailPage = () => {
 
   return (
     <div className="max-w-[1000px] container mx-auto p-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        {detail.images.map((url, index) => (
-          // <img key={index} src={formatURL(url)} alt={`팝업 이미지 ${index + 1}`} className="max-w-[300px] rounded-lg shadow-md" />
-          // <a key={index} href={formatURL(url)} target="_blank" rel="noopener noreferrer">
-          <img key={index} src={formatURL(url)} alt={`팝업 이미지 ${index + 1}`} className="w-[300px] h-[300px] object-cover rounded-lg shadow-md" />
-          // </a>
-        ))}
-      </div>
+      <div className="ml-1">
+        <div className="mb-5 p-5 bg-gray-100 rounded-2xl space-y-6">
+          {detail.images.map((url, index) => (
+            // <img key={index} src={formatURL(url)} alt={`팝업 이미지 ${index + 1}`} className="max-w-[300px] rounded-lg shadow-md" />
+            // <a key={index} href={formatURL(url)} target="_blank" rel="noopener noreferrer">
+            <img key={index} src={formatURL(url)} alt={`팝업 이미지 ${index + 1}`} className="w-[300px] h-[300px] object-cover rounded-lg shadow-md" />
+            // </a>
+          ))}
+        </div>
 
-      <div key={detail.category} className="mb-4 p-2 rounded-lg border border-[#b3b3b3] justify-center items-center gap-3 inline-flex text-center text-xs font-normal font-['Pretendard'] leading-normal whitespace-nowrap border-[#A15EA1] bg-opacity-30 bg-[#C8A0C8] text-[#A15EA1]">
-        {formatCategory(detail.category)}
-      </div>
+        <div key={detail.category} className="mb-4 p-2 rounded-lg border border-[#b3b3b3] justify-center items-center gap-3 inline-flex text-center text-xs font-normal font-['Pretendard'] leading-normal whitespace-nowrap border-[#A15EA1] bg-opacity-30 bg-[#C8A0C8] text-[#A15EA1]">
+          {formatCategory(detail.category)}
+        </div>
 
-      <div className="flex items-center mb-4">
-        <h1 className="text-3xl font-semibold">{detail.s_name}</h1>
-        <button
-          className="text-2xl"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleLikeToggle(popupId);
-          }}
-          aria-label={like ? "좋아요 취소" : "좋아요"}
-        >
-          {like ? "❤️" : "🤍"}
-        </button>
-      </div>
+        <div className="flex items-center mb-4">
+          <h1 className="text-3xl font-semibold">{detail.s_name}</h1>
+          <button
+            className="text-2xl"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleLikeToggle(popupId);
+            }}
+            aria-label={like ? "좋아요 취소" : "좋아요"}
+          >
+            {like ? "❤️" : "🤍"}
+          </button>
+        </div>
 
-      <div className="flex mb-3">
-        <img src={ownerIcon} alt="Owner Icon" className="w-5 h-5" />
-        <p className="ml-2 text-gray-500">{detail.owner}</p>
-      </div>
+        <div className="flex mb-3">
+          <img src={ownerIcon} alt="Owner Icon" className="w-5 h-5" />
+          <p className="ml-2 text-gray-500">{detail.owner}</p>
+        </div>
 
-      <div className="flex mb-3">
-        <img src={calendarIcon} alt="Calendar Icon" className="w-5 h-5" />
+        <div className="flex mb-3">
+          <img src={calendarIcon} alt="Calendar Icon" className="w-5 h-5" />
 
-        <p className="ml-2 text-gray-500">
-          {formatDate(detail.s_date)} ~ {formatDate(detail.e_date)}
-        </p>
-      </div>
+          <p className="ml-2 text-gray-500">
+            {formatDate(detail.s_date)} ~ {formatDate(detail.e_date)}
+          </p>
+        </div>
 
-      <div className="flex opacity-50 mb-3">
-        <img src={clockIcon} alt="Clock Icon" className="w-5 h-5" />
-        <p className="ml-2">{detail.business_hours}</p>
-      </div>
+        <div className="flex opacity-50 mb-3">
+          <img src={clockIcon} alt="Clock Icon" className="w-5 h-5" />
+          <p className="ml-2">{detail.business_hours}</p>
+        </div>
 
-      <div className="flex mb-3">
-        <img src={locationIcon} alt="Location Icon" className="w-5 h-5" />
+        <div className="flex mb-3">
+          <img src={locationIcon} alt="Location Icon" className="w-5 h-5" />
 
-        <p className="ml-2 text-gray-500">{detail.location}</p>
+          <p className="ml-2 text-gray-500">{detail.location}</p>
+        </div>
       </div>
 
       <div className="flex mt-6 mb-4">
-        <button className={`mr-2 px-4 py-2 bg-[#c8a0c8] rounded-full justify-center items-center gap-2 flex hover:bg-[#a15da1] transition-all duration-300 ${activeTab === "description" ? "bg-[#a15da1]" : ""} text-center text-white text-sm font-semibold font-['Pretendard'] leading-normal `} onClick={() => setActiveTab("description")}>
+        <button className={`mr-2 px-4 py-2 bg-[#c8a0c8] rounded-lg justify-center items-center gap-2 flex hover:bg-[#a15da1] transition-all duration-300 ${activeTab === "description" ? "bg-[#a15da1]" : ""} text-center text-white text-sm font-semibold font-['Pretendard'] leading-normal `} onClick={() => setActiveTab("description")}>
           상세 설명
         </button>
 
-        <button className={`px-4 py-2 bg-[#c8a0c8] rounded-full justify-center items-center gap-2 flex hover:bg-[#a15da1] transition-all duration-300 ${activeTab === "reviews" ? "bg-[#a15da1]" : ""} text-center text-white text-sm font-semibold font-['Pretendard'] leading-normal `} onClick={() => setActiveTab("reviews")}>
+        <button className={`px-4 py-2 bg-[#c8a0c8] rounded-lg justify-center items-center gap-2 flex hover:bg-[#a15da1] transition-all duration-300 ${activeTab === "reviews" ? "bg-[#a15da1]" : ""} text-center text-white text-sm font-semibold font-['Pretendard'] leading-normal `} onClick={() => setActiveTab("reviews")}>
           블로그 후기
         </button>
       </div>

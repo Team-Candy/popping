@@ -71,7 +71,7 @@ const LoginPage = () => {
 
   return (
     <div className="flex flex-col items-center min-h-screen">
-      <h2 className="text-center mb-6 text-2xl font-semibold">이메일로 로그인</h2>
+      <h2 className="mt-10 text-center mb-6 text-2xl font-semibold">이메일로 로그인</h2>
 
       <form onSubmit={handleSubmit} className="w-full max-w-md bg-gray-100 p-8 rounded-xl shadow-lg">
         <div className="flex flex-col space-y-4">
