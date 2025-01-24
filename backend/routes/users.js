@@ -7,39 +7,39 @@ const router = express.Router();
 
 // 유저 프로필 정보 등록
 router.post("/", authenticateJWT, async (req, res) => {
-  const { email, name } = req.body;
+    const { email, name } = req.body;
 
-  // 입력 검증
-  if (!email || !name) {
-    return res.status(400).json({ error: "email and name are required" });
-  }
-
-  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({ error: "Invalid email format" });
-  }
-
-  const checkEmailQuery = `SELECT COUNT(*) AS count FROM user WHERE email = ?`;
-  const insertUserQuery = `INSERT INTO user (email, name) VALUES (?, ?)`;
-
-  try {
-    // 이메일 중복 체크
-    const [emailCheckResult] = await db.promise().query(checkEmailQuery, [email]);
-    if (emailCheckResult[0].count > 0) {
-      return res.status(400).json({ error: "Email is already in use" });
+    // 입력 검증
+    if (!email || !name) {
+        return res.status(400).json({ error: "email and name are required" });
     }
 
-    // 사용자 등록
-    const [insertResult] = await db.promise().query(insertUserQuery, [email, name]);
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Invalid email format" });
+    }
 
-    res.status(201).json({
-      message: "User profile registered successfully",
-      userId: insertResult.insertId, // 삽입된 유저의 ID 반환
-    });
-  } catch (err) {
-    console.error("Error during user registration:", err.message);
-    res.status(500).json({ error: "Failed to register user profile" });
-  }
+    const checkEmailQuery = `SELECT COUNT(*) AS count FROM user WHERE email = ?`;
+    const insertUserQuery = `INSERT INTO user (email, name) VALUES (?, ?)`;
+
+    try {
+        // 이메일 중복 체크
+        const [emailCheckResult] = await db.promise().query(checkEmailQuery, [email]);
+        if (emailCheckResult[0].count > 0) {
+            return res.status(400).json({ error: "Email is already in use" });
+        }
+
+        // 사용자 등록
+        const [insertResult] = await db.promise().query(insertUserQuery, [email, name]);
+
+        res.status(201).json({
+            message: "User profile registered successfully",
+            userId: insertResult.insertId, // 삽입된 유저의 ID 반환
+        });
+    } catch (err) {
+        console.error("Error during user registration:", err.message);
+        res.status(500).json({ error: "Failed to register user profile" });
+    }
 });
 
 // 유저 정보 수정
