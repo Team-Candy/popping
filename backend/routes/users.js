@@ -250,13 +250,12 @@ router.get("/:u_id/stores", authenticateJWT, async (req, res) => {
               store.e_date, 
               store.business_hours, 
               store.description,
-              JSON_ARRAYAGG(store_image.image_url) AS images,
-              category.name AS category
+              JSON_ARRAYAGG(store_image.image_url) AS images
           FROM store
           LEFT JOIN store_image ON store.s_id = store_image.s_id
           LEFT JOIN category ON store.s_id = category.s_id
           WHERE store.u_id = ?
-          GROUP BY store.s_id, category.name
+          GROUP BY store.s_id
       `;
 
     try {
