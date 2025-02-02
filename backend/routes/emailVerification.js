@@ -162,7 +162,7 @@ router.post("/users", async (req, res) => {
   try {
     await db.promise().beginTransaction(); // 트랜잭션 시작
 
-    // // 이메일 인증 확인
+    // 이메일 인증 확인
     const verifyQuery = `SELECT verified FROM emailverification WHERE email = ?`;
     const [verifyResults] = await db.promise().query(verifyQuery, [email]);
 
@@ -174,17 +174,17 @@ router.post("/users", async (req, res) => {
     // 중복 가입 확인
     const checkUserQuery = `SELECT email FROM user WHERE email = ?`;
     const [userResults] = await db.promise().query(checkUserQuery, [email]);
-
+    
     if (userResults.length > 0) {
       await db.promise().rollback(); // 오류 발생 시 롤백
       return res.status(400).json({ error: "이미 등록된 이메일 입니다." });
     }
-
+    
     // 사용자 정보 저장
     const insertUserQuery = `INSERT INTO user (email, password, name) VALUES (?, ?, ?)`;
     const hashedPassword = bcrypt.hashSync(password, 10);
     await db.promise().query(insertUserQuery, [email, hashedPassword, name]);
-
+    
     // 인증 데이터 삭제
     const deleteCodeQuery = `DELETE FROM emailverification WHERE email = ?`;
     await db.promise().query(deleteCodeQuery, [email]);

@@ -1,3 +1,4 @@
+// 디테일 페이지
 import PropTypes from "prop-types";
 import { useEffect, useRef } from "react";
 

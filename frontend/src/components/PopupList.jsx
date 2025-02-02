@@ -29,6 +29,8 @@ const PopupList = ({ category }) => {
       const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/categories/${category}`);
 
       if (!response.ok) {
+        setPopups([]);
+
         throw new Error("Failed to fetch categories");
       }
 
@@ -42,24 +44,24 @@ const PopupList = ({ category }) => {
         setPopups(data.categories);
       }
     } catch (err) {
-      setError(err.message);
+      // setError(err.message);
     } finally {
       setLoading(false); // 로딩 완료
     }
   };
 
-  useEffect(() => {
-    if (category) {
-      setError(null);
-      fetch(`${import.meta.env.VITE_BE_PORT}/api/categories/${category}`)
-        .then((res) => res.json())
-        .then((data) => setPopups(data.categories))
-        .catch((err) => {
-          console.error("Error fetching popups:", err);
-          setError(err.message);
-        });
-    }
-  }, [category]);
+  // useEffect(() => {
+  //   if (category) {
+  //     setError(null);
+  //     fetch(`${import.meta.env.VITE_BE_PORT}/api/categories/${category}`)
+  //       .then((res) => res.json())
+  //       .then((data) => setPopups(data.categories))
+  //       .catch((err) => {
+  //         console.error("Error fetching popups:", err);
+  //         setError(err.message);
+  //       });
+  //   }
+  // }, [category]);
 
   // 로그인 상태일 때만 좋아요 데이터 가져오기
   useEffect(() => {

@@ -61,6 +61,8 @@ router.get("/:categoryName", async (req, res) => {
       images: row.Images || [],
     }));
 
+    console.log("categories: ", categories);
+
     res.json({ categories });
   } catch (error) {
     console.error("Database query error:", error);

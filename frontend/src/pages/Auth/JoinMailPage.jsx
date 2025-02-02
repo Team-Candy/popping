@@ -288,7 +288,7 @@ const JoinEmailPage = () => {
             {sendNumber && (
               <div className="mt-4 space-y-2">
                 <input type="number" placeholder="인증번호 입력" value={authNumber} onChange={handleAuthNumberChange} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-200" />
-                <button type="button" onClick={handleAuthSubmit} className="px-4 py-2 rounded-md bg-[#c8a0c8] text-white font-medium hover:bg-[#a15da1]">
+                <button type="button" disabled={isAuthValid} onClick={handleAuthSubmit} className={`px-4 py-2 rounded-md bg-[#c8a0c8] text-white font-medium hover:bg-[#a15da1] ${isAuthValid ? "bg-gray-300 cursor-not-allowed" : "bg-[#c8a0c8] hover:bg-[#a15da1]"}`}>
                   인증
                 </button>
                 {authError && <p className="mt-1 text-sm text-red-500">{authError}</p>} {/* 인증 오류 메시지 */}
