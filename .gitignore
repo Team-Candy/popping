@@ -26,3 +26,5 @@ docs/
 backup/
 
 uploads/
+
+*.zip

@@ -39,6 +39,10 @@ const ProfilePage = () => {
             Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
           },
         });
+<<<<<<< HEAD
+        // const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`);
+=======
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
 
         if (!response.ok) {
           throw new Error("Failed to fetch");

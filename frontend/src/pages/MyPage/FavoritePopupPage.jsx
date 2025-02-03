@@ -27,6 +27,7 @@ const FavoritePopupPage = () => {
         }
 
         setResults(data.likes);
+        // console.log(data.likes);
 
         const likes = data.likes.map((store) => store.s_id);
         setLikedPopups(likes);

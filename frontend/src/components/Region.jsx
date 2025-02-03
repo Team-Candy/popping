@@ -65,6 +65,7 @@ const Region = ({ onSelectRegion }) => {
 
 Region.propTypes = {
   onSelectRegion: PropTypes.func.isRequired,
+  onSelectRegion: PropTypes.func.isRequired,
 };
 
 export default Region;

@@ -184,6 +184,13 @@ const PopupEditPage = () => {
       }
     });
 
+<<<<<<< HEAD
+    // deleteImages.forEach((image) => {
+    //   formDataToSend.append("deleteImages", image);
+    // });
+
+=======
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
     formDataToSend.append("deleteImages", JSON.stringify(deleteImages));
 
     for (const [key, value] of formDataToSend.entries()) {

@@ -26,6 +26,8 @@ export const fetchWithAuth = (url, options = {}) => {
     },
   });
 };
+<<<<<<< HEAD
+=======
 
 export const useCheckToken = () => {
   const { logout } = useAuth();
@@ -50,3 +52,4 @@ export const formatURL = (url) => {
     return url;
   }
 };
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3

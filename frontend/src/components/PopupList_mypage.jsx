@@ -30,6 +30,15 @@ const PopupList = () => {
       }
 
       const data = await response.json();
+<<<<<<< HEAD
+
+      if (data.error) {
+        setPopups([]);
+        setError("유저의 게시물이 없습니다.");
+        return;
+      }
+=======
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
 
       setPopups(data.stores);
     } catch (err) {

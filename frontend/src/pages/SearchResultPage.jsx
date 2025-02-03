@@ -63,6 +63,7 @@ const SearchResult = () => {
     const fetchLikesData = async () => {
       try {
         const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/likes`);
+>>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
         const data = await response.json();
 
         if (!response.ok) {

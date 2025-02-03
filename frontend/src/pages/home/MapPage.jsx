@@ -10,6 +10,12 @@ const MapPage = () => {
     const fetchLocationData = async () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/categories/whole`);
+<<<<<<< HEAD
+        if (!response.ok) {
+          throw new Error("");
+        }
+        const data = await response.json();
+=======
 
         if (!response.ok) {
           const data = await response.json();
