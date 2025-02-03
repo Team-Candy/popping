@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom"; // Link 컴포넌트
+import { Link } from "react-router-dom";
 
-import CreatePopup from "../CreatePopup"; // 팝업 올리기
-import AuthButton from "../AuthButton"; // 로그인/회원가입
+import CreatePopup from "../CreatePopup";
+import AuthButton from "../AuthButton";
 
 import NavBar from "./NavBar";
 import SearchBar from "../SearchBar";

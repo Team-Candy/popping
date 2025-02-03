@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { fetchWithAuth, useCheckToken } from "../utils/util";
 
 const PopupList = () => {
-  // {state} ->  onGoing, scheduled, completed
   const checkToken = useCheckToken();
 
   const [popups, setPopups] = useState([]);
@@ -14,11 +13,9 @@ const PopupList = () => {
   const fetchUserPopup = async () => {
     setError(null);
 
-    // 현재 유저 아이디
     const userId = sessionStorage.getItem("userId");
 
     try {
-      // (수정) API - 유저가 작성한 게시글 조회
       const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${userId}/stores`);
 
       if (!response.ok) {

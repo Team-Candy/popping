@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../context/useAuth";
 
 const CreatePopup = () => {
-  const { auth } = useAuth(); // 로그인 상태 가져오기
+  const { auth } = useAuth();
   const navigate = useNavigate();
 
   const handleClick = () => {

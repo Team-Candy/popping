@@ -1,4 +1,4 @@
-import useAuth from "../context/useAuth"; // 로그인 상태;
+import useAuth from "../context/useAuth";
 import { useNavigate } from "react-router-dom";
 import MyPageButton from "./MyPageButton";
 

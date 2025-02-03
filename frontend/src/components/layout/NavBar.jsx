@@ -6,7 +6,6 @@ const NavBar = () => {
   const [clicked, setClicked] = useState();
 
   useEffect(() => {
-    // 현재 URL 경로 가져오기
     const updateClicked = () => {
       const currentURL = window.location.pathname;
       const pathSegment = currentURL.split("/").pop();
@@ -29,7 +28,6 @@ const NavBar = () => {
         }}
       >
         <div className="h-14 justify-center items-end gap-8 flex">
-          {/* <div className="w-9 h-14 px-4 pb-4 border-b-2 border-black flex-col justify-start items-center inline-flex"> */}
           <button
             className={`text-center text-black text-2s font-medium font-['Pretendard'] leading-9 ${clicked === "home" ? "border-b-2 border-black" : ""}`}
             onClick={() => {
@@ -39,8 +37,6 @@ const NavBar = () => {
           >
             홈
           </button>
-          {/* </div> */}
-          {/* <div className="w-9 h-14 px-4 pb-4 flex-col justify-start items-center inline-flex"> */}
           <button
             className={`text-center text-black text-2s font-medium font-['Pretendard'] leading-9 ${clicked === "calendar" ? "border-b-2 border-black" : ""}`}
             onClick={() => {
@@ -50,8 +46,6 @@ const NavBar = () => {
           >
             달력
           </button>
-          {/* </div> */}
-          {/* <div className="w-9 h-14 px-4 pb-4 flex-col justify-start items-center inline-flex"> */}
           <button
             className={`text-center text-black text-2s font-medium font-['Pretendard'] leading-9 ${clicked === "map" ? "border-b-2 border-black" : ""}`}
             onClick={() => {
@@ -61,7 +55,6 @@ const NavBar = () => {
           >
             지도
           </button>
-          {/* </div> */}
         </div>
       </ul>
     </nav>

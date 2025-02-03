@@ -5,7 +5,6 @@ const BlogReview = ({ name }) => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // API 호출 - blog data 받기
   const fetchBlogs = async (name) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/blogs?query=${encodeURIComponent(name)}`);
@@ -18,13 +17,13 @@ const BlogReview = ({ name }) => {
       if (data.blogs && Array.isArray(data.blogs)) {
         setBlogs(data.blogs);
       } else {
-        setBlogs([]); // result가 없거나, []이 아닐 경우
+        setBlogs([]);
       }
     } catch (err) {
       console.error("Error fetching blogs:", err.message);
       setBlogs([]);
     } finally {
-      setLoading(false); // 데이터 로딩이 끝나면 loading을 false로 설정
+      setLoading(false);
     }
   };
 
@@ -35,11 +34,8 @@ const BlogReview = ({ name }) => {
   }, [name]);
 
   return (
-    // <div>
     <div className="p-5 bg-gray-100  rounded-2xl shadow-md space-y-6">
-      {/* <div className="p-5 bg-pink-100 rounded-2xl shadow-md space-y-6"> */}
       {loading ? (
-        // 로딩 상태일 때 스켈레톤 UI 표시
         <div className="space-y-4">
           <div className="h-[150px] rounded-2xl bg-gray-300 rounded w-full animate-pulse"></div>
           <div className="h-[150px] rounded-2xl bg-gray-300 rounded w-full animate-pulse"></div>

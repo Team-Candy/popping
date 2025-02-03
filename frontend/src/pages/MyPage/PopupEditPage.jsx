@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-// import "../../styles/PopupEditPage.css";
 import { fetchWithAuth, useCheckToken } from "../../utils/util";
 
 const PopupEditPage = () => {
@@ -9,17 +8,15 @@ const PopupEditPage = () => {
   const checkToken = useCheckToken();
 
   const [hasPermission, setHasPermission] = useState(null);
-  const [error, setError] = useState(null); // 에러 메시지 저장
+  const [error, setError] = useState(null);
   const [detail, setDetail] = useState(null);
-  const [loading, setLoading] = useState(true); // 로딩 상태 저장
+  const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 
-  // 미리보기 URL 관리
   const [images, setImages] = useState([]);
 
-  // 삭제된 이미지
   const [deleteImages, setDeleteImages] = useState([]);
 
   const [formData, setFormData] = useState({
@@ -61,10 +58,6 @@ const PopupEditPage = () => {
     setFormData((prev) => ({ ...prev, category: category }));
   };
 
-  // (수정) 보안 2가지 방식
-  // 권한 - 로컬 캐시나 상태 관리를 통해 재사용하는 방법
-
-  // 권한 확인
   const auth = async () => {
     const userId = sessionStorage.getItem("userId");
 
@@ -79,12 +72,10 @@ const PopupEditPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // 권한 있음
         setHasPermission(data.hasPermission);
       } else {
         checkToken(response);
 
-        // 권한 없음
         setHasPermission(false);
         console.log("서버 에러: ", data.message);
         alert("해당 팝업에 대한 수정 권한이 없습니다.");
@@ -98,17 +89,14 @@ const PopupEditPage = () => {
     }
   };
 
-  // 팝업 데이터 가져오기
   const fetchPopupDetail = async () => {
     try {
-      // (수정) API
       const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/stores/${popupId}`);
       if (!response.ok) {
         throw new Error("Failed to fetch PopupDetail");
       }
       const data = await response.json();
 
-      // 확인용 데이터 상태 저장
       setDetail(data.store);
 
       const splitTimeRange = async (timeRange) => {
@@ -119,7 +107,6 @@ const PopupEditPage = () => {
 
       splitTimeRange(data.store.business_hours);
 
-      // 수정용 데이터 상태 저장
       setFormData({
         s_name: data.store.s_name,
         category: data.store.category,
@@ -133,7 +120,6 @@ const PopupEditPage = () => {
         contact: data.store.contact,
       });
 
-      // 미리보기 데이터 저장 - 기존에 있던 거 '/upload/
       setImages(data.store.images.map((i) => `${import.meta.env.VITE_BE_PORT}${i}`));
 
       setError(null);
@@ -141,11 +127,10 @@ const PopupEditPage = () => {
       setError(err.message);
       setDetail(null);
     } finally {
-      setLoading(false); // 로딩 종료
+      setLoading(false);
     }
   };
 
-  // 권한 확인
   useEffect(() => {
     auth();
   }, [popupId]);
@@ -156,7 +141,6 @@ const PopupEditPage = () => {
     }
   }, [hasPermission, editing]);
 
-  // 값 변경 시
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -165,7 +149,6 @@ const PopupEditPage = () => {
     // }
   };
 
-  // 빈칸 확인
   const validateForm = () => {
     console.log("formData.images: ", formData.images);
     if (formData.s_name && formData.category && formData.owner && formData.business_hours && formData.location && formData.s_date && formData.e_date && formData.images.some((image) => image !== null) && formData.contact) {
@@ -176,7 +159,6 @@ const PopupEditPage = () => {
     }
   };
 
-  // 수정된 데이터 서버로 전송
   const handleSave = async () => {
     if (!validateForm()) {
       return;
@@ -187,11 +169,9 @@ const PopupEditPage = () => {
     Object.keys(formData).forEach((key) => {
       if (key === "images") {
         formData.images.forEach((image) => {
-          // 새로 업로드된 파일은 "image[]"로 보냄
           if (image instanceof File) {
             formDataToSend.append("image[]", image);
           } else {
-            // 기존 URL은 "uploadedImage"로 보냄
             formDataToSend.append("uploadedImage", image);
           }
         });
@@ -200,27 +180,21 @@ const PopupEditPage = () => {
       } else if (key === "business_hours") {
         formDataToSend.append(key, startTime + "-" + endTime);
       } else {
-        // 나머지는 그대로
         formDataToSend.append(key, formData[key]);
       }
     });
 
     formDataToSend.append("deleteImages", JSON.stringify(deleteImages));
 
-    // FormData의 내용 출력
     for (const [key, value] of formDataToSend.entries()) {
       console.log(`${key}: ${value}`);
     }
 
     try {
-      // API - 수정 정보 전달 (저장하기)
       const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
         method: "PUT",
         body: formDataToSend,
       });
-
-      // 200 - {"message": "Store updated successfully"}
-      // 400~500 -  {"error": "Store not found"}
 
       if (!response.ok) {
         checkToken(response);
@@ -232,10 +206,10 @@ const PopupEditPage = () => {
       }
 
       const data = await response.json();
-      console.log(data.message); // 성공 메시지 출력
+      console.log(data.message);
       alert("팝업 스토어의 정보를 성공적으로 수정하였습니다.");
 
-      setEditing(false); // 수정 모드 종료
+      setEditing(false);
       navigate(`/popup/edit/${popupId}`);
     } catch (err) {
       console.error("네트워크 오류 발생: ", err);
@@ -245,24 +219,20 @@ const PopupEditPage = () => {
 
   if (loading) {
     return <p></p>;
-    // return <p>로딩 중...</p>;
   }
 
   if (error) {
     return <p>오류가 발생하였습니다: {error}</p>;
   }
 
-  // 권한이 없을 때
   if (hasPermission === false) {
     return <p>해당 팝업에 대한 수정 권한이 없습니다.</p>;
   }
 
-  // 받아온 데이터가 없을 때
   if (!detail) {
     return <p>팝업 정보를 불러올 수 없습니다.</p>;
   }
 
-  // 팝업 삭제
   const handleDelete = async () => {
     const isConfirmed = window.confirm("정말 삭제하시겠습니까?");
 
@@ -271,7 +241,6 @@ const PopupEditPage = () => {
     }
 
     try {
-      // API - 유저가 작성한 게시글 삭제
       const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}`, {
         method: "DELETE",
         headers: {
@@ -289,42 +258,34 @@ const PopupEditPage = () => {
       alert("삭제를 성공했습니다.");
       navigate("/myPopup");
     } catch (err) {
-      //
       console.error("네트워크 오류 발생", err.message);
       alert("네트워크 오류가 발생했습니다.\n다시 시도해 주세요.");
     }
   };
 
-  // 이미지 업로드
   const handleImageChange = (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const newFiles = Array.from(files); // 선택된 파일들을 배열로 변환
-      const newImageUrls = newFiles.map((file) => URL.createObjectURL(file)); // 파일의 미리보기 URL 생성
+      const newFiles = Array.from(files);
+      const newImageUrls = newFiles.map((file) => URL.createObjectURL(file));
 
-      // 실제 파일 객체는 formData.images에 저장
       setFormData((prevData) => ({
         ...prevData,
-        images: [...prevData.images, ...newFiles], // 기존 이미지와 추가된 이미지를 합쳐서 상태에 저장
+        images: [...prevData.images, ...newFiles],
       }));
 
-      // 미리보기 URL은 setImages에 저장
-      setImages((prevImages) => [...prevImages, ...newImageUrls]); // 기존 미리보기 URL과 새로 추가된 URL을 합침
+      setImages((prevImages) => [...prevImages, ...newImageUrls]);
     }
   };
 
-  // 이미지 삭제
   const handleDeleteImage = (index) => {
-    // 기존 이미지 중 삭제된 url 관리
     if (String(formData.images[index]).startsWith("/upload")) {
       setDeleteImages([...deleteImages, formData.images[index]]);
     }
 
-    // formData에서 이미지 파일 삭제
     const newImages = formData.images.filter((_, i) => i !== index);
     setFormData({ ...formData, images: newImages });
 
-    // setImages에서 미리보기 URL 삭제
     const newImageUrls = images.filter((_, i) => i !== index);
     setImages(newImageUrls);
   };
@@ -419,7 +380,6 @@ const PopupEditPage = () => {
             <div className="flex gap-4 mb-4">
               {images.map((url, index) => (
                 <div key={index} className="relative">
-                  {/* <img src={url} alt={`이미지 ${index + 1}`} className="w-32 h-32 object-cover rounded-lg shadow-md" /> */}
                   <img src={url} alt={`이미지 ${index + 1}`} className="w-full max-w-sm md:max-w-md lg:max-w-lg h-auto object-cover rounded-lg shadow-md" />
                   <button onClick={() => handleDeleteImage(index)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-2">
                     X

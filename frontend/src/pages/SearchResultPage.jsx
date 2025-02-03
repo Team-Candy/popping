@@ -4,7 +4,6 @@ import useAuth from "../context/useAuth";
 import { fetchWithAuth, formatDate, formatURL, useCheckToken } from "../utils/util";
 
 async function fetchData(query, limit = 10) {
-  // API 요청
   try {
     console.log("query: ", query);
     const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/search?value=${encodeURIComponent(query)}&limit=${limit}`);
@@ -28,11 +27,11 @@ const SearchResult = () => {
   const { auth } = useAuth();
   const checkToken = useCheckToken();
 
-  const [likedPopups, setLikedPopups] = useState([]); // 좋아요 상태 저장
+  const [likedPopups, setLikedPopups] = useState([]);
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const location = useLocation(); // URL의 쿼리 파라미터
+  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,14 +40,14 @@ const SearchResult = () => {
 
     if (query) {
       const fetchResults = async () => {
-        setIsLoading(true); // 데이터 로딩 시작
+        setIsLoading(true);
         try {
-          const data = await fetchData(query, 100); // 전체 데이터 가져오기
-          setResults(data.results); // 결과 업데이트
+          const data = await fetchData(query, 100);
+          setResults(data.results);
         } catch (error) {
           console.error("데이터 로드 중 오류 발생:", error);
         } finally {
-          setIsLoading(false); // 데이터 로딩 종료
+          setIsLoading(false);
         }
       };
 
@@ -56,7 +55,6 @@ const SearchResult = () => {
     }
   }, [location.search]);
 
-  // 로그인 상태일 때만 좋아요 데이터 가져오기
   const fetchLikedPopups = async () => {
     if (!auth.isLoggedIn) {
       return;
@@ -64,7 +62,6 @@ const SearchResult = () => {
 
     const fetchLikesData = async () => {
       try {
-        // API - 유저가 좋아요 누른 게시글 조회
         const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/likes`);
         const data = await response.json();
 
@@ -85,10 +82,9 @@ const SearchResult = () => {
   };
 
   useEffect(() => {
-    fetchLikedPopups(); // 로그인 상태일 때만 호출
+    fetchLikedPopups();
   }, [auth.isLoggedIn]);
 
-  // 좋아요 토글 함수
   const handleLikeToggle = async (popupId) => {
     if (!auth.isLoggedIn) {
       navigate("/login");
@@ -96,7 +92,7 @@ const SearchResult = () => {
       return;
     }
 
-    const isLiked = likedPopups.includes(popupId); // true,false
+    const isLiked = likedPopups.includes(popupId);
     setLikedPopups((prevLiked) => (isLiked ? prevLiked.filter((id) => id !== popupId) : [...prevLiked, popupId]));
 
     try {
@@ -114,7 +110,6 @@ const SearchResult = () => {
     } catch (error) {
       console.error(error.message);
 
-      // 요청 실패 시 상태 복구
       setLikedPopups((prevLiked) => (isLiked ? [...prevLiked, popupId] : prevLiked.filter((id) => id !== popupId)));
     }
   };

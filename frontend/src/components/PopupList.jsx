@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchWithAuth, useCheckToken, formatURL } from "../utils/util";
 
 const PopupList = ({ category }) => {
-  const { auth } = useAuth(); // 로그인 정보
+  const { auth } = useAuth();
   const navigate = useNavigate();
   const checkToken = useCheckToken();
 
@@ -14,7 +14,6 @@ const PopupList = ({ category }) => {
   const [likedPopups, setLikedPopups] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // API - 팝업 데이터 가져오기
   useEffect(() => {
     if (category) {
       fetchCategoryData(category);
@@ -25,16 +24,11 @@ const PopupList = ({ category }) => {
     setError(null);
 
     try {
-      // API - 메인 페이지 - 카테고리별 팝업 스토어 그리드 정보
       const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/categories/${category}`);
 
       if (!response.ok) {
         throw new Error("Failed to fetch categories");
       }
-
-      // category type
-      // whole, food, education, culture, digital, clothing, interior, sports, fashion miscellaneous goods, characters, others
-      // popular, scheduled
 
       const data = await response.json();
 
@@ -44,7 +38,7 @@ const PopupList = ({ category }) => {
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false); // 로딩 완료
+      setLoading(false);
     }
   };
 
@@ -61,17 +55,13 @@ const PopupList = ({ category }) => {
     }
   }, [category]);
 
-  // 로그인 상태일 때만 좋아요 데이터 가져오기
   useEffect(() => {
-    // 로그인 되지 않은 경우 무시
     if (!auth.isLoggedIn) {
       return;
     }
 
     const fetchLikesData = async () => {
       try {
-        // API - 유저가 좋아요 누른 게시글 조회
-        // (수정) (최적화) 매번 요청하지 않고 이걸 context 로 모든 페이지에서 볼 수 있도록?
         const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/likes`);
         const data = await response.json();
 
@@ -96,7 +86,6 @@ const PopupList = ({ category }) => {
     fetchLikesData();
   }, [auth.isLoggedIn]);
 
-  // 좋아요 추가 함수
   const handleLikeToggle = async (popupId) => {
     if (!auth.isLoggedIn) {
       navigate("/login");
@@ -104,16 +93,9 @@ const PopupList = ({ category }) => {
       return;
     }
 
-    // UI 먼저 업데이트
-    const isLiked = likedPopups.includes(popupId); // true,false
-    setLikedPopups(
-      (prevLiked) =>
-        isLiked
-          ? prevLiked.filter((id) => id !== popupId) // 좋아요 취소
-          : [...prevLiked, popupId] // 좋아요 추가
-    );
+    const isLiked = likedPopups.includes(popupId);
+    setLikedPopups((prevLiked) => (isLiked ? prevLiked.filter((id) => id !== popupId) : [...prevLiked, popupId]));
 
-    // API - 서버에 요청
     try {
       const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
         method: isLiked ? "DELETE" : "POST",
@@ -130,13 +112,7 @@ const PopupList = ({ category }) => {
     } catch (error) {
       console.error(error.message);
 
-      // 요청 실패 시 상태 복구
-      setLikedPopups(
-        (prevLiked) =>
-          isLiked
-            ? [...prevLiked, popupId] // 좋아요 복구
-            : prevLiked.filter((id) => id !== popupId) // 제거 복구
-      );
+      setLikedPopups((prevLiked) => (isLiked ? [...prevLiked, popupId] : prevLiked.filter((id) => id !== popupId)));
     }
   };
 
@@ -155,11 +131,10 @@ const PopupList = ({ category }) => {
                   <p className="mt-2 text-xs text-[#808080]">{popup.owner}</p>
                 </div>
 
-                {/* 하트 버튼 */}
                 <button
                   onClick={(e) => {
-                    e.stopPropagation(); // 부모 클릭 이벤트 방지
-                    handleLikeToggle(popup.id); // 하트 상태 토글
+                    e.stopPropagation();
+                    handleLikeToggle(popup.id);
                   }}
                 >
                   {likedPopups.includes(popup.id) ? "❤️" : "🤍"}

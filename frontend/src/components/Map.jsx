@@ -1,3 +1,4 @@
+// 디테일 페이지
 import PropTypes from "prop-types";
 import { useEffect, useRef } from "react";
 
@@ -26,7 +27,6 @@ const Map = ({ location }) => {
       return;
     }
 
-    // 스크립트 추가
     const script = document.createElement("script");
     script.id = "kakao-map-script";
     script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_JS_KEY}&autoload=false`;
@@ -35,7 +35,6 @@ const Map = ({ location }) => {
     document.body.appendChild(script);
 
     return () => {
-      // Cleanup
       if (mapRef.current) mapRef.current = null;
       if (markerRef.current) markerRef.current.setMap(null);
       if (infowindowRef.current) infowindowRef.current.close();
@@ -43,7 +42,6 @@ const Map = ({ location }) => {
   }, [location]);
 
   const loadKakaoMaps = async () => {
-    // Kakao Maps SDK가 로드된 후 실행
     if (!window.kakao || !window.kakao.maps) return;
 
     window.kakao.maps.load(async () => {
@@ -52,7 +50,6 @@ const Map = ({ location }) => {
 
       const { x: lng, y: lat } = coordinates;
 
-      // 지도 초기화
       if (!mapRef.current) {
         const container = document.getElementById("map");
         const options = {
@@ -61,11 +58,9 @@ const Map = ({ location }) => {
         };
         mapRef.current = new window.kakao.maps.Map(container, options);
       } else {
-        // 지도 중심 업데이트
         mapRef.current.setCenter(new window.kakao.maps.LatLng(lat, lng));
       }
 
-      // 마커와 인포윈도우 업데이트
       updateMarkerAndInfoWindow(mapRef.current, lat, lng, location);
     });
   };
@@ -73,7 +68,6 @@ const Map = ({ location }) => {
   const updateMarkerAndInfoWindow = (map, lat, lng, location) => {
     const position = new window.kakao.maps.LatLng(lat, lng);
 
-    // 마커 업데이트 또는 생성
     if (markerRef.current) {
       markerRef.current.setPosition(position);
     } else {

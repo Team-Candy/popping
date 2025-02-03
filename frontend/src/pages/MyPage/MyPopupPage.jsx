@@ -14,13 +14,3 @@ const MyPopupPage = () => {
 };
 
 export default MyPopupPage;
-
-{
-  /* 뷰*/
-}
-{
-  /* <div style={{ display: "flex", justifyContent: "flex-end" }}>
-  <button>리스트 뷰</button>
-  <button>달력 뷰</button>
-</div> */
-}

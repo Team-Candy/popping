@@ -3,24 +3,21 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const SearchBar = () => {
   const [query, setQuery] = useState("");
-  const navigate = useNavigate(); // useNavigate 훅
+  const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    // input box value 유지하기
     const queryParams = new URLSearchParams(location.search);
     const queryFromURL = queryParams.get("query");
 
-    // popup/search 가 아닌 다른 페이지 이동 시 input 값 초기화
     if (!location.pathname.startsWith("/popup/search")) {
-      setQuery(""); // 다른 페이지 이동시 초기화
+      setQuery("");
     } else {
-      setQuery(queryFromURL || ""); // URL에 query 값이 있으면 설정, 없으면 빈 문자열
+      setQuery(queryFromURL || "");
     }
   }, [location]);
 
   const handleSearch = async () => {
-    // 검색 후 /search 페이지로 이동
     navigate(`/popup/search?query=${query}`);
   };
 

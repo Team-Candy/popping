@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import useAuth from "../../context/useAuth"; // 로그인 상태;
+import useAuth from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
 import { fetchWithAuth } from "../../utils/util";
 
@@ -12,32 +12,26 @@ const ProfilePage = () => {
   const [nameChange, setNameChange] = useState("");
   const [nameEditing, setNameEditing] = useState(false);
 
-  // (수정) 이름 유효성 검사
+  // 이름 유효성 검사
   const [nameError, setNameError] = useState("");
   const [isNameValid, setIsNameValid] = useState(false);
 
   // 이메일
-  const [email, setEmail] = useState(""); // 기존 이메일
-  const [emailChange, setEmailChange] = useState(""); // 변경된 이메일
-  const [emailEditing, setEmailEditing] = useState(false); // 이메일 수정 상태 T/F
-  const [isEmailValid, setIsEmailValid] = useState(true); // 유효성
+  const [email, setEmail] = useState("");
+  const [emailChange, setEmailChange] = useState("");
+  const [emailEditing, setEmailEditing] = useState(false);
+  const [isEmailValid, setIsEmailValid] = useState(true);
   const [emailError, setEmailError] = useState("");
 
   // 이메일 인증
-  const [sendNumber, setSendNumber] = useState(false); // 인증번호 전송 T/F
+  const [sendNumber, setSendNumber] = useState(false);
   const [authNumber, setAuthNumber] = useState("");
   const [isAuthValid, setIsAuthValid] = useState(false);
   const [authError, setAuthError] = useState("");
 
-  // 비밀번호
-  // const [password, setPassword] = useState("");
-  // const [passwordEditing, setPasswordEditing] = useState(false);
-
-  // 개인정보 기본값 설정
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        //  API - 유저의 프로필 정보 조회
         const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`, {
           method: "GET",
           headers: {
@@ -45,7 +39,6 @@ const ProfilePage = () => {
             Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
           },
         });
-        // const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch");
@@ -57,7 +50,6 @@ const ProfilePage = () => {
         if (data && data.user) {
           setName(data.user.name);
           setEmail(data.user.email);
-          // setPassword(data.user.password);
         } else {
           console.error("Invalid data format:", data);
         }
@@ -76,14 +68,12 @@ const ProfilePage = () => {
     }
   }, [reload]);
 
-  // 회원 탈퇴
   const handleDeleteUser = async () => {
     const isConfirmed = window.confirm("정말 탈퇴하시겠습니까?");
     if (!isConfirmed) {
       return;
     }
 
-    // API - 유저 정보 삭제
     try {
       const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}`, {
         method: "DELETE",
@@ -105,11 +95,9 @@ const ProfilePage = () => {
     }
   };
 
-  // API - 유저의 정보 수정
   const handleChange = async () => {
     try {
       if (isNameValid) {
-        // 이름 수정
         const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/profile`, {
           method: "PUT",
           headers: {
@@ -130,7 +118,6 @@ const ProfilePage = () => {
         sessionStorage.setItem("username", nameChange);
         setReload(true);
       } else if (emailEditing) {
-        // 이메일 수정
         if (!isEmailValid) {
           alert("이메일 검증 후 다시 시도해주세요.");
           return;
@@ -161,7 +148,6 @@ const ProfilePage = () => {
     }
   };
 
-  // 이메일
   const handleEmailChange = (e) => {
     const inputEmail = e.target.value;
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -174,16 +160,13 @@ const ProfilePage = () => {
       setIsEmailValid(true);
     }
 
-    // 이메일 상태 업데이트
     setEmailChange(inputEmail);
 
-    // 메일이 수정되면
-    setSendNumber(false); // 인증메일 발송상태 초기화
+    setSendNumber(false);
     setAuthNumber(false);
-    setIsAuthValid(false); // 인증상태 초기화
+    setIsAuthValid(false);
   };
 
-  // API - 이메일 인증코드 발송
   const handleEmailVerification = async () => {
     if (!isEmailValid) {
       setEmailError("유효한 이메일을 입력해주세요.");
@@ -205,24 +188,21 @@ const ProfilePage = () => {
         return;
       }
 
-      setSendNumber(true); // 인증번호 발송 성공
+      setSendNumber(true);
     } catch (err) {
       setEmailError("네트워크 오류가 발생했습니다.");
       console.error(err);
     }
   };
 
-  // 인증번호 입력
   const handleAuthNumberChange = (e) => {
     const inputNumber = e.target.value;
     setAuthNumber(inputNumber);
 
-    // input값 변경시
-    setIsAuthValid(false); // 인증 초기화
+    setIsAuthValid(false);
     setAuthError("");
   };
 
-  // API - 이메일 인증코드 확인
   const handleAuthSubmit = async () => {
     if (authNumber == "") {
       setAuthError("인증번호를 입력해주세요.");
@@ -243,7 +223,6 @@ const ProfilePage = () => {
 
       if (!response.ok) {
         const data = await response.json();
-        // 실패시 {"error": "Invalid verification code"}
         setAuthError("인증번호가 일치하지 않습니다.");
         setIsAuthValid(false);
         throw new Error(data.error);
@@ -258,14 +237,12 @@ const ProfilePage = () => {
     }
   };
 
-  // 이름
   const handleNameChange = (e) => {
     const inputName = e.target.value;
-    const nameRegex = /^[a-zA-Z가-힣]*$/; // 한글, 알파벳만 허용
+    const nameRegex = /^[a-zA-Z가-힣]*$/;
 
     setNameChange(inputName);
 
-    // 지연처리 필요
     if (!nameRegex.test(inputName)) {
       setNameError("한글, 알파벳만 허용합니다.");
       setIsNameValid(false);
@@ -289,7 +266,6 @@ const ProfilePage = () => {
     <div className="flex flex-col items-center min-h-screen">
       <h2 className="text-center mb-6 text-2xl font-semibold">프로필</h2>
       <div className="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg space-y-6">
-        {/* 이름 변경 */}
         <div>
           <p className="block mb-1 text-gray-600 font-medium">이름</p>
           <div className="flex justify-between items-center">
@@ -300,7 +276,6 @@ const ProfilePage = () => {
                   value={nameChange}
                   placeholder="이름을 입력하세요."
                   onChange={(e) => {
-                    // setNameChange(e.target.value);
                     handleNameChange(e);
                   }}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-200"
@@ -340,14 +315,11 @@ const ProfilePage = () => {
           {nameError && <p className="ml-1 mt-1 text-sm text-red-500">{nameError}</p>}
         </div>
 
-        {/* 이메일 변경 */}
         <div>
           <p className="block mb-1 text-gray-600 font-medium">이메일</p>
-          {/* <div className="flex justify-between items-center"> */}
           <div>
             {emailEditing ? (
               <div>
-                {/* <div> */}
                 <div className="flex justify-between">
                   <div className="flex-grow">
                     <input type="email" placeholder="이메일 주소를 입력해주세요." value={emailChange} onChange={handleEmailChange} className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${emailError ? "border-red-500 focus:ring-red-300" : "border-gray-300 focus:ring-pink-200"}`} />
@@ -361,7 +333,7 @@ const ProfilePage = () => {
                     </button>
                   </div>
                 </div>
-                {emailError && <p className="mt-1 text-sm text-red-500">{emailError}</p>} {/* 이미 존재하는 이메일입니다.*/}
+                {emailError && <p className="mt-1 text-sm text-red-500">{emailError}</p>}
                 {sendNumber && <p className="mt-2 text-sm text-green-500">인증번호가 발송되었습니다.</p>}
                 <button type="button" onClick={handleEmailVerification} disabled={sendNumber} className={`mt-2 px-4 py-2 rounded-md text-white font-medium ${sendNumber ? "bg-gray-300 cursor-not-allowed" : "bg-[#c8a0c8] hover:bg-[#a15da1]"}`}>
                   인증번호 발송
@@ -372,13 +344,12 @@ const ProfilePage = () => {
                     <button type="button" onClick={handleAuthSubmit} className="px-4 py-2 rounded-md bg-[#c8a0c8] text-white font-medium hover:bg-[#a15da1]">
                       인증
                     </button>
-                    {authError && <p className="mt-1 text-sm text-red-500">{authError}</p>} {/* 인증 오류 메시지 */}
-                    {isAuthValid && <p className="mt-1 text-sm text-green-500">인증번호가 일치합니다.</p>} {/* 인증 성공 메시지 */}
+                    {authError && <p className="mt-1 text-sm text-red-500">{authError}</p>}
+                    {isAuthValid && <p className="mt-1 text-sm text-green-500">인증번호가 일치합니다.</p>}
                   </div>
                 )}
               </div>
             ) : (
-              // <div>
               <div className="flex justify-between">
                 <p className="p-2">{email}</p>
 
@@ -400,7 +371,6 @@ const ProfilePage = () => {
       </div>
       <hr />
 
-      {/* 회원 탈퇴 */}
       <div className="mt-10">
         <div className="px-6 py-2 bg-gray-300 text-white rounded-md hover:bg-gray-400">
           <button onClick={handleDeleteUser}>회원 탈퇴</button>

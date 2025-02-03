@@ -8,15 +8,13 @@ const FavoritePopupPage = () => {
   const navigate = useNavigate();
 
   const [results, setResults] = useState([]);
-  const [likedPopups, setLikedPopups] = useState([]); // 좋아요 상태 저장
+  const [likedPopups, setLikedPopups] = useState([]);
 
   const [loading, setLoading] = useState("false");
 
   const fetchLikedPopups = async () => {
     const fetchLikesData = async () => {
       try {
-        // API - 유저가 좋아요 누른 게시글 조회
-        // (수정) (최적화) 매번 요청하지 않고 이걸 context 로 모든 페이지에서 볼 수 있도록?
         const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/likes`);
 
         const data = await response.json();
@@ -29,7 +27,6 @@ const FavoritePopupPage = () => {
         }
 
         setResults(data.likes);
-        // console.log(data.likes);
 
         const likes = data.likes.map((store) => store.s_id);
         setLikedPopups(likes);
@@ -42,7 +39,6 @@ const FavoritePopupPage = () => {
     fetchLikesData();
   };
 
-  // 로그인 상태일 때만 좋아요 데이터 가져오기
   useEffect(() => {
     if (!auth.isLoggedIn) {
       alert("로그인 후 이용해주세요");
@@ -53,18 +49,10 @@ const FavoritePopupPage = () => {
     fetchLikedPopups();
   }, []);
 
-  // 좋아요 토글 함수
   const handleLikeToggle = async (popupId) => {
-    const isLiked = likedPopups.includes(popupId); // 기존에 있는지(T), 없는지(F)
-    setLikedPopups(
-      // UI 먼저 업데이트
-      (prevLiked) =>
-        isLiked
-          ? prevLiked.filter((id) => id !== popupId) // 좋아요 취소
-          : [...prevLiked, popupId] // 좋아요 추가
-    );
+    const isLiked = likedPopups.includes(popupId);
+    setLikedPopups((prevLiked) => (isLiked ? prevLiked.filter((id) => id !== popupId) : [...prevLiked, popupId]));
 
-    // API - 팝업 스토어 좋아요 추가 / 삭제
     try {
       const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores/${popupId}/likes`, {
         method: isLiked ? "DELETE" : "POST",
@@ -83,13 +71,7 @@ const FavoritePopupPage = () => {
     } catch (error) {
       console.error(error.message);
 
-      // 요청 실패 시 상태 복구
-      setLikedPopups(
-        (prevLiked) =>
-          isLiked
-            ? [...prevLiked, popupId] // 좋아요 복구
-            : prevLiked.filter((id) => id !== popupId) // 제거 복구
-      );
+      setLikedPopups((prevLiked) => (isLiked ? [...prevLiked, popupId] : prevLiked.filter((id) => id !== popupId)));
     }
   };
 
@@ -108,8 +90,8 @@ const FavoritePopupPage = () => {
                 <button
                   className="absolute bottom-2 right-2 bg-white rounded-full p-1 shadow-md hover:shadow-lg"
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent parent click event
-                    handleLikeToggle(popup.s_id); // Toggle heart state
+                    e.stopPropagation();
+                    handleLikeToggle(popup.s_id);
                   }}
                 >
                   {likedPopups.includes(popup.s_id) ? "❤️" : "🤍"}

@@ -24,28 +24,24 @@ const RegisterPopupPage = () => {
 
   const [isFormValid, setIsFormValid] = useState(false);
 
-  // 이미지 업로드 처리
   const handleImageChange = (e, index) => {
     const newImage = e.target.files[0];
     if (newImage) {
       const updatedImages = [...images];
-      updatedImages[index] = newImage; // 현재 필드에 해당하는 이미지 업데이트
+      updatedImages[index] = newImage;
       if (index === images.length - 1) {
-        // 마지막 이미지 필드에 이미지를 추가했다면 새로운 필드 추가
         updatedImages.push(null);
       }
-      setImages(updatedImages); // 상태 업데이트
+      setImages(updatedImages);
 
-      // 유효성
       setImagesValid(true);
     }
   };
-  //   이미지 삭제 처리 (미리보기와 데이터 삭제)
-  const handleImageDelete = (index) => {
-    const updatedImages = images.filter((_, i) => i !== index); // 해당 인덱스 이미지와 필드 삭제
-    setImages(updatedImages); // 상태 업데이트
 
-    // 유효성
+  const handleImageDelete = (index) => {
+    const updatedImages = images.filter((_, i) => i !== index);
+    setImages(updatedImages);
+
     if (updatedImages.length === 0) {
       setImagesValid(false);
     }
@@ -82,10 +78,6 @@ const RegisterPopupPage = () => {
     }
   };
 
-  // 모든 필드가 유효한지 검사
-  //   const isFormValid = () => {
-  //     return name.trim() !== "" && location.trim() !== "" && startDate !== "" && endDate !== "" && selectedCategory && owner.trim() !== "" && isDescriptionValid && imagesValid;
-  //   };
   useEffect(() => {
     const valid = name.trim() !== "" && location.trim() !== "" && startDate !== "" && endDate !== "" && selectedCategory && owner.trim() !== "" && contact.trim() !== "" && isDescriptionValid && imagesValid;
     setIsFormValid(valid);
@@ -93,9 +85,6 @@ const RegisterPopupPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // 디버깅
-    // console.log("isFormValid:", isFormValid);
 
     // API - 서버로 데이터 보내기
     if (isDescriptionValid && selectedCategory && images.length > 0) {
@@ -114,32 +103,19 @@ const RegisterPopupPage = () => {
       images.forEach((image, index) => {
         formData.append(`image[]`, image);
         console.log(`image[${index}]`, image);
-        // formData.append(`image[${index}]`, image);
       });
 
-      // const files = document.querySelector('input[type="file"]').files;
-      // for (let i = 0; i < files.length; i++) {
-      //   formData.append("image[]", files[i]);
-      // }
-
-      // 디버깅
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-      }
       try {
         console.log("formData: ", formData);
 
-        // API - 사용자가 팝업 게시물 등록
         const response = await fetchWithAuth(`${import.meta.env.VITE_BE_PORT}/api/users/${sessionStorage.getItem("userId")}/stores`, {
           method: "POST",
-          //   headers 자동설정됨
-          body: formData, // FormData 객체 전송
+          body: formData,
         });
 
         if (!response.ok) {
           checkToken(response);
 
-          // 서버 오류 처리
           console.error("서버 오류: ", response.status);
           alert("서버 오류가 발생했습니다. 다시 시도해 주세요.");
           return;

@@ -9,7 +9,6 @@ const Layout = () => {
         <Header />
       </div>
 
-      {/* 라우팅된 콘텐츠*/}
       <div className="pt-[150px]">
         <main>
           <Outlet />

@@ -13,7 +13,6 @@ const Region = ({ onSelectRegion }) => {
   const [selectedRegion, setSelectedRegion] = useState("");
   return (
     <div>
-      {/* 검색 */}
       <div className="mb-5 h-9 px-5 bg-[#f0f0f0] rounded-full justify-between items-center inline-flex">
         <div className="text-sm w-[200px]">
           <input
@@ -23,12 +22,11 @@ const Region = ({ onSelectRegion }) => {
             onChange={(e) => {
               setLocation(e.target.value);
             }}
-            tabIndex="0" // 키보드 포커스를 받을 수 있도록 설정
+            tabIndex="0"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
                 onSelectRegion(location);
-                // document.getElementById("search-button").click();
               }
             }}
           />
@@ -46,27 +44,9 @@ const Region = ({ onSelectRegion }) => {
         </div>
       </div>
 
-      {/* 도시별 */}
-
-      {/* <div className="p-4 justify-center items-center gap-2 flex flex-wrap">
-        {categories.map((item) => (
-          <div key={item.value}>
-            <div
-              key={item.value}
-              className={`p-2 rounded-lg border border-[#b3b3b3] justify-center items-center gap-3 flex text-center text-xs font-normal font-['Pretendard'] leading-normal whitespace-nowrap w-full sm:w-auto transition-all hover:cursor-pointer ${selectedCategory === item.value ? "border-[#A15EA1] bg-opacity-30 bg-[#C8A0C8] text-[#A15EA1]" : "text-black"} active:bg-gray-300 active:scale-95`}
-              onClick={() => handleCategoryClick(item.value)}
-            >
-              {item.label}
-            </div>
-          </div>
-        ))}
-      </div> */}
-
-      {/* <div> */}
       <div className="p-4 justify-center items-center gap-2 flex flex-wrap">
         {Object.keys(city).map((region) => (
           <button
-            // className={`p-2 rounded-lg border border-[#b3b3b3] justify-center items-center gap-3 flex text-center text-xs font-normal font-['Pretendard'] leading-normal whitespace-nowrap w-full sm:w-auto transition-all hover:cursor-pointer ${selectedRegion === region.value ? "border-[#A15EA1] bg-opacity-30 bg-[#C8A0C8] text-[#A15EA1]" : "text-black"} active:bg-gray-300 active:scale-95`}
             className={`p-2 rounded-lg border border-[#b3b3b3] justify-center items-center gap-3 flex text-center text-xs font-normal font-['Pretendard'] leading-normal whitespace-nowrap w-full sm:w-auto transition-all hover:cursor-pointer ${selectedRegion === region ? "border-[#A15EA1] bg-opacity-30 bg-[#C8A0C8] text-[#A15EA1]" : "text-black"} active:bg-gray-300 active:scale-95`}
             key={region}
             onClick={() => {
@@ -84,7 +64,7 @@ const Region = ({ onSelectRegion }) => {
 };
 
 Region.propTypes = {
-  onSelectRegion: PropTypes.func.isRequired, // 필수 함수
+  onSelectRegion: PropTypes.func.isRequired,
 };
 
 export default Region;

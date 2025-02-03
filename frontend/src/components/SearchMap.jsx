@@ -11,28 +11,19 @@ const Map = ({ region, location }) => {
     const scriptId = "kakao-map-script";
     const existingScript = document.getElementById(scriptId);
 
-    // if (existingScript) {
-    //   initializeMap(region, location);
-    //   return;
-    // }
-
     if (existingScript) {
       if (window.kakao && window.kakao.maps) {
-        // Kakao Maps SDK가 이미 로드된 경우
         initializeMap(region, location);
       } else {
-        // Kakao 객체가 아직 로드되지 않은 경우
         existingScript.onload = () => initializeMap(region, location);
       }
       return;
     }
 
-    // 새로운 <script> 태그를 동적으로 생성하고, Kakao Maps SDK의 URL을 설정한 뒤 문서에 추가
     const script = document.createElement("script");
     script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_JS_KEY}&autoload=false`;
     script.async = true;
     script.id = scriptId;
-    // script.onload = () => initializeMap(region, location);
     script.onload = () => {
       console.log("Kakao Maps SDK 로드 완료");
       initializeMap(region, location);
@@ -74,11 +65,9 @@ const Map = ({ region, location }) => {
           map.zoomControl = zoomControl;
         }
 
-        // location.forEach(async (item) => {
         for (const item of location) {
           const { id, name, location, startDate, endDate, images } = item;
 
-          // fetchLatLng(location).then((coords) => {
           const coords = await fetchLatLng(location);
           const { x: lng, y: lat } = coords;
 
@@ -112,23 +101,21 @@ const Map = ({ region, location }) => {
           const infowindow = new window.kakao.maps.InfoWindow({
             position: new window.kakao.maps.LatLng(lat, lng),
             content: iwContent,
-            zIndex: 1, // 기본 zIndex 값
+            zIndex: 1,
             disableAutoPan: true,
           });
 
           window.kakao.maps.event.addListener(marker, "click", () => {
             markersRef.current.forEach((m) => {
-              m.setZIndex(1); // 마커 기본 zIndex로 설정
+              m.setZIndex(1);
             });
 
             infowindowsRef.current.forEach((infowindow) => {
-              infowindow.setZIndex(1); // 모든 인포윈도우의 zIndex를 기본값으로 설정
+              infowindow.setZIndex(1);
             });
 
-            // 클릭한 마커의 zIndex를 최상위로 설정
             marker.setZIndex(9999);
 
-            // 클릭한 인포윈도우의 zIndex를 최상위로 설정
             infowindow.setZIndex(9999);
           });
 
