@@ -7,7 +7,6 @@ const MapPage = () => {
   const [location, setLocation] = useState([]);
 
   useEffect(() => {
-    // 현재 활성화된 전체 팝업 정보 요청
     const fetchLocationData = async () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_BE_PORT}/api/categories/whole`);
@@ -24,9 +23,6 @@ const MapPage = () => {
         }
 
         const data = await response.json();
-        // 팝업고유 id, 팝업 이름, 주소, startDate, endDate, 이미지 url
-        // console.log("categories: ", data.categories);
->>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
 
         setLocation(data.categories);
       } catch (err) {
@@ -38,10 +34,14 @@ const MapPage = () => {
   }, []);
 
   return (
-    <div>
-      <h2>지도</h2>
-      <Region onSelectRegion={setSelectedRegion}></Region>
-      <Map region={selectedRegion} location={location}></Map>
+    <div className="mt-10 flex flex-col items-center justify-center">
+      <div className="max-w-[1000px] w-4/5">
+        <h2 className="mb-6 text-center text-3xl font-semibold text-gray-800">지도</h2>
+        <div className="w-full flex justify-center">
+          <Region onSelectRegion={setSelectedRegion}></Region>
+        </div>
+        <Map region={selectedRegion} location={location}></Map>
+      </div>
     </div>
   );
 };

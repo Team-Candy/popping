@@ -10,61 +10,50 @@ const city = {
 
 const Region = ({ onSelectRegion }) => {
   const [location, setLocation] = useState("");
-<<<<<<< HEAD
+  const [selectedRegion, setSelectedRegion] = useState("");
+  return (
+    <div>
+      <div className="mb-5 h-9 px-5 bg-[#f0f0f0] rounded-full justify-between items-center inline-flex">
+        <div className="text-sm w-[200px]">
+          <input
+            className="bg-[#f0f0f0] font-['Pretendard'] leading-normal w-full outline-none"
+            placeholder="주소를 입력해주세요."
+            type="text"
+            onChange={(e) => {
+              setLocation(e.target.value);
+            }}
+            tabIndex="0"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                onSelectRegion(location);
+              }
+            }}
+          />
+        </div>
 
-  return (
-    <div>
-      {/* 검색 */}
-      <input
-        type="text"
-        placeholder="이동할 위치를 입력하세요."
-        onChange={(e) => {
-          setLocation(e.target.value);
-        }}
-      />
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          onSelectRegion(location);
-        }}
-      >
-        검색
-      </button>
-=======
-  return (
-    <div>
-      {/* 검색 */}
-      <div>
-        <input
-          placeholder="주소를 입력해주세요."
-          type="text"
-          onChange={(e) => {
-            setLocation(e.target.value);
-          }}
-          tabIndex="0" // 키보드 포커스를 받을 수 있도록 설정
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
+        <div className="hover:scale-105 transition-all duration-300 w-10">
+          <button
+            onClick={(e) => {
               e.preventDefault();
               onSelectRegion(location);
-              // document.getElementById("search-button").click();
-            }
-          }}
-        />
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            onSelectRegion(location);
-          }}
-        >
-          검색
-        </button>
+            }}
+          >
+            검색
+          </button>
+        </div>
       </div>
->>>>>>> 332d25afe2b0e3fe93e4a9ca1e49217fc4b38ff3
 
-      {/* 도시별 */}
-      <div>
+      <div className="p-4 justify-center items-center gap-2 flex flex-wrap">
         {Object.keys(city).map((region) => (
-          <button key={region} onClick={() => onSelectRegion(city[region])}>
+          <button
+            className={`p-2 rounded-lg border border-[#b3b3b3] justify-center items-center gap-3 flex text-center text-xs font-normal font-['Pretendard'] leading-normal whitespace-nowrap w-full sm:w-auto transition-all hover:cursor-pointer ${selectedRegion === region ? "border-[#A15EA1] bg-opacity-30 bg-[#C8A0C8] text-[#A15EA1]" : "text-black"} active:bg-gray-300 active:scale-95`}
+            key={region}
+            onClick={() => {
+              setSelectedRegion(region);
+              onSelectRegion(city[region]);
+            }}
+          >
             {region}
           </button>
         ))}
@@ -75,6 +64,7 @@ const Region = ({ onSelectRegion }) => {
 };
 
 Region.propTypes = {
+  onSelectRegion: PropTypes.func.isRequired,
   onSelectRegion: PropTypes.func.isRequired,
 };
 

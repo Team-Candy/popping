@@ -2,6 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  /* background-color: red; */
+.custom-event {
+  color: black;
+  background-color: #c8a0c8;
+  border: none;
+}
+
+.custom-event:hover {
+  cursor: pointer;
+}
+
+.custom-day {
+  text-align: center;
+}
+
+.fc-button {
+  background-color: #f0f0f0 !important;
+  color: black !important;
+  border: 1px solid #ccc !important;
+}
+
+.fc-button:hover {
+  background-color: #dcdcdc !important;
+  color: #333 !important;
+}
+
+.fc-toolbar-title {
+  color: #333 !important;
+}
+
+.fc-toolbar-chunk {
+  color: #555 !important;
 }

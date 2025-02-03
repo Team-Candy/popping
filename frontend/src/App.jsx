@@ -1,6 +1,8 @@
 // import "./index.css";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import ScrollToTop from "./components/ScrollToTop";
 
 import Layout from "./pages/Layout";
 import PopupDetailPage from "./pages/PopupDetailPage";
@@ -14,7 +16,6 @@ import SignUpPage from "./pages/auth/SignUpPage";
 import JoinEmailPage from "./pages/auth/JoinMailPage";
 import LoginPage from "./pages/auth/LoginPage";
 
-import { AuthProvider } from "./context/AuthContext"; // 로그인 전역 상태관리
 import NotFoundPage from "./pages/notfound/NotFoundPage";
 
 import FavoritePopupPage from "./pages/mypage/FavoritePopupPage";
@@ -27,10 +28,9 @@ import PopupEditPage from "./pages/mypage/PopupEditPage";
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AuthProvider>
         <Routes>
-          {/* Route 정의 */}
-          {/* 기본 경로 */}
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
             <Route path="calendar" element={<CalendarPage />} />
@@ -45,7 +45,7 @@ function App() {
             <Route path="favoritePopup" element={<FavoritePopupPage />} />
             <Route path="registerPopup" element={<RegisterPopupPage />} />
             <Route path="popup/edit/:popupId" element={<PopupEditPage />} />
-            <Route path="*" element={<NotFoundPage />} /> {/* 404페이지 - 잘못된 경로로 접근*/}
+            <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>
       </AuthProvider>

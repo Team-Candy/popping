@@ -1,27 +1,22 @@
 import PropTypes from "prop-types";
 import Map from "./Map";
-import { formatDate } from "../utils/util";
 
 const Description = ({ detail }) => {
   return (
-    <div>
-      <p>
-        <strong>운영 기간:</strong> {formatDate(detail.s_date)} ~ {formatDate(detail.e_date)}
-      </p>
+    <div className="p-5 bg-gray-100  rounded-2xl shadow-md space-y-6">
+      <div>
+        <strong className="text-lg font-semibold text-gray-700 block mb-2">상세 설명</strong>
+        <p className="text-gray-600 leading-relaxed">{detail.description}</p>
+      </div>
 
-      <p>
-        <strong>운영 시간:</strong> {detail.business_hours}
-      </p>
+      <div>
+        <strong className="text-lg font-semibold text-gray-700 block mb-2">문의</strong>
+        <p className="text-gray-600 leading-relaxed">{detail.contact}</p>
+      </div>
 
-      <p>
-        <strong>상세 설명:</strong> {detail.description}
-      </p>
-
-      <p>
-        <strong>문의하기:</strong> {detail.contact}
-      </p>
-
-      <Map location={detail.location}></Map>
+      <div className="pt-4 rounded-2xl">
+        <Map location={detail.location}></Map>
+      </div>
     </div>
   );
 };

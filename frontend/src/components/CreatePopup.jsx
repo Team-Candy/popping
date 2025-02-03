@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../context/useAuth";
 
 const CreatePopup = () => {
-  const { auth } = useAuth(); // 로그인 상태 가져오기
+  const { auth } = useAuth();
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -18,8 +18,7 @@ const CreatePopup = () => {
   return (
     <>
       <div>
-        {/* <div className="text-3xl bg-blue-500">Tailwind Css 적용 테스트</div> */}
-        <div className="px-4 py-2 bg-[#f0f0f0] rounded-full justify-center items-center gap-2 flex">
+        <div className="px-4 py-2 bg-[#f0f0f0] rounded-full justify-center items-center gap-2 flex hover:bg-gray-300 transition-all duration-300">
           <button className="text-center text-red text-sm font-medium font-['Pretendard'] leading-normal" onClick={handleClick}>
             팝업 올리기
           </button>

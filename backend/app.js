@@ -27,6 +27,8 @@ app.use(express.json());
 
 app.use(cors());
 
+app.use(express.static('html')); // public 디렉터리에 정적 파일 배치
+
 app.use((req, res, next) => {
   console.log("Request Origin: ", req.get("Origin"));
   next();
@@ -49,6 +51,7 @@ app.use('/api/auth2', kakaoAuthRoutes);
 
 // 기본 라우트
 app.get("/", (req, res) => res.send("API Running..."));
+
 
 // 서버 시작
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
